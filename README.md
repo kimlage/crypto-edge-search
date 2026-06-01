@@ -130,6 +130,41 @@ deep venues, making the economics strictly worse.)
 
 ---
 
+## Why a backtest is not enough
+
+A profitable backtest is the **weakest** possible evidence a strategy works — and usually evidence
+it does *not*. Several well-documented failure modes turn a pretty equity curve into a lie, and a
+plain backtest controls for **none** of them:
+
+1. **Multiple testing / selection bias.** Try enough variants and the *best of N* looks brilliant
+   by luck alone — the expected maximum Sharpe of N random strategies grows with N (the *False
+   Strategy Theorem*). "I found a great config" is the null hypothesis, not the discovery.
+   → *Gate: Deflated Sharpe at the **honest N**.*
+2. **Overfitting.** A rule with enough knobs memorizes the in-sample path; the in-sample ranking
+   then does not survive on unseen folds. → *Gate: CPCV/PBO + consume-once holdout.*
+3. **Ignoring cost.** Most "edges" are real gross and gone net (fees + slippage on every trade).
+   → *Gate: net-of-cost, first.*
+4. **No baseline.** In a bull market any long-biased rule has a gorgeous Sharpe — that is **beta,
+   not skill.** You must beat buy-and-hold, an equal-weight book, a *random trader with the same
+   turnover*, and a one-line linear model. → *Gate: baselines.*
+5. **Look-ahead & survivorship.** Future-peeking features and "coins liquid today" panels inflate
+   everything. → *Controls: strict causality, lagged / point-in-time features, survivorship noted
+   as an upper bound.*
+
+And the deepest one, which **no backtest can catch by itself**: a backtest cannot tell you whether
+your "edge" is real structure or just **dispersion an optimizer would manufacture in pure noise.**
+The only way to know is to run the *exact same machinery on synthetic data that has the same
+volatility and autocorrelation but no genuine structure* — the **surrogate / placebo control.**
+When the strategy scores as well on noise as on the real series, the backtest was fitting noise. In
+this project a genetic program evolved an **equally good rule on pure noise** (placebo *p* = 1.000);
+without the surrogate, that backtest would have looked like a win.
+
+> **A backtest measures fit. The gauntlet measures edge.** That gap — between an in-sample curve and
+> a result that survives realistic cost, the honest `N`, a noise null, and data the search never saw
+> — is exactly where **26 of these 28 "strategies" died.**
+
+---
+
 ## The methodology — the durable asset
 
 Every hypothesis runs through the same fixed-order gauntlet, packaged as one reusable API
