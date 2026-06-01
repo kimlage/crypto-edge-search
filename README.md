@@ -1,5 +1,33 @@
 # crypto-edge-search
 
+## Philosophy
+
+This project is a **public scientific laboratory for trading techniques.** Its purpose is to
+**test — and aggregate falsifiable, reproducible evidence for or against — the methods people
+actually use to look for an edge in financial markets**: technical analysis, indicators, support
+and resistance, momentum and mean-reversion, pattern-based and "robust professional" setups,
+carry, capital rotation, on-chain flow, and the rest. Each one is run through a single fixed,
+uncompromising standard of proof, and the result is published — whatever it is.
+
+It is also, deliberately, a **falsification alert.** An entire industry sells the promise of easy,
+fast profit from speculation and trading. The evidence collected here points the other way: once
+you account for realistic cost, the *true* number of strategies you tried, and a single honest
+out-of-sample test, the overwhelming majority of these techniques are **statistically
+indistinguishable from noise.** What survives is not prediction skill — it is a thin, decaying
+structural premium that, in the current regime, does not even beat a risk-free Treasury bill.
+
+The uncomfortable conclusion the data keeps repeating: for an individual trading liquid markets at
+retail cost, speculation behaves **far more like a game of chance than like a consistent method of
+making money.** That is not cynicism — it is the output of running every popular technique through
+the same harsh, pre-registered gauntlet and reporting the kills honestly. **A KILL is the most
+valuable thing this project produces:** it is one less false promise, backed by evidence anyone can
+re-run for $0.
+
+> *If a technique cannot beat buy-and-hold, a random trader, and a coin-flip's worth of
+> luck-adjusted significance on data it has never seen — it is not an edge. It is a story.*
+
+---
+
 **A rigorous, anti-overfitting search for a tradeable edge in crypto.** 28 distinct
 hypotheses were tested at full statistical rigor on real, free, public market data
 (cloud spend **$0**). **26 were killed.** The **2 survivors** are structural-carry
