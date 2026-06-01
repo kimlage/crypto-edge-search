@@ -2,7 +2,7 @@
 
 > **Purpose.** This is the consolidated, standalone bibliography for the entire
 > edge-search program. Every gate in the anti-overfitting harness and every one of the
-> **28 tested hypotheses** traces to a peer-reviewed paper or a public working paper.
+> **31 tested hypotheses** traces to a peer-reviewed paper or a public working paper.
 > The page has two mapped sections: **(A) Gates & Methodology → paper** and
 > **(B) Hypotheses → paper**. Each entry is one line — authors, year, title, venue — with
 > a `→ used for / tests` note that points back to the exact gate, script, or hypothesis ID
@@ -20,7 +20,7 @@
 ## How to read the mapping
 
 The project's claim is methodological, not predictive: a committed validation gauntlet
-killed 26 of 28 hypotheses net of realistic cost, leaving only two structural-carry
+killed 29 of 31 hypotheses net of realistic cost, leaving only two structural-carry
 "survivors" that are real but **sub-risk-free in the current regime**. The bibliography
 below is the audit trail for that claim. Two conventions:
 
@@ -138,7 +138,7 @@ verdicts trace to `output/**` JSON and to [`EDGE_SEARCH_SYNTHESIS.md`](EDGE_SEAR
 
 ## See also (project documentation set)
 
-- [`EDGE_SEARCH_SYNTHESIS.md`](EDGE_SEARCH_SYNTHESIS.md) — the durable map: 28 hypotheses, 26 KILL, 2 sub-RF carry survivors; where the edge is *not*; the methodology that works.
+- [`EDGE_SEARCH_SYNTHESIS.md`](EDGE_SEARCH_SYNTHESIS.md) — the durable map: 31 hypotheses, 29 KILL, 2 sub-RF carry survivors; where the edge is *not*; the methodology that works.
 - [`VALIDATION_HARNESS.md`](VALIDATION_HARNESS.md) — the anti-overfitting gauntlet packaged as one reusable `validateStrategy(...)` call, with the gate order.
 - `EVOLUTION_TRAINING_LOG.md` (internal lab log — not included in this public release) — the raw chronological lab record with every number (internal provenance; rounds 1–6).
 - `references/REFERENCIAS_CRITICAS_EDGE_ROBUSTO_2026-05-28.md` — the prior annotated bibliography (finding + evidence strength + per-paper critique) with verified DOIs/venues.

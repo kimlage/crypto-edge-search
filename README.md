@@ -28,16 +28,16 @@ re-run for $0.
 
 ---
 
-**A rigorous, anti-overfitting search for a tradeable edge in crypto.** 28 distinct
+**A rigorous, anti-overfitting search for a tradeable edge in crypto.** 31 distinct
 hypotheses were tested at full statistical rigor on real, free, public market data
-(cloud spend **$0**). **26 were killed.** The **2 survivors** are structural-carry
+(cloud spend **$0**). **29 were killed.** The **2 survivors** are structural-carry
 strategies that pass the full-sample gates but are **sub-risk-free in the current
 (2025–2026) regime** — regime trades, not a business.
 
 > **This is a negative-results + methodology contribution, and that is the point.**
 > The durable asset is **not** a profitable strategy — it is the **methodology**: a
 > committed anti-overfitting gauntlet (honest trial-count `N`, surrogate/placebo
-> controls, and a consume-once holdout) that refused to promote 26 pretty in-sample
+> controls, and a consume-once holdout) that refused to promote 29 pretty in-sample
 > Sharpes that would otherwise have looked like wins. Honest negative results, fully
 > reproducible at $0, are rare in quant — that refusal **is** the result.
 >
@@ -49,16 +49,17 @@ strategies that pass the full-sample gates but are **sub-risk-free in the curren
 
 ## Key results
 
-- **28 hypotheses tested → 26 KILL, 2 sub-risk-free carry survivors** (perp funding carry, dated-futures basis).
+- **31 hypotheses tested → 29 KILL, 2 sub-risk-free carry survivors** (perp funding carry, dated-futures basis).
 - **The edge is NOT in** direction prediction, technical analysis, cross-section / relative value, capital rotation, event flow, on-chain flow, **or** adaptively re-fitting any of them — *fixed, adaptive, AND genetically evolved*.
 - **The two-gate death pattern:** signals produce pretty in-sample Sharpes that *pass* DSR / PBO / haircut (which only certify "not luck-of-selection"), then **die at the two gates that test real edge** — beating buy-and-hold/baselines, and a consume-once holdout.
 - **The surrogate/placebo control is the hero.** By preserving each asset's volatility and autocorrelation while destroying genuine structure, it answers *"is this edge just dispersion the machine would manufacture in noise?"* — and repeatedly, the answer was yes (a genetic program evolves an *equally good rule on pure noise*; placebo p = 1.000).
 - **The one survivor — structural carry — has decayed below the risk-free rate.** A perfect-foresight oracle earns only **+0.51–0.53%/yr** over T-bills in the current regime (proven three independent ways).
+- **The trader favorites die too.** Support/resistance is decoration on trend (surrogate p=0.609); **stop-loss + take-profit "risk management" only reshapes the P&L distribution — it does not move expectancy** (bracketed real ≈ bracketed noise — the fair-game theorem); and low-N signal confluence finds no threshold that is *both* rare and edgeful. (See [`docs/TRADER_FORMS_REFLECTION.md`](docs/TRADER_FORMS_REFLECTION.md).)
 - Everything runs on **free public APIs** (Binance / Bybit / OKX / DefiLlama / Coin Metrics Community), **cloud $0**, TypeScript + `tsx`.
 
 ---
 
-## The full results — all 28 hypotheses
+## The full results — all 31 hypotheses
 
 Columns: **ID** · **Name** · **Class** · **Data** · **Honest N** (the true number of distinct
 configs searched, fed to the Deflated-Sharpe and haircut gates) · **Binding KILL gate** (the
@@ -96,6 +97,9 @@ or for survivors the full-sample net APR).
 | **C3** | Joint market-state / breadth overlay | rotation | 30-coin panel + volume, 6y | 32 | KILL — baselines (loses to linear) | holdout **−19.56%**; residual edge is *aggregate vol*, not breadth |
 | **C4** | Event / listing forced-flow | event | 641 real listing events (incl. delisted), 2019–2026 | 32 | KILL — **surrogate** | real "listing dump" (CAR −5.3%/20d) but holdout short **−100% compound** |
 | **OC1** | On-chain distribution-pressure (exchange-flow + MVRV) | on-chain / flow | Coin Metrics exchange flow + MVRV, BTC+ETH daily | 36 | KILL — **baselines** + **surrogate (placeboP=0.482)** | loses to B&H + random-lottery + equal-weight; holdout flat (Sharpe 0.003) |
+| **NF1** | Support/resistance & price levels (pivots, swing H/L, round #s, Fibonacci, Bollinger) | TA / price-action | BTC 15m + 8 majors daily OHLC | 168 | KILL — **surrogate (placeboP=0.609)** | every winner is a *breakout riding trend*; destroy the levels (phase/block/x-shuffle) and the edge is unchanged — levels are decoration on filtered beta |
+| **NF2** | Target + Stop-Loss / professional brackets (path-dependent, intrabar TP/SL) | exit management | BTC 15m HIGH/LOW path + majors daily OHLC | 25 | KILL — **net-of-cost (0/47 pass)** | TP/SL **reshapes** the P&L distribution (win-rate 33→65%, skew −0.64→+2.22) but does **not** move expectancy (~0); bracketed real ≈ bracketed noise |
+| **NF3** | Confluence of rare pre-registered signals (≥k of 6 agree) | confluence / low-N | funding + basis + price + cross-section, BTC daily | 8 | KILL — baselines (loses to random-lottery) | pre-registration genuinely lowers the bar (expMaxSharpe 0.049) but **no k is both rare AND edgeful**; holdout **−0.090** |
 | **—** | BTC-15m direction (retired legacy GA target) | prediction | BTC 15m | 659 evals | KILL (retired as alpha generator) | best **+2.2%** < luck-of-N **+11.76%**; mean negative |
 
 **\*** The two survivors are **structural carry** (a limits-to-arbitrage premium), not prediction.
@@ -103,7 +107,7 @@ Both passed the full gauntlet on the 3-year sample but have **decayed below the 
 in the current regime (see below). A dash (`—`) in *Honest N* means a single pre-specified rule
 (no grid searched), so deflation is by construction and the holdout governs.
 
-**Canonical totals: 28 hypotheses · 26 KILL · 2 sub-risk-free carry survivors.** The full
+**Canonical totals: 31 hypotheses · 29 KILL · 2 sub-risk-free carry survivors.** The full
 per-round narrative, with every number traced to its machine-readable `output/…json`, is in
 [`docs/RESULTS.md`](docs/RESULTS.md).
 
@@ -161,7 +165,7 @@ without the surrogate, that backtest would have looked like a win.
 
 > **A backtest measures fit. The gauntlet measures edge.** That gap — between an in-sample curve and
 > a result that survives realistic cost, the honest `N`, a noise null, and data the search never saw
-> — is exactly where **26 of these 28 "strategies" died.**
+> — is exactly where **29 of these 31 "strategies" died.**
 
 ---
 
@@ -257,11 +261,12 @@ See [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) for the per-round scrip
 | Path | What's there |
 |---|---|
 | [`docs/`](docs/) | The full documentation set — start at [`docs/README.md`](docs/README.md) |
-| `docs/RESULTS.md` | Canonical record of all 28 hypotheses (master table + per-round narrative) |
+| `docs/RESULTS.md` | Canonical record of all 31 hypotheses (master table + per-round narrative) |
 | `docs/METHODOLOGY.md` | The 7-gate anti-overfitting gauntlet, explained |
 | `docs/EDGE_SEARCH_SYNTHESIS.md` | The synthesis + full academic bibliography |
 | `docs/REFERENCES.md` · `docs/REPRODUCIBILITY.md` | Bibliography · reproduce-it guide |
 | `docs/ONCHAIN_FEASIBILITY.md` | The $0 on-chain data feasibility scout (→ test OC1) |
+| `docs/TRADER_FORMS_REFLECTION.md` | Reflection: how to rigorously test trader-style forms (S/R, TP/SL, low-N confluence → NF1–NF3) |
 | `docs/VALIDATION_HARNESS.md` | The reusable `validateStrategy()` API |
 | `src/lib/validation/` | The harness — `validateStrategy()` |
 | `src/lib/significance/`, `src/lib/statistical-validation.ts` | The committed gates (DSR, CPCV/PBO, haircut, SPA, holdout, baselines) |

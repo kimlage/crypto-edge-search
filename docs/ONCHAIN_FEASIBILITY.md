@@ -5,7 +5,7 @@
 > recommended test below was subsequently executed as the program's **28th hypothesis** (OC1,
 > on-chain distribution-pressure) and the verdict was **KILL** — binding gate **baselines**,
 > with the **surrogate** also failing (placeboP=0.482), at honest N=36 on free Coin Metrics
-> Community data (cloud $0). The running tally is therefore now **28 tested / 26 KILL / 2
+> Community data (cloud $0). The running tally is therefore now **31 tested / 29 KILL / 2
 > sub-RF carry survivors**. See `RESULTS.md` §1 + §3 (Round 7) and `output/onchain-poc/verdict.json`.
 > The design notes below are preserved as written (they remain a faithful record of how the
 > test was specified and de-risked before it was run).

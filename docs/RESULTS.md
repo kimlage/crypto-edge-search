@@ -1,15 +1,15 @@
 # RESULTS — The Crypto Edge-Search Program (canonical record)
 
 > **What this is.** The single, canonical, English-language record of every hypothesis
-> tested in this project's systematic search for a tradeable crypto edge. **28 distinct
+> tested in this project's systematic search for a tradeable crypto edge. **31 distinct
 > hypotheses** were run at full rigor on real public market data (cloud spend **$0**).
-> **26 were KILLED.** **2 are sub-risk-free carry "survivors"** that pass the full-sample
+> **29 were KILLED.** **2 are sub-risk-free carry "survivors"** that pass the full-sample
 > gates but are **sub-risk-free in the current (2025–2026) regime** — they are regime
 > trades, not a business.
 >
 > **The durable asset is the methodology, not a strategy.** A committed anti-overfitting
 > gauntlet (honest trial-count `N`, surrogate/placebo controls, and a consume-once
-> holdout) refused to promote 26 pretty in-sample Sharpes that would otherwise have
+> holdout) refused to promote 29 pretty in-sample Sharpes that would otherwise have
 > looked like wins. That refusal is the result.
 >
 > **Honest framing.** This is a *negative-results + rigorous-methodology* contribution.
@@ -26,7 +26,7 @@
 
 ---
 
-## 1. Master table — all 28 hypotheses
+## 1. Master table — all 31 hypotheses
 
 Columns: **ID** · **Name** · **Class** (prediction / carry / rotation / event /
 structural / adaptive / TA-timing) · **Data used** · **Honest N** (the true number of
@@ -66,6 +66,9 @@ net APR).
 | **C3** | Joint market-state / breadth overlay | rotation | 30-coin panel + volume, 6y | 32 | KILL — baselines (loses to linear) | holdout **−19.56%**; ties equal-weight; the residual timing edge is *aggregate vol*, not breadth |
 | **C4** | Event / listing forced-flow | event | 641 real Binance listing events (incl. delisted), 2019–2026 | 32 | KILL — **surrogate** | real "listing dump" (CAR −5.3% by day 20) but block-boot reproduces 72%; holdout short **−100% compound** |
 | **OC1** | On-chain distribution-pressure overlay (exchange-flow + MVRV) | on-chain / flow | Coin Metrics Community exchange in/out flow (native units) + MVRV, BTC+ETH daily ~3,948 bars | 36 | KILL — **baselines** + **surrogate (placeboP=0.482)** | long/flat overlay loses to B&H + random-lottery + equal-weight; phase/block surrogates reproduce the "edge" ~48% of the time; holdout flat (Sharpe 0.003) |
+| **NF1** | Support/resistance & price levels (pivots, swing H/L, round #s, Fibonacci, Bollinger) | TA / price-action | BTC 15m + 8 majors daily OHLC | 168 | KILL — **surrogate (placeboP=0.609)** | every winner is a *breakout riding trend*; destroy the levels (phase/block/x-shuffle) and the edge is unchanged — levels are decoration on filtered beta |
+| **NF2** | Target + Stop-Loss / professional brackets (path-dependent, intrabar TP/SL) | exit management | BTC 15m HIGH/LOW path + majors daily OHLC | 25 | KILL — **net-of-cost (0/47 pass)** | TP/SL **reshapes** the P&L distribution (win-rate 33→65%, skew −0.64→+2.22) but does **not** move expectancy (~0); bracketed real ≈ bracketed noise |
+| **NF3** | Confluence of rare pre-registered signals (≥k of 6 agree) | confluence / low-N | funding + basis + price + cross-section, BTC daily | 8 | KILL — baselines (loses to random-lottery) | pre-registration genuinely lowers the bar (expMaxSharpe 0.049) but **no k is both rare AND edgeful**; holdout **−0.090** |
 | **—** | BTC-15m direction (retired legacy GA target) | prediction | BTC 15m | 659 evals | KILL (retired as an alpha generator) | best **+2.2%** < luck-of-N expectation **+11.76%**; mean negative |
 
 **\*** The two survivors are **structural carry**, not prediction. Both passed the full
@@ -74,9 +77,9 @@ risk-free rate** in the current regime — see **§4**. A dash (`—`) in *Hones
 hypothesis was a single pre-specified rule (no config grid searched), so deflation is by
 construction; the holdout still governs the verdict.
 
-**Canonical totals: 28 hypotheses tested · 26 KILL · 2 sub-risk-free carry survivors (both
+**Canonical totals: 31 hypotheses tested · 29 KILL · 2 sub-risk-free carry survivors (both
 sub-RF now).** This is the project's authoritative tally (lab log, 28th-test entry). The 2
-survivors are **E2** (perp funding carry) and **T8** (dated-futures basis). The 26 kills
+survivors are **E2** (perp funding carry) and **T8** (dated-futures basis). The 29 kills
 are every other entry in the table — the prediction / TA / rotation / event / adaptive /
 on-chain hypotheses (E1, E3, T1–T7, T9, T10, TA1–TA4, WF-A–D, R2–R4, C1–C4, **OC1**)
 together with the **retired legacy BTC-15m direction target**, which is counted among the
@@ -85,7 +88,7 @@ kills as the program's origin point (it is what the whole search replaced).
 > **Note on the count.** The master table lists every distinct identifier the program
 > touched, so a reader can audit each one independently. Counting the two carry survivors
 > (E2, T8) inside their E/T ranges and the retired legacy target as one kill, the program
-> total is **28 hypotheses: 26 KILL + 2 survivors.** (The Round-1–4 synthesis,
+> total is **31 hypotheses: 29 KILL + 2 survivors.** (The Round-1–4 synthesis,
 > `docs/EDGE_SEARCH_SYNTHESIS.md`, reports the running total of 23 at the end of Round 4;
 > Rounds 5–6 added R2–R4 and C1–C4 to reach 27, and the 28th-test on-chain
 > distribution-pressure POC (**OC1**) added the 28th = the 26th KILL.)
@@ -147,7 +150,7 @@ attempt at the same target had also failed).
 
 **What it triggered.** This true negative is exactly what motivated the **pivot to theory-first
 hypothesis testing** — *change the target, never the gates* — and the construction of the
-committed anti-overfitting harness that then killed 25 further hypotheses (and now 26, with
+committed anti-overfitting harness that then killed 25 further hypotheses (and now 29, with
 OC1). The GA-over-neural-DNAs engine itself is **retired as an alpha generator**; its source is
 **preserved/archived in the repository for provenance, not maintained or recommended for use**.
 The durable win was never the engine — it was retiring a dead target and keeping the rigor.
@@ -430,6 +433,41 @@ class most resembles the rotation tests (C1, C2) that both died on the surrogate
 under the same rigor, without manufacturing a survivor. The frontier is now tested, not just
 scouted.
 
+### Round 8 — Trader-style forms (NF1–NF3): support/resistance, target+stop-loss, low-N confluence — 3/3 KILL
+
+Three trade *forms* categorically different from the indicator strategies above — level-based
+discretionary techniques, path-dependent exit management, and rare-signal confluence — each forcing
+an explicit methodological upgrade to stay honest. Full reflection in
+`docs/TRADER_FORMS_REFLECTION.md`. *(`scripts/{nf1,nf2-brackets,nf3-confluence}/`.)*
+
+- **NF1 — Support/Resistance & price levels** (floor pivots, swing H/L, round numbers, Fibonacci,
+  Bollinger edges × bounce/breakout/retest, N=168). **KILL by the surrogate (placeboP=0.609).**
+  Floor-trader pivots are flat-to-negative net of cost; only *breakout* variants "work," and they
+  just ride trend. Destroying the level structure (phase/block/cross-sectional shuffle) leaves the
+  edge unchanged — the levels are decoration on filtered beta, the same failure as the classic
+  indicators in TA4.
+- **NF2 — Target + Stop-Loss / professional brackets** (path-dependent, intrabar TP/SL on the real
+  HIGH/LOW path, N=25). **KILL by net-of-cost (0/47 configs pass).** The decisive question — does
+  TP/SL *create* edge or *reshape* the distribution? — resolves cleanly: bracketing swings the
+  win-rate 33%→65% and per-trade skew −0.64→+2.22 while **gross expectancy stays ≈0**. Bracketed
+  real (−0.0795 Sharpe/trade) ≈ bracketed noise (GBM −0.0948, phase −0.0906). This is the
+  *fair-game / optional-stopping theorem* made operational: **"risk management" manages variance, it
+  does not manufacture edge — only the entry signal's edge matters,** and the entry was itself
+  indistinguishable from the surrogate null.
+- **NF3 — Confluence of rare pre-registered signals** (6 economically-motivated signals, act when
+  ≥k agree, N=8). **KILL by baselines (loses to random-lottery).** The honest nuance: pre-registration
+  *genuinely* lowers the deflation bar (N=8 ⇒ expected-max Sharpe only 0.049 — the intuition is
+  statistically correct), but **there is no threshold k that is simultaneously rare AND edgeful** —
+  loosen it (k=3) and it fires 735/1082 days = a long-biased trend filter beaten by the
+  random-lottery; tighten it (k=6) and it fires twice. The small honest N helps the statistics; it
+  cannot manufacture an edge that is not there.
+
+**Round-8 lesson:** each form forced a methodological upgrade (path-dependent exits need a per-trade
+P&L series + a bracket-on-surrogate null; low-N confluence needs genuine pre-registration so N stays
+small; discretionary levels need the level-construction counted in N) — and each KILL is one more
+falsified trader-favorite technique. The deepest, now-operational result: **stop-loss / take-profit
+is variance management, not alpha.**
+
 ---
 
 ## 4. The two survivors — real, but a regime trade, sub-RF now
@@ -458,7 +496,7 @@ timer can extract it now.**
 
 ---
 
-## 5. Patterns across all 28 tests
+## 5. Patterns across all 31 tests
 
 Two patterns recur so consistently they are the meta-findings of the program.
 
