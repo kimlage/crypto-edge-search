@@ -275,6 +275,22 @@ See [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) for the per-round scrip
 
 ---
 
+## Contributing
+
+**This is a community falsification lab — help us break it.** 🔬
+
+Bring a technique you think has edge and run it through the gauntlet; **try to revive one of the 29
+kills** (you must beat the *same* gates — cost, baselines, honest `N`, surrogate, consume-once
+holdout); **attack the harness** for bugs, look-ahead, or a weak surrogate; add a new surrogate null
+for a new trade form; or **port `validateStrategy(...)` to equities / FX / commodities** and see if
+the same techniques die there too. Disagreements *with code* are exactly what this repo is for.
+
+A well-run **KILL is a contribution** — honest negative results are the product. Open an issue to
+propose a hypothesis or report a gate bug, or a PR with your test. Full guide:
+[`CONTRIBUTING.md`](CONTRIBUTING.md). The one rule: **change the target, never the gates.**
+
+---
+
 ## License
 
 MIT — see [`LICENSE`](LICENSE). Copyright © 2026 Kim Lage.
