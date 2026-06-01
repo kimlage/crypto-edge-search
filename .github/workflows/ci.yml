@@ -1,0 +1,46 @@
+name: CI
+
+"on":
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: typecheck + test + build
+    runs-on: ubuntu-latest
+    # Keep CI free of any paid cloud / live-engine side effects.
+    env:
+      CI: "true"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      # Build last: it is the most expensive step and should only run once the
+      # cheaper type-check and unit tests are green.
+      - name: Build
+        run: npm run build

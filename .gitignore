@@ -1,0 +1,15 @@
+.next/
+node_modules/
+.venv-neural/
+.playwright-cli/
+output/
+docs/generated/
+__pycache__/
+python/__pycache__/
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
