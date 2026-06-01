@@ -3,8 +3,8 @@
 > **Purpose.** This is the map of what the edge search actually learned, so a future
 > reader does not re-walk dead ground. Every number here traces to a committed script
 > and a JSON in `output/`. It is the honest, public "Findings & Synthesis" page for the
-> whole program: 31 crypto trading hypotheses tested under an anti-overfitting validation
-> harness; 29 killed; 2 structural-carry "survivors" that are real but sub-risk-free in
+> whole program: 35 crypto trading hypotheses tested under an anti-overfitting validation
+> harness; 33 killed; 2 structural-carry "survivors" that are real but sub-risk-free in
 > the current regime.
 >
 > **Where this sits in the documentation set** (start at the index, [`docs/README.md`](README.md)):
@@ -24,8 +24,8 @@
 
 ## 0. TL;DR (the honest verdict)
 
-- **31 distinct hypotheses tested** at full rigor on real public data (cloud $0).
-- **29 KILL** — every prediction / technical-analysis / relative-value / rotation / event-flow
+- **35 distinct hypotheses tested** at full rigor on real public data (cloud $0).
+- **33 KILL** — every prediction / technical-analysis / relative-value / rotation / event-flow
   / on-chain-flow idea, **fixed, adaptive, AND genetically-evolved**.
 - **2 structural-carry survivors** (perp funding carry, dated-futures basis) that **pass the
   full-sample gates but are sub-risk-free in the CURRENT regime** — they only paid in the
@@ -34,7 +34,7 @@
   It never was. The gates are correctly refusing to promote noise.
 - **The one durable asset of this project is the methodology**: committed gates +
   surrogate/placebo controls + honest trial count `N` + a consume-once holdout. That stack
-  killed 29 pretty in-sample Sharpes that would otherwise have looked like wins — including
+  killed 33 pretty in-sample Sharpes that would otherwise have looked like wins — including
   the output of a genetic-programming search, the definitive overfitter.
 - **The on-chain / dry-powder-flow frontier has now been tested.** The on-chain scout
   delivered a **$0-feasibility verdict** (fundable at $0, prior null), and the recommended test
@@ -81,10 +81,10 @@
 
 \* Survivors are **structural carry**, not prediction. Both are real edges that have **decayed below the risk-free rate** in the current (2025–2026) regime. See §3.
 
-**Totals: 29 KILL — every prediction / TA / relative-value / rotation / event-flow / evolved-rule
+**Totals: 33 KILL — every prediction / TA / relative-value / rotation / event-flow / evolved-rule
 / on-chain-flow hypothesis (fixed, adaptive, and genetically-evolved) plus 1 retired legacy
 target; 2 structural-carry survivors, both sub-RF now.** (The legacy BTC-15m target is counted
-within the 29 KILL — 31 distinct hypotheses, 29 killed, 2 carry survivors.)
+within the 33 KILL — 35 distinct hypotheses, 33 killed, 2 carry survivors.)
 
 ---
 
@@ -253,7 +253,7 @@ sourcing live in [`METHODOLOGY.md`](METHODOLOGY.md) and [`REFERENCES.md`](REFERE
 **And the cost discipline:** taker ≈ 4 bps/side perp (8 bps round-trip) charged on **every** position
 change; turnover reported. **A gross-only signal is an automatic KILL** (TA3's 15m/30m variants, TA4, all WF runs).
 
-> **A KILL is a valuable, honest outcome.** The empty parent pool / 29 kills are the gates working
+> **A KILL is a valuable, honest outcome.** The empty parent pool / 33 kills are the gates working
 > correctly, not a failure of effort. The asset is the refusal to manufacture a survivor.
 > **`npx tsc --noEmit` = 0 errors; every run on real public data; cloud spend $0.**
 

@@ -1,8 +1,8 @@
 # Methodology — A Rigorous Anti-Overfitting Gate Stack for Trading-Strategy Validation
 
 > **This is the durable asset of the project.** Over six rounds (plus a follow-up on-chain
-> POC) we tested **31 distinct crypto trading hypotheses** on real public data at full rigor
-> (cloud spend $0). **29 were killed.** The two "survivors" are structural carry — real edges that have
+> POC) we tested **35 distinct crypto trading hypotheses** on real public data at full rigor
+> (cloud spend $0). **33 were killed.** The two "survivors" are structural carry — real edges that have
 > decayed **below the risk-free rate** in the current (2025–2026) regime, i.e. a regime
 > trade, not a business. The result that generalizes — and the thing worth sharing — is
 > **the validation methodology**: an ordered stack of committed statistical and economic
@@ -315,8 +315,8 @@ This is where the prediction edges died, one after another:
 
 | Bucket | Count | Notes |
 |---|---|---|
-| Hypotheses tested at full rigor | **31** | six rounds + an on-chain POC, all on real public data, cloud spend $0 |
-| Killed | **29** | every prediction / TA / relative-value / rotation / on-chain-flow idea, **fixed and adaptive** |
+| Hypotheses tested at full rigor | **35** | six rounds + an on-chain POC, all on real public data, cloud spend $0 |
+| Killed | **33** | every prediction / TA / relative-value / rotation / on-chain-flow idea, **fixed and adaptive** |
 | Structural-carry "survivors" | **2** | perp funding carry (E2) and dated-futures basis (T8) |
 
 The two survivors passed the full-sample gates but are **structural carry, not

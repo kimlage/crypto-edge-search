@@ -1,15 +1,15 @@
 # RESULTS — The Crypto Edge-Search Program (canonical record)
 
 > **What this is.** The single, canonical, English-language record of every hypothesis
-> tested in this project's systematic search for a tradeable crypto edge. **31 distinct
+> tested in this project's systematic search for a tradeable crypto edge. **35 distinct
 > hypotheses** were run at full rigor on real public market data (cloud spend **$0**).
-> **29 were KILLED.** **2 are sub-risk-free carry "survivors"** that pass the full-sample
+> **33 were KILLED.** **2 are sub-risk-free carry "survivors"** that pass the full-sample
 > gates but are **sub-risk-free in the current (2025–2026) regime** — they are regime
 > trades, not a business.
 >
 > **The durable asset is the methodology, not a strategy.** A committed anti-overfitting
 > gauntlet (honest trial-count `N`, surrogate/placebo controls, and a consume-once
-> holdout) refused to promote 29 pretty in-sample Sharpes that would otherwise have
+> holdout) refused to promote 33 pretty in-sample Sharpes that would otherwise have
 > looked like wins. That refusal is the result.
 >
 > **Honest framing.** This is a *negative-results + rigorous-methodology* contribution.
@@ -26,7 +26,7 @@
 
 ---
 
-## 1. Master table — all 31 hypotheses
+## 1. Master table — all 35 hypotheses
 
 Columns: **ID** · **Name** · **Class** (prediction / carry / rotation / event /
 structural / adaptive / TA-timing) · **Data used** · **Honest N** (the true number of
@@ -69,6 +69,10 @@ net APR).
 | **NF1** | Support/resistance & price levels (pivots, swing H/L, round #s, Fibonacci, Bollinger) | TA / price-action | BTC 15m + 8 majors daily OHLC | 168 | KILL — **surrogate (placeboP=0.609)** | every winner is a *breakout riding trend*; destroy the levels (phase/block/x-shuffle) and the edge is unchanged — levels are decoration on filtered beta |
 | **NF2** | Target + Stop-Loss / professional brackets (path-dependent, intrabar TP/SL) | exit management | BTC 15m HIGH/LOW path + majors daily OHLC | 25 | KILL — **net-of-cost (0/47 pass)** | TP/SL **reshapes** the P&L distribution (win-rate 33→65%, skew −0.64→+2.22) but does **not** move expectancy (~0); bracketed real ≈ bracketed noise |
 | **NF3** | Confluence of rare pre-registered signals (≥k of 6 agree) | confluence / low-N | funding + basis + price + cross-section, BTC daily | 8 | KILL — baselines (loses to random-lottery) | pre-registration genuinely lowers the bar (expMaxSharpe 0.049) but **no k is both rare AND edgeful**; holdout **−0.090** |
+| **NA** | Monthly options-expiry / "max-pain pin" | calendar / event | BTC 15m→4h + derived expiry calendar | 12 | KILL — baselines (loses to buy-and-hold) | the "max-pain pin / pre-expiry dump" is **folklore**: the real pre-weak/post-strong drift is just long-BTC beta; surrogate p=0.77; holdout **−0.010** |
+| **NB** | On-chain valuation suite (exchange-reserve trend, active-address momentum, NVT) | on-chain / valuation | Coin Metrics Community, BTC+ETH daily | 192 | KILL — baselines | on-chain valuation is **coincident, not predictive**; vol-targeting just parks you in cash (mean exposure 0.22); loses to B&H + equal-weight + random-lottery |
+| **NC** | Cross-asset macro regime (BTC vs DXY/gold/SPX risk-on/off) | macro / regime | stooq free macro + BTC daily | 90 | KILL — Deflated Sharpe (PBO 0.964) | macro conditioning is **coincident beta** — BTC/SPX/$ share the same global risk tape; the small bump is de-risking, not timing |
+| **ND** | Intraday/weekly calendar (weekend, day-of-week, sessions) | seasonality / calendar | BTC 15m, 306k bars, 8.75y | 28 | KILL — Deflated Sharpe | no calendar edge — a data-mining mirage like T6; best **+447% in-sample → negative holdout**; surrogate p=0.752 |
 | **—** | BTC-15m direction (retired legacy GA target) | prediction | BTC 15m | 659 evals | KILL (retired as an alpha generator) | best **+2.2%** < luck-of-N expectation **+11.76%**; mean negative |
 
 **\*** The two survivors are **structural carry**, not prediction. Both passed the full
@@ -77,9 +81,9 @@ risk-free rate** in the current regime — see **§4**. A dash (`—`) in *Hones
 hypothesis was a single pre-specified rule (no config grid searched), so deflation is by
 construction; the holdout still governs the verdict.
 
-**Canonical totals: 31 hypotheses tested · 29 KILL · 2 sub-risk-free carry survivors (both
+**Canonical totals: 35 hypotheses tested · 33 KILL · 2 sub-risk-free carry survivors (both
 sub-RF now).** This is the project's authoritative tally (lab log, 28th-test entry). The 2
-survivors are **E2** (perp funding carry) and **T8** (dated-futures basis). The 29 kills
+survivors are **E2** (perp funding carry) and **T8** (dated-futures basis). The 33 kills
 are every other entry in the table — the prediction / TA / rotation / event / adaptive /
 on-chain hypotheses (E1, E3, T1–T7, T9, T10, TA1–TA4, WF-A–D, R2–R4, C1–C4, **OC1**)
 together with the **retired legacy BTC-15m direction target**, which is counted among the
@@ -88,7 +92,7 @@ kills as the program's origin point (it is what the whole search replaced).
 > **Note on the count.** The master table lists every distinct identifier the program
 > touched, so a reader can audit each one independently. Counting the two carry survivors
 > (E2, T8) inside their E/T ranges and the retired legacy target as one kill, the program
-> total is **31 hypotheses: 29 KILL + 2 survivors.** (The Round-1–4 synthesis,
+> total is **35 hypotheses: 33 KILL + 2 survivors.** (The Round-1–4 synthesis,
 > `docs/EDGE_SEARCH_SYNTHESIS.md`, reports the running total of 23 at the end of Round 4;
 > Rounds 5–6 added R2–R4 and C1–C4 to reach 27, and the 28th-test on-chain
 > distribution-pressure POC (**OC1**) added the 28th = the 26th KILL.)
@@ -468,6 +472,43 @@ small; discretionary levels need the level-construction counted in N) — and ea
 falsified trader-favorite technique. The deepest, now-operational result: **stop-loss / take-profit
 is variance management, not alpha.**
 
+### Round 9 — Four more popular beliefs (NA–ND): expiry pins, on-chain valuation, macro regime, calendar — 4/4 KILL
+
+Four widely-held retail beliefs, each fundable at $0, run through the gauntlet. All KILL — and
+three of the four die the *same* way: a real descriptive pattern that is just **long-BTC beta in
+disguise**, losing to buy-and-hold once costed. *(`scripts/{options-expiry,onchain-nb,nc,track-nd}/`.)*
+
+- **NA — Monthly options-expiry / "max-pain pin"** (N=12). The folklore *looks* alive descriptively
+  (BTC is weak into the last-Friday expiry, drifts up after), but **KILL by baselines**: the
+  post-expiry "rally" is just being long BTC in a subset of a bull market — it loses to buy-and-hold
+  and to a random-lottery of equal trade count, the surrogate places it at the 23rd percentile of
+  its own null (p=0.77), and the holdout is negative. A cautionary tale: a claim-specific "expiry
+  beats random windows" placebo returned **p=0.000** — it *would* have looked like a SURVIVE without
+  the committed baselines + consume-once-holdout gates, which correctly expose it as beta.
+  (Historical option OI-by-strike is not free, so the robust price-vs-calendar test is the
+  falsifiable one.)
+- **NB — On-chain valuation suite** (exchange-reserve trend, active-address momentum, NVT; N=192).
+  **KILL by baselines.** Free on-chain valuation metrics are **coincident, not predictive**: scaling
+  exposure to them lifts the Sharpe only because vol-targeting parks you in cash (mean exposure
+  0.22), mechanically cutting drawdown while sacrificing more return than it saves. It loses to
+  buy-and-hold, equal-weight, and a random-lottery of the same exposure; phase/block surrogates
+  reproduce it. (Distinct features from the MVRV+flow OC1 test — same conclusion.)
+- **NC — Cross-asset macro regime** (BTC vs DXY/gold/SPX risk-on/off; N=90). **KILL by Deflated
+  Sharpe** (PBO 0.964, surrogate). Macro conditioning is **coincident beta**: BTC, equities, and the
+  dollar all respond to the same global risk-on/off tape, so "risk-on ⇒ long BTC" mostly recovers
+  long-BTC exposure with lower time-in-market. The small in-sample bump is de-risking (volatility
+  reduction), not predictive timing, and it does not survive deflation.
+- **ND — Intraday/weekly calendar** (weekend pump, day-of-week, Asia/EU/US sessions, turn-of-week;
+  N=28). **KILL by Deflated Sharpe.** No real, cost-surviving, out-of-sample calendar edge — a
+  seasonality data-mining mirage exactly like T6: the best rule is **+447% in-sample → negative
+  Sharpe in the untouched holdout**, its temporal structure matched by phase/block surrogates
+  (p=0.752).
+
+**Round-9 lesson:** three of the four (NA, NB, NC) are the same trap — a *real* descriptive pattern
+that is **long-BTC beta sampled part of the time**, which the baselines and Deflated-Sharpe gates
+correctly unmask; the fourth (ND) is pure calendar data-mining. "Trade with the macro" and the
+"max-pain pin" join the kill list as folklore, not edge.
+
 ---
 
 ## 4. The two survivors — real, but a regime trade, sub-RF now
@@ -496,7 +537,7 @@ timer can extract it now.**
 
 ---
 
-## 5. Patterns across all 31 tests
+## 5. Patterns across all 35 tests
 
 Two patterns recur so consistently they are the meta-findings of the program.
 

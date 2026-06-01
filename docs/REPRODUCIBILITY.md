@@ -2,8 +2,8 @@
 
 > **Purpose.** This document lets anyone reproduce the edge-search program from scratch:
 > the data, the environment, a worked validation example, and an index of every audit
-> script. The program tested **31 crypto trading hypotheses** through an anti-overfitting
-> validation harness; **29 were KILLED** and **2 structural-carry "survivors"** are real
+> script. The program tested **35 crypto trading hypotheses** through an anti-overfitting
+> validation harness; **33 were KILLED** and **2 structural-carry "survivors"** are real
 > but **sub-risk-free in the current regime** (see `docs/EDGE_SEARCH_SYNTHESIS.md` for the
 > tally and `docs/EVOLUTION_TRAINING_LOG.md` for the chronological lab record). The
 > durable asset is the **methodology** — committed gates + surrogate/placebo controls +
@@ -305,6 +305,6 @@ may change over time.
 
 ### See also
 
-- `docs/EDGE_SEARCH_SYNTHESIS.md` — the durable tally of all 31 hypotheses + full academic bibliography.
+- `docs/EDGE_SEARCH_SYNTHESIS.md` — the durable tally of all 35 hypotheses + full academic bibliography.
 - `docs/VALIDATION_HARNESS.md` — the `validateStrategy()` harness, gate-by-gate.
 - `docs/EVOLUTION_TRAINING_LOG.md` — the chronological lab record (raw provenance; in Portuguese).

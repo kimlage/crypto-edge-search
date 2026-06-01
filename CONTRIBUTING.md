@@ -11,7 +11,7 @@ contribution.**
    Add a `scripts/<your-test>/` audit that calls `validateStrategy(...)` with an **honest trial
    count**, realistic cost, a surrogate null, and a consume-once holdout. Open a PR with the
    verdict — KILL or SURVIVE, both are valuable.
-2. **Try to revive a KILL.** Think one of the 29 kills was unfair? Challenge it — but you must beat
+2. **Try to revive a KILL.** Think one of the 33 kills was unfair? Challenge it — but you must beat
    the *same* gates (cost, baselines, honest `N`, surrogate, consume-once holdout). If you can make
    a dead strategy genuinely pass, that is a real finding.
 3. **Attack the gates.** Find a bug, an edge case, or a way the gauntlet could be fooled — a
