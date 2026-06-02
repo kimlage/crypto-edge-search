@@ -40,6 +40,14 @@ jobs:
       - name: Validate schemas
         run: npm run schema:validate
 
+      - name: Check results-ledger / docs consistency
+        run: npm run results:check
+
+      # Fail CI if the committed dashboard is stale: rebuild it and assert the
+      # working tree is clean. A drifted docs/dashboard.html surfaces as a diff.
+      - name: Check dashboard is up to date
+        run: npm run dashboard:check
+
       - name: Check references
         run: npm run refs:check
 

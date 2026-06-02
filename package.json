@@ -29,6 +29,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "schema:validate": "tsx scripts/validate-schemas.ts",
+    "results:check": "tsx scripts/check-results-consistency.ts",
+    "dashboard:build": "tsx scripts/build-dashboard.ts",
+    "dashboard:check": "tsx scripts/build-dashboard.ts && git diff --exit-code docs/dashboard.html",
     "refs:check": "tsx scripts/refs-check.ts",
     "test:property": "vitest run test/property",
     "prepublishOnly": "npm run build:lib && npm test"

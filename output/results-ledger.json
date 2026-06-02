@@ -1,0 +1,738 @@
+[
+  {
+    "id": "—",
+    "domain": "audit-nb",
+    "name": "Q9-LOWVOL",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-audit-nb/SUMMARY.md"
+  },
+  {
+    "id": "—",
+    "domain": "audit-nb",
+    "name": "O3-NVTS",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-audit-nb/SUMMARY.md"
+  },
+  {
+    "id": "—",
+    "domain": "consensus",
+    "name": "Funding-momentum inverse (drift-stripped)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt/SUMMARY.md"
+  },
+  {
+    "id": "—",
+    "domain": "consensus",
+    "name": "Residual / idiosyncratic momentum (BHM)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt/SUMMARY.md"
+  },
+  {
+    "id": "—",
+    "domain": "consensus",
+    "name": "Funding dispersion (Binance×Bybit)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt/SUMMARY.md"
+  },
+  {
+    "id": "—",
+    "domain": "consensus",
+    "name": "Perp-spot cash-and-carry",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt/SUMMARY.md"
+  },
+  {
+    "id": "—",
+    "domain": "consensus",
+    "name": "TSMOM-carry crash-hedge overlay",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt/SUMMARY.md"
+  },
+  {
+    "id": "—",
+    "domain": "consensus",
+    "name": "Vol-target / Moreira-Muir overlay (BTC)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt/SUMMARY.md"
+  },
+  {
+    "id": "—",
+    "domain": "consensus",
+    "name": "PCA basket stat-arb (Avellaneda-Lee)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt/SUMMARY.md"
+  },
+  {
+    "id": "—",
+    "domain": "consensus",
+    "name": "Funding-sentiment contrarian fade",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt/SUMMARY.md"
+  },
+  {
+    "id": "D8-C6-DATED",
+    "domain": "consensus",
+    "name": "Dated-futures cash-and-carry (BTC+ETH)",
+    "rawVerdict": "PROMISING",
+    "auditedVerdict": "PROMISING",
+    "lastAudit": "2026-06-01",
+    "claimType": "carry",
+    "bindingGate": "deflated_sharpe",
+    "honestN": 16,
+    "surrogateP": 0.001,
+    "monthlyAt100k": 475,
+    "artifactPath": "output/edgehunt-deepen/SUMMARY.md"
+  },
+  {
+    "id": "VRP-HARVEST",
+    "domain": "consensus",
+    "name": "VRP harvest + crash-gate (BTC/ETH)",
+    "rawVerdict": "PROMISING",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "claimType": "volatility-premium",
+    "bindingGate": "deflated_sharpe",
+    "honestN": 90,
+    "surrogateP": 0.14,
+    "monthlyAt100k": null,
+    "auditOverrideReason": "A 2021 DVOL-onset regime artifact: leave-2021-out Sharpe 1.257 -> 0.560, post-2021 DSR@N=1 only 0.842; the favorable consume-once holdout was lucky split-placement on the 2nd-richest year. Already fails DSR 0.389 @N=90 + PBO 0.50 (audited-kill: 2021 regime artifact).",
+    "artifactPath": "output/edgehunt-deepen/SUMMARY.md"
+  },
+  {
+    "id": "D1-03",
+    "domain": "D1",
+    "name": "Supertrend (ATR-band trend overlay)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D1/SUMMARY.md"
+  },
+  {
+    "id": "D1-06",
+    "domain": "D1",
+    "name": "CCI (z-scored typical-price oscillator)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D1/SUMMARY.md"
+  },
+  {
+    "id": "D2-CVD",
+    "domain": "D2",
+    "name": "CVD literal/band-gated divergence (h>=1)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D2/SUMMARY.md"
+  },
+  {
+    "id": "D2-LIQ",
+    "domain": "D2",
+    "name": "Liquidation-cascade fade/follow (proxy)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D2/SUMMARY.md"
+  },
+  {
+    "id": "D2-LT",
+    "domain": "D2",
+    "name": "Large-trade / whale-print short-horizon momentum",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D2/SUMMARY.md"
+  },
+  {
+    "id": "D2-M2",
+    "domain": "D2",
+    "name": "Amihud illiquidity premium (cross-section)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D2/SUMMARY.md"
+  },
+  {
+    "id": "D2-OBV",
+    "domain": "D2",
+    "name": "OBV / A-D trend confirmation",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D2/SUMMARY.md"
+  },
+  {
+    "id": "D2-TBR",
+    "domain": "D2",
+    "name": "Taker buy/sell ratio extreme imbalance",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D2/SUMMARY.md"
+  },
+  {
+    "id": "D2-VP",
+    "domain": "D2",
+    "name": "Volume-profile POC / value-area reversion",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D2/SUMMARY.md"
+  },
+  {
+    "id": "D2-VWAP",
+    "domain": "D2",
+    "name": "Anchored / session VWAP mean-reversion",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D2/SUMMARY.md"
+  },
+  {
+    "id": "D3-A3",
+    "domain": "D348",
+    "name": "GARCH/EGARCH vol-forecast timing (BTC)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D3-B1",
+    "domain": "D348",
+    "name": "GEX / dealer gamma (walls, flip)",
+    "rawVerdict": "DEFERRED",
+    "auditedVerdict": "DEFERRED",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D3-B3",
+    "domain": "D348",
+    "name": "25-delta risk reversal / skew",
+    "rawVerdict": "DEFERRED",
+    "auditedVerdict": "DEFERRED",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D3-B9",
+    "domain": "D348",
+    "name": "DVOL signals (spike/mom/level/timer)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D4-M1",
+    "domain": "D348",
+    "name": "Dual momentum (abs+rel)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D4-M3",
+    "domain": "D348",
+    "name": "52-week-high nearness (anchoring)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D4-M4",
+    "domain": "D348",
+    "name": "Frog-in-the-pan / info discreteness",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D4-S7",
+    "domain": "D348",
+    "name": "Short-term reversal (weekly+daily XS)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D8-A7",
+    "domain": "D348",
+    "name": "Ensemble stacking of weak signals",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D8-B1",
+    "domain": "D348",
+    "name": "Risk parity (inverse-vol / ERC)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D8-B4",
+    "domain": "D348",
+    "name": "Rebalancing premium / vol harvesting",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D8-C1",
+    "domain": "D348",
+    "name": "Funding dispersion (cross-venue)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D348/SUMMARY.md"
+  },
+  {
+    "id": "D5-03",
+    "domain": "D5",
+    "name": "MVRV-Z extreme bands",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D5/SUMMARY.md"
+  },
+  {
+    "id": "D5-05",
+    "domain": "D5",
+    "name": "Realized-price cost-basis S/R",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D5/SUMMARY.md"
+  },
+  {
+    "id": "D5-08",
+    "domain": "D5",
+    "name": "Exchange reserve/netflow trend",
+    "rawVerdict": "PROMISING",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "claimType": "on-chain",
+    "bindingGate": "surrogate",
+    "honestN": 54,
+    "surrogateP": 0.24,
+    "monthlyAt100k": null,
+    "auditOverrideReason": "Harness surrogate p=0.013 was a single-best-config p over a searched grid; under the family-wise MAX-statistic null the surrogate gate FAILS (p~=0.24, real-best 0.994 < surr95 1.19) and it fails honest-N DSR at the full grid (audited-kill: family-wise surrogate).",
+    "artifactPath": "output/edgehunt-audit/SUMMARY.md"
+  },
+  {
+    "id": "D5-09",
+    "domain": "D5",
+    "name": "Puell Multiple",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D5/SUMMARY.md"
+  },
+  {
+    "id": "D5-10",
+    "domain": "D5",
+    "name": "Hash Ribbons",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D5/SUMMARY.md"
+  },
+  {
+    "id": "D5-13",
+    "domain": "D5",
+    "name": "Stablecoin Supply Ratio",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D5/SUMMARY.md"
+  },
+  {
+    "id": "D5-16",
+    "domain": "D5",
+    "name": "Metcalfe active-addr residual",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D5/SUMMARY.md"
+  },
+  {
+    "id": "D5-17",
+    "domain": "D5",
+    "name": "Stock-to-Flow deviation",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D5/SUMMARY.md"
+  },
+  {
+    "id": "D6-M1",
+    "domain": "D6",
+    "name": "BTC vs US rates + 2s10s yield-curve regime timer",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D6/SUMMARY.md"
+  },
+  {
+    "id": "D6-M4",
+    "domain": "D6",
+    "name": "Real yields / \"digital gold\" (falling 10Y TIPS real yield → buy BTC)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D6/SUMMARY.md"
+  },
+  {
+    "id": "D6-S5",
+    "domain": "D6",
+    "name": "GDELT news-tone (sentiment) timer",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D6/SUMMARY.md"
+  },
+  {
+    "id": "D7.1",
+    "domain": "D7",
+    "name": "Four-year halving cycle / post-halving drift",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D7/SUMMARY.md"
+  },
+  {
+    "id": "D7.18",
+    "domain": "D7",
+    "name": "Stablecoin mint-as-event (supply prints precede pumps)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D7/SUMMARY.md"
+  },
+  {
+    "id": "D7.19",
+    "domain": "D7",
+    "name": "Funding settlement-timing micro-flows (refines carry)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-D7/SUMMARY.md"
+  },
+  {
+    "id": "O1-ADRACT",
+    "domain": "onchain2",
+    "name": "Network-growth (AdrActCnt + TxCnt) momentum timer, price-orthogonalized",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-onchain2/SUMMARY.md"
+  },
+  {
+    "id": "O2-REALCAP",
+    "domain": "onchain2",
+    "name": "Realized-cap / MVRV valuation band (thermocap deferred)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-onchain2/SUMMARY.md"
+  },
+  {
+    "id": "O3-NVTS",
+    "domain": "onchain2",
+    "name": "NVT signal, fee-revenue free proxy, causal contrarian",
+    "rawVerdict": "PROMISING",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "claimType": "on-chain",
+    "bindingGate": "deflated_sharpe",
+    "honestN": 312,
+    "surrogateP": 0.093,
+    "monthlyAt100k": null,
+    "auditOverrideReason": "Harness surrogate p=0.005 phase-randomized only the one winning signal; family-wise MAX-stat over the actually-searched N=312 grid gives p=0.093 (real-best 1.332 < surr95-max 1.384) and DSR @N=312 = 0.894 fails — the N=54 carve-out was a post-hoc argmax (audited-kill: family-wise surrogate).",
+    "artifactPath": "output/edgehunt-audit-nb/SUMMARY.md"
+  },
+  {
+    "id": "O4-STABLEFLOW",
+    "domain": "onchain2",
+    "name": "Stablecoin supply growth as lagged dry-powder flow",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-onchain2/SUMMARY.md"
+  },
+  {
+    "id": "O5-HEIKIN",
+    "domain": "onchain2",
+    "name": "Heikin-Ashi trend / HA-EMA timer",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-onchain2/SUMMARY.md"
+  },
+  {
+    "id": "O6-FRACTAL",
+    "domain": "onchain2",
+    "name": "Williams 5-bar fractal breakout",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-onchain2/SUMMARY.md"
+  },
+  {
+    "id": "O7-MAYER",
+    "domain": "onchain2",
+    "name": "Mayer Multiple (price / SMA200)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-onchain2/SUMMARY.md"
+  },
+  {
+    "id": "O8-RENKO",
+    "domain": "onchain2",
+    "name": "Causal Renko brick trend timer",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-onchain2/SUMMARY.md"
+  },
+  {
+    "id": "Q1-HMM",
+    "domain": "quant",
+    "name": "Strictly-causal Gaussian HMM regime timer (BTC)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-quant/SUMMARY.md"
+  },
+  {
+    "id": "Q10-CARRYMOM",
+    "domain": "quant",
+    "name": "Carry + momentum combo (super-additive claim)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-quant/SUMMARY.md"
+  },
+  {
+    "id": "Q2-BOCPD",
+    "domain": "quant",
+    "name": "Bayesian online change-point timer (D8-A5)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-quant/SUMMARY.md"
+  },
+  {
+    "id": "Q3-ACCEL",
+    "domain": "quant",
+    "name": "Acceleration momentum / momentum-of-momentum (D4-M6)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-quant/SUMMARY.md"
+  },
+  {
+    "id": "Q4-STREV",
+    "domain": "quant",
+    "name": "Weekly residual short-term reversal (D4-S7/M2)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-quant/SUMMARY.md"
+  },
+  {
+    "id": "Q5-TOD",
+    "domain": "quant",
+    "name": "Time-of-day / UTC-hour session timing (BTC)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-quant/SUMMARY.md"
+  },
+  {
+    "id": "Q6-DVOLTS",
+    "domain": "quant",
+    "name": "DVOL term-structure (contango-sell) vol timing",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-quant/SUMMARY.md"
+  },
+  {
+    "id": "Q7-VOLREGIME",
+    "domain": "quant",
+    "name": "Revive killed signal via vol-regime gate (D3-A4)",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-quant/SUMMARY.md"
+  },
+  {
+    "id": "Q8-EFFRATIO",
+    "domain": "quant",
+    "name": "Efficiency-Ratio + ADX trend-strength gate on TSMOM",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-quant/SUMMARY.md"
+  },
+  {
+    "id": "Q9-LOWVOL",
+    "domain": "quant",
+    "name": "Cross-sectional low-volatility anomaly (β-neutral L/S)",
+    "rawVerdict": "PROMISING",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "claimType": "cross-sectional",
+    "bindingGate": "deflated_sharpe",
+    "honestN": 96,
+    "surrogateP": 0.06,
+    "monthlyAt100k": null,
+    "auditOverrideReason": "Single-best-config surrogate p=0.002 masked a searched 96-config grid; family-wise MAX-stat p~=0.06 (seed-sensitive) and it fails honest-N DSR 0.476 @N=96 + Harvey-Liu adjP 0.673 (audited-kill: family-wise surrogate).",
+    "artifactPath": "output/edgehunt-audit-nb/SUMMARY.md"
+  },
+  {
+    "id": "D1-CANDLE",
+    "domain": "requeue",
+    "name": "BTC candlestick patterns",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D1-LS-BOLL",
+    "domain": "requeue",
+    "name": "XS Bollinger %b reversion long-short",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D1-LS-DONCH",
+    "domain": "requeue",
+    "name": "XS Donchian channel-position long-short",
+    "rawVerdict": "PROMISING",
+    "auditedVerdict": "PROMISING",
+    "lastAudit": "2026-06-01",
+    "claimType": "cross-sectional",
+    "bindingGate": "deflated_sharpe",
+    "honestN": 72,
+    "surrogateP": 0.009,
+    "monthlyAt100k": 4116,
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D1-LS-ICHI",
+    "domain": "requeue",
+    "name": "XS Ichimoku long-short",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D6-FNG",
+    "domain": "requeue",
+    "name": "Fear & Greed contrarian timer",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D6-LIQ",
+    "domain": "requeue",
+    "name": "Global net-liquidity (M2/WALCL) timer",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D6-PUTCALL",
+    "domain": "requeue",
+    "name": "Options put/call (DVOL skew) contrarian",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D6-TRENDS",
+    "domain": "requeue",
+    "name": "Google Trends \"bitcoin\" attention",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D7-CME",
+    "domain": "requeue",
+    "name": "CME weekend-gap fill",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D7-DOW",
+    "domain": "requeue",
+    "name": "Day-of-week effect",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D7-SEAS",
+    "domain": "requeue",
+    "name": "Sell-in-May / month seasonality",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D7-TOM",
+    "domain": "requeue",
+    "name": "Turn-of-month",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  }
+]

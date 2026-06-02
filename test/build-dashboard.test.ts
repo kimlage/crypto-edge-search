@@ -269,7 +269,7 @@ describe("renderHtml (audit-aware)", () => {
 
   it("never embeds an absolute or machine-local path, a CDN, or an external script", () => {
     const html = renderHtml(buildDisplayRows(fixture, []));
-    expect(html).not.toMatch(/\/Users\/|\/home\/|codex-runtimes|file:\/\//);
+    expect(html).not.toMatch(/\/Users\/|\/home\/|file:\/\/|^[A-Za-z]:[\\/]/m);
     expect(html).not.toMatch(/https?:\/\/[^"' ]*\.(?:js|css)/);
     expect(html).not.toMatch(/<script[^>]*\bsrc=/);
     expect(html).not.toMatch(/<link\b/);

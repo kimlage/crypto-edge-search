@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kimlage/crypto-edge-search/schemas/results-ledger.schema.json",
+  "title": "ResultsLedger",
+  "description": "The CANONICAL AUDITED RESULTS LEDGER: the single machine-readable source of truth for every hypothesis the program ran. Each entry pairs the RAW per-domain verdict (parsed from output/edgehunt-*/SUMMARY.md) with the AUDITED verdict (the scientificVerdict after the two-layer adversarial audit in output/edgehunt-audit/, output/edgehunt-audit-nb/, output/edgehunt-deepen/). When rawVerdict != auditedVerdict an auditOverrideReason is REQUIRED, so every flip is explained and machine-checkable. The audited headline of this ledger is the authoritative count; in any conflict with a human-readable doc, the ledger wins. The top-level value is an ARRAY of entries.",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "domain", "name", "rawVerdict", "auditedVerdict", "lastAudit"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Stable hypothesis / strategy identifier, e.g. D5-08, Q9-LOWVOL, O3-NVTS, D1-LS-DONCH."
+      },
+      "domain": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Source domain code, derived from the ledger directory (e.g. D1, D5, quant, onchain2, requeue, consensus)."
+      },
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Human-readable hypothesis / strategy name."
+      },
+      "claimType": {
+        "type": "string",
+        "description": "Optional claim taxonomy, e.g. time-series-timing, cross-sectional, carry, volatility-premium, calendar, on-chain, macro, microstructure."
+      },
+      "rawVerdict": {
+        "type": "string",
+        "enum": ["SURVIVE", "PROMISING", "KILL", "DEFERRED", "INDETERMINATE"],
+        "description": "The RAW verdict as written in the per-domain output/edgehunt-*/SUMMARY.md verdict table, BEFORE the cross-domain adversarial audit."
+      },
+      "auditedVerdict": {
+        "type": "string",
+        "enum": ["SURVIVE", "PROMISING", "KILL", "DEFERRED", "INDETERMINATE"],
+        "description": "The audited scientificVerdict: the canonical final label after the two-layer adversarial audit. SURVIVE = every gate passes. PROMISING = passes the core economic gates but trips a multiple-testing / Deflated-Sharpe gate (structure real, honest-N magnitude significance not). KILL = fails a core economic gate. DEFERRED = needs paid/forward data unavailable at $0. INDETERMINATE = ran but too weak/seed-sensitive to label."
+      },
+      "bindingGate": {
+        "type": ["string", "null"],
+        "description": "The id of the FIRST gate that bound the audited verdict, or null when every gate passed (SURVIVE) or the verdict is DEFERRED (never run)."
+      },
+      "honestN": {
+        "type": ["integer", "null"],
+        "minimum": 1,
+        "description": "The HONEST N — the true number of distinct configs searched, used to deflate. Null when not applicable (e.g. DEFERRED / never run)."
+      },
+      "surrogateP": {
+        "type": ["number", "null"],
+        "minimum": 0,
+        "maximum": 1,
+        "description": "The family-wise-correct surrogate / placebo p-value at the audited honest N. Null when no surrogate was scored."
+      },
+      "monthlyAt100k": {
+        "type": ["number", "null"],
+        "description": "Realistic net-of-cost monthly P&L in USD at $100k notional. Null when no deployable edge (most KILLs) so projecting a number would be dishonest."
+      },
+      "lastAudit": {
+        "type": "string",
+        "format": "date",
+        "minLength": 10,
+        "description": "Date (YYYY-MM-DD) of the most recent audit that set this entry's audited verdict."
+      },
+      "auditOverrideReason": {
+        "type": "string",
+        "minLength": 1,
+        "description": "REQUIRED iff rawVerdict != auditedVerdict: a one-line reason the audit flipped the raw label (enforced by the validator, not by JSON Schema alone)."
+      },
+      "artifactPath": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Optional repo-relative path to the source artifact (SUMMARY.md / result JSON). Never an absolute or machine-local path."
+      }
+    }
+  }
+}

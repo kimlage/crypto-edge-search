@@ -1,5 +1,7 @@
 # Research Backlog — Trading Techniques to Falsify Through the Gauntlet
 
+> **CANONICAL VERDICTS:** `output/results-ledger.json` is the single machine-readable source of truth for every audited verdict (see `docs/CANONICAL_STATE.md`). Some verdict cells in this backlog predate the two-layer adversarial audit; where they disagree with the ledger, **the ledger wins**. Cells corrected to the audited reality are tagged `[audited: …]`. Audited headline: **0 SURVIVE, 2 PROMISING (XS Donchian + dated-futures-unlevered-thin), rest KILL/DEFERRED.**
+
 **Status:** living research backlog · **Total hypotheses:** 155 across 8 domains (D1–D8)
 **Last compiled:** 2026-06-01 · **License posture:** MIT project, $0 cloud budget, free public data only.
 
@@ -176,7 +178,7 @@ near-certain / definitional / debunked. **Status**: NEW, or *refines* a tested I
 | D5-05 | Realized price as dynamic S/R | yes | bracket-on-surrogate (NF1 control) | KILL | refines NF1 (on-chain level) |
 | D5-06 | NVT ratio extreme | yes | phase-rand + denominator-shuffle | KILL | NEW |
 | D5-07 | NVTS & NVT golden cross | yes | MA-crossover-on-surrogate | KILL | refines TA4(MA-cross) |
-| O3-NVTS | NVT-signal refinement (strongest causal, free fee-throughput proxy) | proxy-free (canonical TxTfrValAdjUSD/NVTAdj are PAID) | phase-rand surrogate + price-clock + orthog-vs-momentum | **SURVIVE (BTC)** / KILL (ETH) | refines D5-06/07 |
+| O3-NVTS | NVT-signal refinement (strongest causal, free fee-throughput proxy) | proxy-free (canonical TxTfrValAdjUSD/NVTAdj are PAID) | phase-rand surrogate + price-clock + orthog-vs-momentum | KILL [audited-kill: family-wise surrogate] | refines D5-06/07 |
 | D5-08 | Exchange netflow / reserve-depletion trend | partial (entity-list dep) | block + detrend-vs-price | KILL | refines NB |
 | D5-09 | Puell Multiple (miner-revenue extreme) | yes | phase-rand + Mayer price-only control | KILL | NEW (Mayer cousin) |
 | D5-10 | Hash Ribbons (miner capitulation buy) | yes | MA-cross-on-surrogate + price-decompose | KILL (honest-N) | NEW (TA2/TA4 overlap) |
@@ -255,10 +257,10 @@ near-certain / definitional / debunked. **Status**: NEW, or *refines* a tested I
 | D8-B6 | Trend-overlay (TSMOM) on a carry book | yes | block joint panel + calendar-reanchor trend | **UNC** | refines TA2 (overlay on survivors) |
 | D8-C1 | Cross-venue funding-rate dispersion | yes | **cross-sectional shuffle** venue→funding | **UNC (best Part-C)** | refines D1-r2 + survivors |
 | D8-C2 | Triangular arbitrage (single venue) | yes (latency crux) | block snapshot + latency-injection placebo | KILL! | NEW (cf TA3) |
-| D8-C3 | Perp-spot basis (cash-and-carry) | yes | block funding series + bracket (liq path) | WS (SURVIVE-with-skew) | refines survivors / T9 |
+| D8-C3 | Perp-spot basis (cash-and-carry) | yes | block funding series + bracket (liq path) | KILL [audited: perp-spot carry under-earns T-bills on tail-adjusted basis] | refines survivors / T9 |
 | D8-C4 | DeFi lending vs perp-funding arb | yes (DefiLlama) | cross-sectional shuffle + block | KILL (risk premium) | NEW (cf C1/C3, OC1) |
 | D8-C5 | Liquid-staking basis (stETH/rETH) | yes (DefiLlama/on-chain) | block basis + bracket (queue duration) | WS (yield) / KILL (convergence) | NEW (cf C3/C4) |
-| D8-C6 | Cash-and-carry on dated futures | yes | block basis-to-expiry + bracket + XS expiries | WS (partial-SURVIVE) | refines survivors / C3 |
+| D8-C6 | Cash-and-carry on dated futures | yes | block basis-to-expiry + bracket + XS expiries | PROMISING (unlevered-thin only) [audited: levered headline cut ~2x by financing leak; only a thin ~4.9%/yr unlevered market-neutral excess survives] | refines survivors / C3 |
 
 ---
 

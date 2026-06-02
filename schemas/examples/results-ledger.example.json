@@ -1,0 +1,31 @@
+[
+  {
+    "id": "D1-LS-DONCH",
+    "domain": "requeue",
+    "name": "XS Donchian channel-position long-short",
+    "claimType": "cross-sectional",
+    "rawVerdict": "PROMISING",
+    "auditedVerdict": "PROMISING",
+    "bindingGate": "deflated_sharpe",
+    "honestN": 72,
+    "surrogateP": 0.002,
+    "monthlyAt100k": 4116,
+    "lastAudit": "2026-06-01",
+    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+  },
+  {
+    "id": "D5-08",
+    "domain": "D5",
+    "name": "Exchange reserve/netflow trend",
+    "claimType": "on-chain",
+    "rawVerdict": "PROMISING",
+    "auditedVerdict": "KILL",
+    "bindingGate": "surrogate",
+    "honestN": 54,
+    "surrogateP": 0.24,
+    "monthlyAt100k": null,
+    "lastAudit": "2026-06-01",
+    "auditOverrideReason": "Harness surrogate p=0.013 was a single-best-config p over a searched grid; under the family-wise MAX-statistic null the surrogate gate fails (p~=0.24, real-best 0.994 < surr95 1.19) and it fails honest-N DSR at the full grid.",
+    "artifactPath": "output/edgehunt-audit/SUMMARY.md"
+  }
+]
