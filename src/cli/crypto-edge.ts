@@ -1,15 +1,29 @@
 /**
  * `crypto-edge` — the lab's command-line front door to the anti-overfitting stack.
  *
- * Two subcommands wrap the COMMITTED, individually-tested library functions (it does
+ * The subcommands wrap the COMMITTED, individually-tested library functions (it does
  * NOT reimplement any statistics):
  *
  *   validate         — run the full single-series gauntlet (`validateStrategy`) on a
  *                      returns CSV and print the scientific verdict (KILL / PROMISING /
- *                      SURVIVE / INDETERMINATE) as Markdown or JSON.
+ *                      SURVIVE / INDETERMINATE) as Markdown or JSON. The scientific
+ *                      verdict LEADS the summary; the legacy PASS/KILL is labelled the
+ *                      "legacy binary verdict". With NO baselines the run is capped at
+ *                      INDETERMINATE and REFUSES (exit 2) unless the operator passes
+ *                      `--allow-missing-baselines` to acknowledge. A spec/flag that
+ *                      declares a `searched_grid` selection mode is REFUSED here and
+ *                      directed to `validate-family` (a grid-best needs the family-wise
+ *                      null, not the single-series one).
  *   validate-family  — run the family-wise MAX-statistic surrogate
  *                      (`validateStrategyFamily`) over a searched config grid on a wide
  *                      asset panel, and print the family verdict + an evidence card.
+ *   check-data       — parse a returns/panel CSV and print the data-quality grade
+ *                      (PASS / WARN / FAIL); exit 2 when the grade is FAIL.
+ *   init             — scaffold a hypothesis.yaml template to stdout (or `--out`).
+ *   prereg           — freeze a HypothesisSpec's config into a pre-registration
+ *                      manifest (`buildPreregistration`), print the SHA-256 hash that
+ *                      LOCKS it (so an honest N=1 is earned), and flag a `searched_grid`
+ *                      spec as requiring `validate-family`.
  *
  * Design contract (so this stays testable and well-behaved):
  *   - `runCli(argv)` is async and returns an EXIT CODE. It NEVER calls process.exit,
@@ -26,7 +40,7 @@
  */
 
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { resolve } from "node:path";
+import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { parseReturnsCsv, parsePanelCsv } from "../lib/io/returns-csv";
@@ -52,6 +66,17 @@ import {
   renderVerdictJson,
 } from "../lib/report/report-renderer";
 import { renderEvidenceCard } from "../lib/report/evidence-card";
+import {
+  dataQualityReport,
+  panelQualityReport,
+  type QualityGrade,
+} from "../lib/data/data-quality";
+import { parseSpecString } from "../lib/spec/load-spec";
+import {
+  loadHypothesisSpec,
+  requiresFamilyValidation,
+} from "../lib/spec/hypothesis-spec";
+import { buildPreregistration } from "../lib/prereg/preregistration";
 
 /** Sink for output so tests can capture without touching the real streams. */
 export interface CliIo {
@@ -92,6 +117,12 @@ export async function runCli(argv: string[], io: CliIo = DEFAULT_IO): Promise<nu
         return runValidate(rest, io);
       case "validate-family":
         return runValidateFamily(rest, io);
+      case "check-data":
+        return runCheckData(rest, io);
+      case "init":
+        return runInit(rest, io);
+      case "prereg":
+        return runPrereg(rest, io);
       default:
         io.err(`crypto-edge: unknown command '${command}'.\n\n${usage()}`);
         return 2;
@@ -126,6 +157,20 @@ function runValidate(args: string[], io: CliIo): number {
   if (positionals.length > 1) {
     io.err(
       `crypto-edge validate: expected exactly one <returns.csv>, got ${positionals.length}.\n`,
+    );
+    return 2;
+  }
+
+  // SELECTION-MODE ENFORCEMENT (c): resolve the declared selection mode from the
+  // explicit --selection-mode flag and/or a passed --spec file's `selection_mode`
+  // field. A 'searched_grid' selection is a grid-best and MUST use the family-wise
+  // null (validate-family), not the single-series gauntlet — so REFUSE with exit 2.
+  const selectionMode = resolveSelectionMode(parsed, io);
+  if (selectionMode === "searched_grid") {
+    io.err(
+      "crypto-edge validate: selection_mode is 'searched_grid' — a grid-best must be " +
+        "scored against the FAMILY-WISE null, not the single-series gauntlet. " +
+        "Re-run with 'crypto-edge validate-family <spec> --panel <panel.csv>'.\n",
     );
     return 2;
   }
@@ -167,12 +212,34 @@ function runValidate(args: string[], io: CliIo): number {
     options.strictBaselines = true;
   }
 
+  // NO-BASELINES ENFORCEMENT (a): without baselines the baselines gate cannot certify
+  // and the scientific verdict is CAPPED at INDETERMINATE (not certified). Emit a LOUD
+  // stderr warning, and REFUSE (exit 2) unless the operator explicitly acknowledges
+  // with --allow-missing-baselines (or supplies --baselines).
+  if (options.baselines === undefined) {
+    io.err(
+      "WARNING: no baselines supplied -> scientific verdict is capped at INDETERMINATE " +
+        "(not certified). Pass --baselines <csv> or --allow-missing-baselines to acknowledge.\n",
+    );
+    if (!parsed.flags["allow-missing-baselines"]) {
+      return 2;
+    }
+  }
+
   const verdict = validateStrategy(csv.returns, options);
   const meta = { hypothesisId: deriveHypothesisId(returnsPath) };
 
   if (parsed.flags.json) {
     io.out(`${JSON.stringify(renderVerdictJson(verdict, meta), null, 2)}\n`);
   } else {
+    // The CLI's OWN summary line LEADS with the scientific verdict (the prominent,
+    // certifying result) and labels the legacy PASS/KILL as the "legacy binary
+    // verdict" — then the full Markdown report (renderVerdictMarkdown, which also
+    // prioritizes the scientific verdict) follows.
+    io.out(
+      `Scientific verdict: ${verdict.scientificVerdict} ` +
+        `(legacy binary verdict: ${verdict.verdict})\n\n`,
+    );
     io.out(`${renderVerdictMarkdown(verdict, meta)}\n`);
   }
 
@@ -268,6 +335,288 @@ function runValidateFamily(args: string[], io: CliIo): number {
     writeFileSync(resolve(dir, `${base}.md`), `${lines.join("\n")}\n`);
     writeFileSync(resolve(dir, `${base}.json`), `${JSON.stringify(familyJson(spec, verdict), null, 2)}\n`);
     io.err(`crypto-edge validate-family: wrote ${base}.md and ${base}.json to ${dir}\n`);
+  }
+
+  return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Subcommand: check-data
+// ---------------------------------------------------------------------------
+
+/**
+ * `check-data <csv> [flags]` — parse a returns CSV (or, with --panel-mode / a wide
+ * date+assets CSV, a panel) and run the deterministic data-quality report. Prints the
+ * overall grade (PASS / WARN / FAIL) plus the reasons that drove it. Returns 0 for
+ * PASS/WARN (a WARN is a caveat, not a stop), and 2 when the grade is FAIL — so a CI
+ * step can gate a backtest on data hygiene the same way it gates on significance.
+ */
+function runCheckData(args: string[], io: CliIo): number {
+  if (args.length > 0 && (args[0] === "--help" || args[0] === "-h")) {
+    io.out(usage());
+    return 0;
+  }
+
+  const parsed = parseFlags(args);
+  const positionals = parsed.positionals;
+  if (positionals.length === 0) {
+    io.err(`crypto-edge check-data: missing <csv> argument.\n\n${usage()}`);
+    return 2;
+  }
+  if (positionals.length > 1) {
+    io.err(
+      `crypto-edge check-data: expected exactly one <csv>, got ${positionals.length}.\n`,
+    );
+    return 2;
+  }
+
+  const csvPath = positionals[0]!;
+  const text = readFileOrThrow(csvPath);
+
+  // Decide the shape: a wide panel iff the header declares more than one asset column
+  // (i.e. parsePanelCsv succeeds AND finds ≥2 assets). Otherwise treat it as a long
+  // returns series. We probe panel first and fall back to the returns parser so a
+  // plain `date,return` file checks the returns column, not a 1-wide "panel".
+  let grade: QualityGrade;
+  let reasons: string[];
+  const panel = tryParsePanel(text);
+  if (panel && panel.assets.length >= 2) {
+    const report = panelQualityReport({
+      dates: panel.dates,
+      assets: panel.assets,
+      panel: panel.panel,
+    });
+    grade = report.grade;
+    reasons = report.reasons;
+    io.out(
+      `# Data quality — ${deriveHypothesisId(csvPath)} (panel: ${panel.assets.length} assets, ${panel.panel.length} rows)\n`,
+    );
+  } else {
+    const csv = parseReturnsCsv(text);
+    const report = dataQualityReport({
+      name: deriveHypothesisId(csvPath),
+      values: csv.returns,
+      dates: csv.dates,
+    });
+    grade = report.grade;
+    reasons = report.reasons;
+    io.out(
+      `# Data quality — ${deriveHypothesisId(csvPath)} (returns: ${csv.returns.length} rows)\n`,
+    );
+  }
+
+  io.out(`\n- **Grade:** ${grade}\n`);
+  if (reasons.length === 0) {
+    io.out("- No issues found — series is clean.\n");
+  } else {
+    io.out("- Reasons:\n");
+    for (const reason of reasons) io.out(`  - ${reason}\n`);
+  }
+
+  // FAIL is a hard stop (exit 2); PASS and WARN both proceed (0).
+  return grade === "FAIL" ? 2 : 0;
+}
+
+/** Try to parse the text as a wide panel; return undefined if it is not panel-shaped. */
+function tryParsePanel(text: string): ParsedPanelCsv | undefined {
+  try {
+    return parsePanelCsv(text);
+  } catch {
+    return undefined;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Subcommand: init
+// ---------------------------------------------------------------------------
+
+/**
+ * `init [--out <file>]` — scaffold a commented hypothesis.yaml template the operator
+ * fills in before running the gauntlet. Prints to stdout by default, or writes to
+ * `--out <file>` (a note goes to stderr so stdout stays the pure artifact). Always 0
+ * on success; 2 only on a file-write error.
+ */
+function runInit(args: string[], io: CliIo): number {
+  if (args.length > 0 && (args[0] === "--help" || args[0] === "-h")) {
+    io.out(usage());
+    return 0;
+  }
+
+  const parsed = parseFlags(args);
+  const template = hypothesisTemplate();
+
+  if (parsed.values.out !== undefined) {
+    const outPath = parsed.values.out;
+    try {
+      mkdirSync(dirname(outPath), { recursive: true });
+      writeFileSync(outPath, template);
+    } catch (error) {
+      throw new Error(`cannot write template to '${outPath}': ${errorMessage(error)}`);
+    }
+    io.err(`crypto-edge init: wrote hypothesis template to ${outPath}\n`);
+    return 0;
+  }
+
+  io.out(template);
+  return 0;
+}
+
+/**
+ * The scaffolded hypothesis.yaml: a fully-formed, commented StrategySpec the
+ * loader (`loadStrategySpec`) accepts, plus the `selection_mode` knob the CLI reads
+ * to route between `validate` (preregistered_single) and `validate-family`
+ * (searched_grid). Pure: a constant string, no I/O, no clock.
+ */
+function hypothesisTemplate(): string {
+  return [
+    "# crypto-edge hypothesis template. Fill this in, then run:",
+    "#   crypto-edge check-data <returns.csv>      # gate on data hygiene first",
+    "#   crypto-edge validate <returns.csv> --baselines <panel.csv>   # single, preregistered",
+    "#   crypto-edge validate-family this.yaml --panel <panel.csv>    # searched grid",
+    "#",
+    "# selection_mode pins HOW the config was chosen, so the right null is used:",
+    "#   preregistered_single -> one config fixed BEFORE seeing the data (single-series null)",
+    "#   searched_grid        -> the best of a searched grid (FAMILY-WISE max null; use validate-family)",
+    "selection_mode: preregistered_single",
+    "",
+    "strategy_id: my-hypothesis",
+    "family: my_family",
+    "cadence: daily # minute|minute5|minute15|hourly|hourly4|funding8h|daily|weekly|yearly",
+    "universe:",
+    "  type: top_by_volume",
+    "  max_assets: 30",
+    "  include_delisted: true # survivorship-free: keep delisted names",
+    "configs:",
+    "  # param -> the values searched. The product of these lengths is the HONEST N.",
+    "  lookback_days: [20, 40, 60, 90]",
+    "  hold_days: [1, 5, 10]",
+    "  long_short: [true, false]",
+    "trial_count_policy:",
+    "  mode: grid # honest N = product of the configs grid sizes",
+    "cost_model:",
+    "  taker_bps_per_side: 5",
+    "  maker_bps_per_side: 1",
+    "  maker_fraction: 0",
+    "  slippage_bps: 2",
+    "baselines:",
+    "  - buy_and_hold",
+    "  - equal_weight",
+    "  - random_lottery",
+    "  - linear_one_layer",
+    "surrogate:",
+    "  mode: family_max # phase|block|cross_sectional|family_max",
+    '  "null": structure # quote: bare null is the YAML null literal, not a string',
+    "  iterations: 200",
+    "holdout:",
+    "  mode: tail",
+    "  fraction: 0.20 # reserve the most-recent 20% as a consume-once vault",
+    "statistic: sharpe # compoundReturn|mean|sharpe",
+    "",
+  ].join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// Subcommand: prereg
+// ---------------------------------------------------------------------------
+
+/**
+ * `prereg <hypothesis.(yml|json)> [--created-at <iso>] [--out <file>] [--json]` —
+ * load a HypothesisSpec, FREEZE its scientific claim into a pre-registration manifest
+ * (`buildPreregistration`), and print the SHA-256 `configHash` that LOCKS it. That
+ * lock is what makes an honest N=1 defensible: a later run can prove (via the hash)
+ * that the config was not re-pointed after the data was seen.
+ *
+ * A `searched_grid` spec is NOT a single pre-registered hypothesis: it is flagged
+ * (via `requiresFamilyValidation`) and the operator is directed to `validate-family`,
+ * whose family-wise null deflates by the real config count rather than pretending N=1.
+ * The manifest is still emitted (the grid is worth freezing), but a LOUD note is
+ * written to stderr so a grid can never quietly claim the single-series N=1.
+ *
+ * `createdAt` is the caller's responsibility (the prereg library never reads the
+ * clock): `--created-at <iso>` pins it for a deterministic, reproducible manifest;
+ * absent it, the current wall-clock instant is used (the CLI owns the clock here).
+ * Returns 0 on a successful freeze, 2 on a usage / parse / file error.
+ */
+function runPrereg(args: string[], io: CliIo): number {
+  if (args.length > 0 && (args[0] === "--help" || args[0] === "-h")) {
+    io.out(usage());
+    return 0;
+  }
+
+  const parsed = parseFlags(args);
+  const positionals = parsed.positionals;
+  if (positionals.length === 0) {
+    io.err(`crypto-edge prereg: missing <hypothesis.(yml|json)> argument.\n\n${usage()}`);
+    return 2;
+  }
+  if (positionals.length > 1) {
+    io.err(
+      `crypto-edge prereg: expected exactly one <hypothesis.(yml|json)>, got ${positionals.length}.\n`,
+    );
+    return 2;
+  }
+
+  const specPath = positionals[0]!;
+  const spec = loadHypothesisSpec(readFileOrThrow(specPath));
+
+  // createdAt is the caller's to supply; default to the current instant (the only
+  // place this CLI reads the clock, and only when the operator did not pin it).
+  const createdAt = parsed.values["created-at"] ?? new Date().toISOString();
+
+  const manifest = buildPreregistration({
+    hypothesisId: spec.id,
+    frozenConfig: spec,
+    mechanism: spec.mechanism,
+    createdAt,
+  });
+
+  const needsFamily = requiresFamilyValidation(spec);
+
+  if (parsed.flags.json) {
+    io.out(`${JSON.stringify(manifest, null, 2)}\n`);
+  } else {
+    const lines: string[] = [];
+    lines.push(`# Pre-registration — ${manifest.hypothesisId}`);
+    lines.push("");
+    lines.push(`- **Locked config hash:** ${manifest.configHash}`);
+    lines.push(`- **Selection mode:** ${spec.search.selection_mode}`);
+    lines.push(`- **Honest N (configCount):** ${spec.search.configCount}`);
+    lines.push(`- **Frozen at:** ${manifest.createdAt}`);
+    lines.push("");
+    if (needsFamily) {
+      lines.push(
+        "This is a SEARCHED GRID — it cannot honestly claim N=1. Validate it with " +
+          "'crypto-edge validate-family <spec> --panel <panel.csv>' (the family-wise " +
+          "null deflates by the real config count, not 1).",
+      );
+    } else {
+      lines.push(
+        "This is a PRE-REGISTERED SINGLE config (honest N=1). The hash above LOCKS it: " +
+          "a later run must reproduce it before claiming the N=1 the lock earns.",
+      );
+    }
+    lines.push("");
+    io.out(`${lines.join("\n")}\n`);
+  }
+
+  // A searched grid still gets a LOUD stderr flag so it can never quietly proceed as
+  // a single-series pre-registration.
+  if (needsFamily) {
+    io.err(
+      "crypto-edge prereg: selection_mode is 'searched_grid' — this is NOT an honest " +
+        "N=1 pre-registration. Use 'crypto-edge validate-family' (family-wise null).\n",
+    );
+  }
+
+  if (parsed.values.out !== undefined) {
+    const outPath = parsed.values.out;
+    try {
+      mkdirSync(dirname(outPath), { recursive: true });
+      writeFileSync(outPath, `${JSON.stringify(manifest, null, 2)}\n`);
+    } catch (error) {
+      throw new Error(`cannot write manifest to '${outPath}': ${errorMessage(error)}`);
+    }
+    io.err(`crypto-edge prereg: wrote pre-registration manifest to ${outPath}\n`);
   }
 
   return 0;
@@ -531,8 +880,15 @@ const VALUE_FLAGS = new Set([
   "out",
   "panel",
   "iterations",
+  "selection-mode",
+  "spec",
+  "created-at",
 ]);
-const BOOL_FLAGS = new Set(["strict", "json"]);
+const BOOL_FLAGS = new Set(["strict", "json", "allow-missing-baselines"]);
+
+/** Selection modes the CLI understands (whence the validate vs. validate-family split). */
+const VALID_SELECTION_MODES = ["preregistered_single", "searched_grid"] as const;
+type SelectionMode = (typeof VALID_SELECTION_MODES)[number];
 
 /**
  * Minimal, dependency-free arg parser. Supports `--key value`, `--key=value`, boolean
@@ -580,6 +936,60 @@ function parseFlags(args: string[]): ParsedArgs {
 // ---------------------------------------------------------------------------
 // Small resolvers + utilities
 // ---------------------------------------------------------------------------
+
+/**
+ * Resolve the declared SELECTION MODE for a `validate` run from two sources:
+ *   1. the explicit `--selection-mode <preregistered_single|searched_grid>` flag, and
+ *   2. a `--spec <hypothesis.(yml|json)>` file that declares a top-level
+ *      `selection_mode` field.
+ * When BOTH are present they must AGREE (a contradiction fails loudly). Returns the
+ * resolved mode, or undefined when neither source declares one (the default, single,
+ * pre-registered path). Throws (mapped to exit 2) on an invalid value or a conflict.
+ */
+function resolveSelectionMode(parsed: ParsedArgs, io: CliIo): SelectionMode | undefined {
+  const flagMode = parsed.values["selection-mode"];
+  let fromFlag: SelectionMode | undefined;
+  if (flagMode !== undefined) {
+    if (!VALID_SELECTION_MODES.includes(flagMode as SelectionMode)) {
+      throw new Error(
+        `--selection-mode must be one of [${VALID_SELECTION_MODES.join(", ")}], got '${flagMode}'.`,
+      );
+    }
+    fromFlag = flagMode as SelectionMode;
+  }
+
+  let fromSpec: SelectionMode | undefined;
+  if (parsed.values.spec !== undefined) {
+    const specText = readFileOrThrow(parsed.values.spec);
+    const declared = readSelectionModeFromSpec(specText);
+    if (declared !== undefined) {
+      if (!VALID_SELECTION_MODES.includes(declared as SelectionMode)) {
+        throw new Error(
+          `--spec selection_mode must be one of [${VALID_SELECTION_MODES.join(", ")}], got '${declared}'.`,
+        );
+      }
+      fromSpec = declared as SelectionMode;
+    }
+  }
+
+  if (fromFlag !== undefined && fromSpec !== undefined && fromFlag !== fromSpec) {
+    throw new Error(
+      `selection_mode conflict: --selection-mode '${fromFlag}' contradicts the spec's '${fromSpec}'.`,
+    );
+  }
+  // Silence the unused-io lint without changing behaviour: io is reserved for future
+  // advisory notes; the conflict above is the only diagnostic and is thrown, not printed.
+  void io;
+  return fromFlag ?? fromSpec;
+}
+
+/** Read an OPTIONAL top-level `selection_mode` from a hypothesis/strategy spec string. */
+function readSelectionModeFromSpec(specText: string): string | undefined {
+  const obj = parseSpecString(specText, "Spec");
+  if (obj === null || typeof obj !== "object" || Array.isArray(obj)) return undefined;
+  const value = (obj as Record<string, unknown>)["selection_mode"];
+  return typeof value === "string" ? value : undefined;
+}
 
 function resolveStatistic(raw: string | undefined): ReturnSeriesStatistic {
   if (raw === undefined) return "compoundReturn";
@@ -691,11 +1101,21 @@ function usage(): string {
     "USAGE:",
     "  crypto-edge validate <returns.csv> [options]",
     "  crypto-edge validate-family <strategyspec.(yml|json)> --panel <panel.csv> [options]",
+    "  crypto-edge check-data <csv>",
+    "  crypto-edge init [--out <file>]",
+    "  crypto-edge prereg <hypothesis.(yml|json)> [--out <manifest.json>] [--created-at <iso>]",
     "  crypto-edge --help",
     "",
     "validate — run the full single-series gauntlet on a returns CSV.",
+    "  The summary LEADS with the scientific verdict; the PASS/KILL is the legacy",
+    "  binary verdict. With NO baselines the verdict is capped at INDETERMINATE and the",
+    "  run REFUSES (exit 2) unless --allow-missing-baselines is passed to acknowledge.",
     "  <returns.csv>            Long CSV with a returns column (+ optional date/position).",
     "  --baselines <csv>        Wide date+assets panel for B&H / equal-weight baselines.",
+    "  --allow-missing-baselines  Proceed without baselines (verdict capped INDETERMINATE).",
+    "  --selection-mode <m>     preregistered_single | searched_grid. 'searched_grid' is",
+    "                           REFUSED here -> use validate-family (family-wise null).",
+    "  --spec <hyp.(yml|json)>  Read selection_mode (and route) from a hypothesis spec.",
     "  --trials <N>             Honest trial count for DSR / haircut (default 1).",
     "  --statistic <stat>       compoundReturn | mean | sharpe (default compoundReturn).",
     "  --cost <costspec.(yml|json)>  Leverage-aware cost model (CostSpec).",
@@ -710,10 +1130,25 @@ function usage(): string {
     "  --iterations <N>         Surrogate grid-max draws (default: spec.surrogate.iterations).",
     "  --out <dir>              Write <id>.family.md and .json into <dir>.",
     "",
+    "check-data — parse a returns/panel CSV and grade its data quality.",
+    "  <csv>                    A long returns CSV or a wide date+assets panel CSV.",
+    "                           Prints PASS/WARN/FAIL; exit 2 when the grade is FAIL.",
+    "",
+    "init — scaffold a hypothesis.yaml template.",
+    "  --out <file>             Write the template to <file> (default: print to stdout).",
+    "",
+    "prereg — freeze a HypothesisSpec's config into a pre-registration manifest.",
+    "  <hypothesis.(yml|json)>  A HypothesisSpec (loadHypothesisSpec) to freeze.",
+    "  --out <manifest.json>    Write the manifest JSON to <file> (hash always printed).",
+    "  --created-at <iso>       Pin the manifest timestamp (default: now). The library",
+    "                           never reads the clock, so this stays deterministic.",
+    "                           A 'searched_grid' spec is flagged: use validate-family.",
+    "",
     "EXIT CODES:",
     "  0  the gauntlet RAN — the scientific verdict (KILL/PROMISING/SURVIVE/INDETERMINATE)",
-    "     is the RESULT, not a failure.",
-    "  2  usage / parse / file error (a clear message is written to stderr).",
+    "     is the RESULT, not a failure. (check-data: a PASS or WARN grade.)",
+    "  2  usage / parse / file error (a clear message is written to stderr); also: validate",
+    "     refusing on missing baselines or a 'searched_grid' selection, or check-data FAIL.",
     "",
   ].join("\n");
 }

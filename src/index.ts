@@ -202,3 +202,36 @@ export type {
   AnnualizedSharpe,
   AnnualizedReturn,
 } from "./lib/cadence";
+
+// ---------------------------------------------------------------------------
+// Null registry + standardized surrogate generators (the "right null per claim").
+// ---------------------------------------------------------------------------
+export { getNullForClaim, listClaimTypes } from "./lib/nulls/null-registry";
+export type { ClaimType, NullEntry } from "./lib/nulls/null-registry";
+export { iaaftSurrogate } from "./lib/nulls/iaaft";
+export { garchSurrogate } from "./lib/nulls/garch-surrogate";
+export { calendarReanchor, makeCalendarNull } from "./lib/nulls/calendar-reanchor";
+export { bracketOnSurrogate, makeBracketNull } from "./lib/nulls/bracket-on-surrogate";
+export { detectorOnSurrogate } from "./lib/nulls/detector-on-surrogate";
+
+// ---------------------------------------------------------------------------
+// Pre-registration (freeze a config to honestly claim N = 1).
+// ---------------------------------------------------------------------------
+export {
+  buildPreregistration,
+  assertPreregistered,
+  PreregistrationError,
+} from "./lib/prereg/preregistration";
+export type {
+  FrozenConfig,
+  BuildPreregistrationInput,
+  PreregistrationManifest,
+} from "./lib/prereg/preregistration";
+
+// ---------------------------------------------------------------------------
+// Hypothesis spec (claim type, selection mode, baselines, null, holdout).
+// ---------------------------------------------------------------------------
+export {
+  loadHypothesisSpec,
+  requiresFamilyValidation,
+} from "./lib/spec/hypothesis-spec";

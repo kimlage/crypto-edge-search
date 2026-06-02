@@ -1,0 +1,39 @@
+# Example HypothesisSpec (YAML) — a PRE-REGISTERED SINGLE config.
+#
+# Exactly ONE config is committed up front (selection_mode: preregistered_single,
+# configCount: 1), so this is a confirmatory test that honestly earns an N of 1: the
+# Deflated Sharpe deflates by 1 because nothing was searched. The single frozen config
+# is locked by a pre-registration manifest (see scripts/preregister.ts) whose hash
+# proves the parameters were not re-pointed after the data was seen.
+id: rsi2-mean-reversion-btc
+name: "RSI(2) overnight mean reversion on BTC"
+claimType: predictive
+mechanism: >
+  A 2-period RSI below 10 marks a short-horizon oversold extreme in BTC daily closes;
+  entering long at that close and exiting on the next close harvests the documented
+  short-horizon mean-reversion of liquid crypto majors. The single config (period=2,
+  entry=10, exit on next bar) was fixed before any in-sample evaluation.
+data:
+  sources:
+    - binance-spot-btc-daily-2019-2024
+  pointInTime: as_of # strictly point-in-time daily closes; no revisions leaked back
+  fidelity: executable # transactable spot closes the book could actually have traded
+cost:
+  taker_bps_per_side: 5
+  maker_bps_per_side: 1
+  maker_fraction: 0
+  slippage_bps: 2
+  risk_free_apr: 0.04
+  margin_haircut: 0.00001
+search:
+  selection_mode: preregistered_single # ONE config chosen up front -> honest N=1
+  configCount: 1 # MUST be exactly 1 for preregistered_single
+baselines:
+  - buy_and_hold
+  - equal_weight
+  - random_lottery
+surrogate:
+  type: block # Politis-Romano stationary block bootstrap (temporal null)
+holdout:
+  policy: tail
+  fraction: 0.20 # reserve the most-recent 20% as a consume-once vault

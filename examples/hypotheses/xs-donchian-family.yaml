@@ -1,0 +1,47 @@
+# Example HypothesisSpec (YAML) — a SEARCHED GRID (a family of configs).
+#
+# A whole family of Donchian breakout configs is searched (selection_mode:
+# searched_grid, configCount: 24), so a single-series verdict would be DISHONEST: the
+# luckiest of 24 configs would masquerade as one pre-chosen idea. This spec is flagged
+# (requiresFamilyValidation) as needing the family-wise MAX-statistic path, which
+# deflates by the real N=24 rather than pretending it is 1. The configHash pins the
+# exact searched grid so the family cannot be quietly widened after the fact.
+id: xs-donchian-breakout-top20
+name: "Cross-sectional Donchian channel breakout on the top-20 perps"
+claimType: structural
+mechanism: >
+  Assets breaking above their own N-day Donchian high tend to continue (cross-sectional
+  trend continuation); ranking the top-20 perps by channel position and going long the
+  breakouts / short the breakdowns dollar-neutrally harvests that continuation. The
+  channel window, hold period and leg width are SEARCHED across a grid, so the honest
+  trial count is the size of that grid, not 1.
+data:
+  sources:
+    - binance-perps-top20-daily-2019-2024
+    - coinmetrics-community-daily
+  pointInTime: as_of # point-in-time universe membership (survivorship-free, keeps delisted)
+  fidelity: executable # perp marks the book could have transacted dollar-neutrally
+cost:
+  taker_bps_per_side: 5
+  maker_bps_per_side: 1
+  maker_fraction: 0.25
+  slippage_bps: 2
+  short_borrow_apr_by_venue:
+    binance: 0.20
+  perp_funding_per_period: 0.0001
+  risk_free_apr: 0.04
+  margin_haircut: 0.00002
+search:
+  selection_mode: searched_grid # a FAMILY is searched -> family-wise N, NOT 1
+  configCount: 24 # honest N = 4 channel windows * 3 holds * 2 leg widths = 24
+  configHash: "sha256:9f2c1b7e4a6d8c0f3b5e1a93d4c6f8e0b2a4c6d8e0f1a3b5c7d9e1f3a5b7c9d1e"
+baselines:
+  - buy_and_hold
+  - equal_weight
+  - random_lottery
+  - linear_one_layer
+surrogate:
+  type: family_max # family-wise MAX-statistic null for a searched grid
+holdout:
+  policy: tail
+  fraction: 0.20 # reserve the most-recent 20% as a consume-once vault
