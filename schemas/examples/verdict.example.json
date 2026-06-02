@@ -1,0 +1,59 @@
+{
+  "hypothesisId": "btc-exchange-reserve-depletion",
+  "verdict": "KILL",
+  "bindingGate": "surrogate",
+  "trialCount": 96,
+  "rationale": "Single-config surrogate p=0.013 looked significant, but under the family-wise MAX-statistic the real grid-best 0.994 < surr95 1.19 (p~=0.24): the lead is grid-selection noise.",
+  "createdAt": "2026-06-01T12:00:00Z",
+  "gates": [
+    {
+      "id": "net_of_cost",
+      "status": "PASS",
+      "reason": "net compound > 0 and net sharpe > 0 after 4 bps/side taker cost",
+      "detail": { "netCompound": 0.184, "netSharpe": 0.71, "turnover": 38.2 }
+    },
+    {
+      "id": "baselines",
+      "status": "PASS",
+      "reason": "beats buy-and-hold, matched-exposure, random-lottery and one-layer linear",
+      "detail": { "vsMarket": 0.04, "vsRandom": 0.03 }
+    },
+    {
+      "id": "deflated_sharpe",
+      "status": "FAIL",
+      "reason": "DSR p=0.41 < 0.95 at honest N=96 (expMaxSharpe=0.97)",
+      "detail": { "dsrProbability": 0.41, "expectedMaxSharpe": 0.97, "trialCount": 96 }
+    },
+    {
+      "id": "block_bootstrap",
+      "status": "PASS",
+      "reason": "block-bootstrap CI lower bound on the mean > 0",
+      "detail": { "lower": 0.0008, "upper": 0.0041 }
+    },
+    {
+      "id": "cpcv_pbo",
+      "status": "ADVISORY",
+      "reason": "candidate-vs-zero PBO is structurally unfailable; reported, not binding",
+      "detail": { "pbo": 0.0 }
+    },
+    {
+      "id": "haircut",
+      "status": "FAIL",
+      "reason": "Harvey-Liu haircut at N=96 drives adjusted p above 0.05",
+      "detail": { "haircut": 0.82, "haircutSharpe": 0.13, "adjustedPValue": 0.066 }
+    },
+    {
+      "id": "surrogate",
+      "status": "FAIL",
+      "binding": true,
+      "reason": "family-wise MAX-stat: real-best 0.994 < surr95 1.19 (placeboP~=0.24)",
+      "detail": { "realBest": 0.994, "surr95": 1.19, "placeboP": 0.24, "familyWise": true }
+    },
+    {
+      "id": "holdout",
+      "status": "SKIP",
+      "reason": "holdout not scored: a prior gate already bound the verdict",
+      "detail": { "scored": false }
+    }
+  ]
+}

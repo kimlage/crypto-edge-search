@@ -37,6 +37,12 @@ jobs:
       - name: Type-check
         run: npm run typecheck
 
+      - name: Validate schemas
+        run: npm run schema:validate
+
+      - name: Check references
+        run: npm run refs:check
+
       - name: Test
         run: npm test
 

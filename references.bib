@@ -1,0 +1,678 @@
+% references.bib — BibTeX bibliography for crypto-edge-search
+%
+% Mirrors references.yml (one entry per cited work in docs/REFERENCES.md).
+% Keys match references.yml exactly. Links web-verified 2026-06-01; BIS WP 1087
+% authorship web-verified 2026-06-02 (Schmeling, Schrimpf & Todorov — NOT
+% Aramonte/Huang/Schrimpf, which is a separate 2021 BIS Quarterly Review piece).
+%
+% Status legend (see the `note` field): peer-reviewed | working-paper |
+% practitioner | unverified.
+
+% ===========================================================================
+% (A) Gates & methodology
+% ===========================================================================
+
+% --- Multiple-testing / Sharpe deflation ---
+
+@article{BaileyLopezDePrado2014DSR,
+  author  = {Bailey, David H. and L{\'o}pez de Prado, Marcos},
+  title   = {The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting, and Non-Normality},
+  journal = {Journal of Portfolio Management},
+  year    = {2014},
+  volume  = {40},
+  number  = {5},
+  pages   = {94--107},
+  doi     = {10.3905/jpm.2014.40.5.094},
+  note    = {peer-reviewed}
+}
+
+@article{BaileyBorweinLopezDePradoZhu2014,
+  author  = {Bailey, David H. and Borwein, Jonathan M. and L{\'o}pez de Prado, Marcos and Zhu, Qiji Jim},
+  title   = {Pseudo-Mathematics and Financial Charlatanism: The Effects of Backtest Overfitting on Out-of-Sample Performance},
+  journal = {Notices of the American Mathematical Society},
+  year    = {2014},
+  volume  = {61},
+  number  = {5},
+  pages   = {458--471},
+  doi     = {10.1090/noti1105},
+  note    = {peer-reviewed}
+}
+
+@article{BaileyLopezDePrado2012PSR,
+  author  = {Bailey, David H. and L{\'o}pez de Prado, Marcos},
+  title   = {The Sharpe Ratio Efficient Frontier (Probabilistic Sharpe Ratio)},
+  journal = {Journal of Risk},
+  year    = {2012},
+  volume  = {15},
+  number  = {2},
+  pages   = {3--44},
+  url     = {https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1821643},
+  note    = {peer-reviewed}
+}
+
+@article{BaileyBorweinLopezDePradoZhu2017PBO,
+  author  = {Bailey, David H. and Borwein, Jonathan M. and L{\'o}pez de Prado, Marcos and Zhu, Qiji Jim},
+  title   = {The Probability of Backtest Overfitting},
+  journal = {Journal of Computational Finance},
+  year    = {2017},
+  volume  = {20},
+  number  = {4},
+  pages   = {39--69},
+  doi     = {10.21314/JCF.2016.322},
+  note    = {peer-reviewed}
+}
+
+@book{LopezDePrado2018AFML,
+  author    = {L{\'o}pez de Prado, Marcos},
+  title     = {Advances in Financial Machine Learning},
+  publisher = {Wiley},
+  year      = {2018},
+  isbn      = {978-1119482086},
+  url       = {https://www.wiley.com/en-us/Advances+in+Financial+Machine+Learning-p-9781119482086},
+  note      = {peer-reviewed; ch. 7, 8, 11, 12}
+}
+
+@article{HarveyLiu2015Backtesting,
+  author  = {Harvey, Campbell R. and Liu, Yan},
+  title   = {Backtesting},
+  journal = {Journal of Portfolio Management},
+  year    = {2015},
+  volume  = {42},
+  number  = {1},
+  pages   = {13--28},
+  doi     = {10.3905/jpm.2015.42.1.013},
+  note    = {peer-reviewed}
+}
+
+@article{HarveyLiuZhu2016CrossSection,
+  author  = {Harvey, Campbell R. and Liu, Yan and Zhu, Heqing},
+  title   = {{\ldots}and the Cross-Section of Expected Returns},
+  journal = {Review of Financial Studies},
+  year    = {2016},
+  volume  = {29},
+  number  = {1},
+  pages   = {5--68},
+  doi     = {10.1093/rfs/hhv059},
+  note    = {peer-reviewed}
+}
+
+@article{HarveyLiu2020FalseDiscoveries,
+  author  = {Harvey, Campbell R. and Liu, Yan},
+  title   = {False (and Missed) Discoveries in Financial Economics},
+  journal = {Journal of Finance},
+  year    = {2020},
+  volume  = {75},
+  number  = {5},
+  pages   = {2503--2553},
+  doi     = {10.1111/jofi.12951},
+  note    = {peer-reviewed}
+}
+
+% --- Reality-check / superior-predictive-ability family ---
+
+@article{White2000RealityCheck,
+  author  = {White, Halbert},
+  title   = {A Reality Check for Data Snooping},
+  journal = {Econometrica},
+  year    = {2000},
+  volume  = {68},
+  number  = {5},
+  pages   = {1097--1126},
+  doi     = {10.1111/1468-0262.00152},
+  note    = {peer-reviewed}
+}
+
+@article{Hansen2005SPA,
+  author  = {Hansen, Peter Reinhard},
+  title   = {A Test for Superior Predictive Ability},
+  journal = {Journal of Business \& Economic Statistics},
+  year    = {2005},
+  volume  = {23},
+  number  = {4},
+  pages   = {365--380},
+  doi     = {10.1198/073500105000000063},
+  note    = {peer-reviewed}
+}
+
+@article{RomanoWolf2005Stepwise,
+  author  = {Romano, Joseph P. and Wolf, Michael},
+  title   = {Stepwise Multiple Testing as Formalized Data Snooping},
+  journal = {Econometrica},
+  year    = {2005},
+  volume  = {73},
+  number  = {4},
+  pages   = {1237--1282},
+  doi     = {10.1111/j.1468-0262.2005.00615.x},
+  note    = {peer-reviewed}
+}
+
+% --- Surrogate / placebo controls ---
+
+@article{Theiler1992SurrogateData,
+  author  = {Theiler, James and Eubank, Stephen and Longtin, Andr{\'e} and Galdrikian, Bryan and Farmer, J. Doyne},
+  title   = {Testing for nonlinearity in time series: the method of surrogate data},
+  journal = {Physica D},
+  year    = {1992},
+  volume  = {58},
+  number  = {1--4},
+  pages   = {77--94},
+  doi     = {10.1016/0167-2789(92)90102-S},
+  note    = {peer-reviewed}
+}
+
+@article{PolitisRomano1994StationaryBootstrap,
+  author  = {Politis, Dimitris N. and Romano, Joseph P.},
+  title   = {The Stationary Bootstrap},
+  journal = {Journal of the American Statistical Association},
+  year    = {1994},
+  volume  = {89},
+  number  = {428},
+  pages   = {1303--1313},
+  doi     = {10.1080/01621459.1994.10476870},
+  note    = {peer-reviewed}
+}
+
+% --- Economic baselines ---
+
+@misc{ChenNavet2007GPFailure,
+  author = {Chen, Shu-Heng and Navet, Nicolas},
+  title  = {Failure of genetic-programming-induced trading strategies: distinguishing genuine edge from random search},
+  year   = {2007},
+  howpublished = {Working note (EvoStar / lecture series)},
+  url    = {https://www.iis.sinica.edu.tw/~chchen/},
+  note   = {unverified --- informal working note; no DOI / stable canonical URL located}
+}
+
+@inproceedings{Zeng2023DLinear,
+  author    = {Zeng, Ailing and Chen, Muxi and Zhang, Lei and Xu, Qiang},
+  title     = {Are Transformers Effective for Time Series Forecasting? (DLinear)},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  year      = {2023},
+  volume    = {37},
+  number    = {9},
+  pages     = {11121--11128},
+  doi       = {10.1609/aaai.v37i9.26317},
+  note      = {peer-reviewed}
+}
+
+% --- Cost / financing ---
+
+@misc{FrazziniIsraelMoskowitz2018TradingCosts,
+  author = {Frazzini, Andrea and Israel, Ronen and Moskowitz, Tobias J.},
+  title  = {Trading Costs},
+  year   = {2018},
+  howpublished = {Working paper / AQR},
+  url    = {https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3229719},
+  note   = {unverified venue --- circulated working paper / AQR white paper; no journal DOI}
+}
+
+% ===========================================================================
+% (B) Hypotheses
+% ===========================================================================
+
+% --- Momentum / reversal ---
+
+@article{MoskowitzOoiPedersen2012TSMOM,
+  author  = {Moskowitz, Tobias J. and Ooi, Yao Hua and Pedersen, Lasse Heje},
+  title   = {Time Series Momentum},
+  journal = {Journal of Financial Economics},
+  year    = {2012},
+  volume  = {104},
+  number  = {2},
+  pages   = {228--250},
+  doi     = {10.1016/j.jfineco.2011.11.003},
+  note    = {peer-reviewed}
+}
+
+@article{JegadeeshTitman1993Momentum,
+  author  = {Jegadeesh, Narasimhan and Titman, Sheridan},
+  title   = {Returns to Buying Winners and Selling Losers: Implications for Stock Market Efficiency},
+  journal = {Journal of Finance},
+  year    = {1993},
+  volume  = {48},
+  number  = {1},
+  pages   = {65--91},
+  doi     = {10.1111/j.1540-6261.1993.tb04702.x},
+  note    = {peer-reviewed}
+}
+
+@article{DeBondtThaler1985Overreact,
+  author  = {De Bondt, Werner F. M. and Thaler, Richard},
+  title   = {Does the Stock Market Overreact?},
+  journal = {Journal of Finance},
+  year    = {1985},
+  volume  = {40},
+  number  = {3},
+  pages   = {793--805},
+  doi     = {10.1111/j.1540-6261.1985.tb05004.x},
+  note    = {peer-reviewed}
+}
+
+@article{BlitzHuijMartens2011ResidualMomentum,
+  author  = {Blitz, David and Huij, Joop and Martens, Martin},
+  title   = {Residual Momentum},
+  journal = {Journal of Empirical Finance},
+  year    = {2011},
+  volume  = {18},
+  number  = {3},
+  pages   = {506--521},
+  doi     = {10.1016/j.jempfin.2011.01.003},
+  note    = {peer-reviewed}
+}
+
+@article{DaGurunWarachka2014FrogInThePan,
+  author  = {Da, Zhi and Gurun, Umit G. and Warachka, Mitch},
+  title   = {Frog in the Pan: Continuous Information and Momentum},
+  journal = {Review of Financial Studies},
+  year    = {2014},
+  volume  = {27},
+  number  = {7},
+  pages   = {2171--2218},
+  doi     = {10.1093/rfs/hhu003},
+  note    = {peer-reviewed}
+}
+
+@article{MoreiraMuir2017VolManaged,
+  author  = {Moreira, Alan and Muir, Tyler},
+  title   = {Volatility-Managed Portfolios},
+  journal = {Journal of Finance},
+  year    = {2017},
+  volume  = {72},
+  number  = {4},
+  pages   = {1611--1644},
+  doi     = {10.1111/jofi.12513},
+  note    = {peer-reviewed}
+}
+
+@article{Fieberg2025CTREND,
+  author  = {Fieberg, Christian and Liedtke, Gerrit and Poddig, Thorsten and Walker, Thomas and Zaremba, Adam},
+  title   = {A Trend Factor for the Cross Section of Cryptocurrency Returns (CTREND)},
+  journal = {Journal of Financial and Quantitative Analysis},
+  year    = {2025},
+  volume  = {60},
+  number  = {7},
+  pages   = {3116--3153},
+  doi     = {10.1017/S0022109024000747},
+  note    = {peer-reviewed}
+}
+
+% --- Low-vol / idiosyncratic-vol anomaly (Q9) ---
+
+@article{AngHodrickXingZhang2006IVol,
+  author  = {Ang, Andrew and Hodrick, Robert J. and Xing, Yuhang and Zhang, Xiaoyan},
+  title   = {The Cross-Section of Volatility and Expected Returns},
+  journal = {Journal of Finance},
+  year    = {2006},
+  volume  = {61},
+  number  = {1},
+  pages   = {259--299},
+  doi     = {10.1111/j.1540-6261.2006.00836.x},
+  note    = {peer-reviewed}
+}
+
+@article{FrazziniPedersen2014BAB,
+  author  = {Frazzini, Andrea and Pedersen, Lasse Heje},
+  title   = {Betting Against Beta},
+  journal = {Journal of Financial Economics},
+  year    = {2014},
+  volume  = {111},
+  number  = {1},
+  pages   = {1--25},
+  doi     = {10.1016/j.jfineco.2013.10.005},
+  note    = {peer-reviewed}
+}
+
+% --- Pairs / cointegration / stat-arb ---
+
+@article{GatevGoetzmannRouwenhorst2006Pairs,
+  author  = {Gatev, Evan and Goetzmann, William N. and Rouwenhorst, K. Geert},
+  title   = {Pairs Trading: Performance of a Relative-Value Arbitrage Rule},
+  journal = {Review of Financial Studies},
+  year    = {2006},
+  volume  = {19},
+  number  = {3},
+  pages   = {797--827},
+  doi     = {10.1093/rfs/hhj020},
+  note    = {peer-reviewed}
+}
+
+@article{EngleGranger1987Cointegration,
+  author  = {Engle, Robert F. and Granger, Clive W. J.},
+  title   = {Co-integration and Error Correction: Representation, Estimation, and Testing},
+  journal = {Econometrica},
+  year    = {1987},
+  volume  = {55},
+  number  = {2},
+  pages   = {251--276},
+  doi     = {10.2307/1913236},
+  note    = {peer-reviewed}
+}
+
+@article{AvellanedaLee2010StatArb,
+  author  = {Avellaneda, Marco and Lee, Jeong-Hyun},
+  title   = {Statistical Arbitrage in the U.S. Equities Market},
+  journal = {Quantitative Finance},
+  year    = {2010},
+  volume  = {10},
+  number  = {7},
+  pages   = {761--782},
+  doi     = {10.1080/14697680903124632},
+  note    = {peer-reviewed}
+}
+
+% --- Technical analysis ---
+
+@article{LoMamayskyWang2000FoundationsTA,
+  author  = {Lo, Andrew W. and Mamaysky, Harry and Wang, Jiang},
+  title   = {Foundations of Technical Analysis: Computational Algorithms, Statistical Inference, and Empirical Implementation},
+  journal = {Journal of Finance},
+  year    = {2000},
+  volume  = {55},
+  number  = {4},
+  pages   = {1705--1765},
+  doi     = {10.1111/0022-1082.00265},
+  note    = {peer-reviewed}
+}
+
+@article{SullivanTimmermannWhite1999DataSnooping,
+  author  = {Sullivan, Ryan and Timmermann, Allan and White, Halbert},
+  title   = {Data-Snooping, Technical Trading Rule Performance, and the Bootstrap},
+  journal = {Journal of Finance},
+  year    = {1999},
+  volume  = {54},
+  number  = {5},
+  pages   = {1647--1691},
+  doi     = {10.1111/0022-1082.00163},
+  note    = {peer-reviewed}
+}
+
+@book{Bouchaud2018TradesQuotesPrices,
+  author    = {Bouchaud, Jean-Philippe and Bonart, Julius and Donier, Jonathan and Gould, Martin},
+  title     = {Trades, Quotes and Prices: Financial Markets Under the Microscope},
+  publisher = {Cambridge University Press},
+  year      = {2018},
+  doi       = {10.1017/9781316659335},
+  note      = {peer-reviewed}
+}
+
+% --- Microstructure / order-flow (D2) ---
+
+@article{Kyle1985ContinuousAuctions,
+  author  = {Kyle, Albert S.},
+  title   = {Continuous Auctions and Insider Trading},
+  journal = {Econometrica},
+  year    = {1985},
+  volume  = {53},
+  number  = {6},
+  pages   = {1315--1335},
+  doi     = {10.2307/1913210},
+  note    = {peer-reviewed}
+}
+
+@article{Hasbrouck1991TradeInfo,
+  author  = {Hasbrouck, Joel},
+  title   = {Measuring the Information Content of Stock Trades},
+  journal = {Journal of Finance},
+  year    = {1991},
+  volume  = {46},
+  number  = {1},
+  pages   = {179--207},
+  doi     = {10.1111/j.1540-6261.1991.tb03749.x},
+  note    = {peer-reviewed}
+}
+
+@article{Hasbrouck1995OneSecurity,
+  author  = {Hasbrouck, Joel},
+  title   = {One Security, Many Markets: Determining the Contributions to Price Discovery},
+  journal = {Journal of Finance},
+  year    = {1995},
+  volume  = {50},
+  number  = {4},
+  pages   = {1175--1199},
+  doi     = {10.1111/j.1540-6261.1995.tb04054.x},
+  note    = {peer-reviewed}
+}
+
+@article{EasleyLopezDePradoOHara2012VPIN,
+  author  = {Easley, David and L{\'o}pez de Prado, Marcos and O'Hara, Maureen},
+  title   = {Flow Toxicity and Liquidity in a High-Frequency World},
+  journal = {Review of Financial Studies},
+  year    = {2012},
+  volume  = {25},
+  number  = {5},
+  pages   = {1457--1493},
+  doi     = {10.1093/rfs/hhr144},
+  note    = {peer-reviewed}
+}
+
+% --- Limits to arbitrage / carry ---
+
+@techreport{SchmelingSchrimpfTodorov2023CryptoCarry,
+  author      = {Schmeling, Maik and Schrimpf, Andreas and Todorov, Karamfil},
+  title       = {Crypto carry},
+  institution = {Bank for International Settlements},
+  type        = {BIS Working Paper},
+  number      = {1087},
+  year        = {2023},
+  url         = {https://www.bis.org/publ/work1087.htm},
+  note        = {working-paper; 4 Apr 2023, rev. Oct 2025. Authorship web-verified 2026-06-02 (NOT Aramonte/Huang/Schrimpf)}
+}
+
+@article{ShleiferVishny1997LimitsArb,
+  author  = {Shleifer, Andrei and Vishny, Robert W.},
+  title   = {The Limits of Arbitrage},
+  journal = {Journal of Finance},
+  year    = {1997},
+  volume  = {52},
+  number  = {1},
+  pages   = {35--55},
+  doi     = {10.1111/j.1540-6261.1997.tb03807.x},
+  note    = {peer-reviewed}
+}
+
+@article{MakarovSchoar2020CryptoArb,
+  author  = {Makarov, Igor and Schoar, Antoinette},
+  title   = {Trading and Arbitrage in Cryptocurrency Markets},
+  journal = {Journal of Financial Economics},
+  year    = {2020},
+  volume  = {135},
+  number  = {2},
+  pages   = {293--319},
+  doi     = {10.1016/j.jfineco.2019.07.001},
+  note    = {peer-reviewed}
+}
+
+% --- Anomaly decay ---
+
+@article{McLeanPontiff2016AnomalyDecay,
+  author  = {McLean, R. David and Pontiff, Jeffrey},
+  title   = {Does Academic Research Destroy Stock Return Predictability?},
+  journal = {Journal of Finance},
+  year    = {2016},
+  volume  = {71},
+  number  = {1},
+  pages   = {5--32},
+  doi     = {10.1111/jofi.12365},
+  note    = {peer-reviewed}
+}
+
+% --- Rotation / lead-lag null ---
+
+@article{LoMacKinlay1990ContrarianProfits,
+  author  = {Lo, Andrew W. and MacKinlay, A. Craig},
+  title   = {When Are Contrarian Profits Due to Stock Market Overreaction?},
+  journal = {Review of Financial Studies},
+  year    = {1990},
+  volume  = {3},
+  number  = {2},
+  pages   = {175--205},
+  doi     = {10.1093/rfs/3.2.175},
+  note    = {peer-reviewed}
+}
+
+@article{Hou2007LeadLag,
+  author  = {Hou, Kewei},
+  title   = {Industry Information Diffusion and the Lead-Lag Effect in Stock Returns},
+  journal = {Review of Financial Studies},
+  year    = {2007},
+  volume  = {20},
+  number  = {4},
+  pages   = {1113--1138},
+  doi     = {10.1093/rfs/hhm003},
+  note    = {peer-reviewed}
+}
+
+@article{MoskowitzGrinblatt1999Industries,
+  author  = {Moskowitz, Tobias J. and Grinblatt, Mark},
+  title   = {Do Industries Explain Momentum?},
+  journal = {Journal of Finance},
+  year    = {1999},
+  volume  = {54},
+  number  = {4},
+  pages   = {1249--1290},
+  doi     = {10.1111/0022-1082.00146},
+  note    = {peer-reviewed}
+}
+
+% --- Event studies ---
+
+@article{MacKinlay1997EventStudies,
+  author  = {MacKinlay, A. Craig},
+  title   = {Event Studies in Economics and Finance},
+  journal = {Journal of Economic Literature},
+  year    = {1997},
+  volume  = {35},
+  number  = {1},
+  pages   = {13--39},
+  url     = {https://www.jstor.org/stable/2729691},
+  note    = {peer-reviewed}
+}
+
+@article{BrownWarner1985DailyReturns,
+  author  = {Brown, Stephen J. and Warner, Jerold B.},
+  title   = {Using Daily Stock Returns: The Case of Event Studies},
+  journal = {Journal of Financial Economics},
+  year    = {1985},
+  volume  = {14},
+  number  = {1},
+  pages   = {3--31},
+  doi     = {10.1016/0304-405X(85)90042-X},
+  note    = {peer-reviewed}
+}
+
+@article{Ritter1991IPOPerformance,
+  author  = {Ritter, Jay R.},
+  title   = {The Long-Run Performance of Initial Public Offerings},
+  journal = {Journal of Finance},
+  year    = {1991},
+  volume  = {46},
+  number  = {1},
+  pages   = {3--27},
+  doi     = {10.1111/j.1540-6261.1991.tb03743.x},
+  note    = {peer-reviewed}
+}
+
+% --- Calendar / seasonality (D7) ---
+
+@article{BoumanJacobsen2002Halloween,
+  author  = {Bouman, Sven and Jacobsen, Ben},
+  title   = {The Halloween Indicator, 'Sell in May and Go Away': Another Puzzle},
+  journal = {American Economic Review},
+  year    = {2002},
+  volume  = {92},
+  number  = {5},
+  pages   = {1618--1635},
+  doi     = {10.1257/000282802762024683},
+  note    = {peer-reviewed}
+}
+
+@article{CaporalePlastun2019DayOfWeek,
+  author  = {Caporale, Guglielmo Maria and Plastun, Alex},
+  title   = {The day of the week effect in the cryptocurrency market},
+  journal = {Finance Research Letters},
+  year    = {2019},
+  volume  = {31},
+  doi     = {10.1016/j.frl.2018.11.012},
+  note    = {peer-reviewed}
+}
+
+% --- On-chain valuation / flow (D5 / on-chain) ---
+
+@misc{PlanB2019StockToFlow,
+  author = {{PlanB}},
+  title  = {Modeling Bitcoin's Value with Scarcity (Stock-to-Flow)},
+  year   = {2019},
+  howpublished = {Practitioner article (Medium)},
+  url    = {https://medium.com/@100trillionUSD/modeling-bitcoins-value-with-scarcity-91fa0fc03e25},
+  note   = {practitioner, non-peer-reviewed}
+}
+
+@article{GrangerNewbold1974SpuriousRegressions,
+  author  = {Granger, Clive W. J. and Newbold, Paul},
+  title   = {Spurious Regressions in Econometrics},
+  journal = {Journal of Econometrics},
+  year    = {1974},
+  volume  = {2},
+  number  = {2},
+  pages   = {111--120},
+  doi     = {10.1016/0304-4076(74)90034-7},
+  note    = {peer-reviewed}
+}
+
+@misc{NvtMvrvSoprPractitionerFamily,
+  author = {Woo, Willy and Kalichkin, Dmitry and Mahmudov, Murad and Puell, David and Shirakashi and {Glassnode}},
+  title  = {NVT / MVRV / SOPR / realized-cap / exchange-flow on-chain metric family},
+  year   = {2017},
+  howpublished = {Practitioner metrics (see BACKLOG.md \S7.6 for provenance)},
+  url    = {https://docs.glassnode.com/},
+  note   = {practitioner metrics; mixed/no peer review}
+}
+
+@article{Metcalfe2013MetcalfesLaw,
+  author  = {Metcalfe, Bob},
+  title   = {Metcalfe's Law after 40 Years of Ethernet},
+  journal = {IEEE Computer},
+  year    = {2013},
+  volume  = {46},
+  number  = {12},
+  pages   = {26--31},
+  doi     = {10.1109/MC.2013.374},
+  note    = {peer-reviewed}
+}
+
+% --- Regime detection / change-point (quant) ---
+
+@article{Hamilton1989RegimeSwitching,
+  author  = {Hamilton, James D.},
+  title   = {A New Approach to the Economic Analysis of Nonstationary Time Series and the Business Cycle},
+  journal = {Econometrica},
+  year    = {1989},
+  volume  = {57},
+  number  = {2},
+  pages   = {357--384},
+  doi     = {10.2307/1912559},
+  note    = {peer-reviewed}
+}
+
+@misc{AdamsMacKay2007BOCPD,
+  author = {Adams, Ryan Prescott and MacKay, David J. C.},
+  title  = {Bayesian Online Changepoint Detection},
+  year   = {2007},
+  howpublished = {arXiv preprint},
+  url    = {https://arxiv.org/abs/0710.3742},
+  note   = {working-paper; arXiv:0710.3742}
+}
+
+% --- Variance risk premium (consensus / options) ---
+
+@article{CarrWu2009VRP,
+  author  = {Carr, Peter and Wu, Liuren},
+  title   = {Variance Risk Premiums},
+  journal = {Review of Financial Studies},
+  year    = {2009},
+  volume  = {22},
+  number  = {3},
+  pages   = {1311--1341},
+  doi     = {10.1093/rfs/hhn038},
+  note    = {peer-reviewed}
+}

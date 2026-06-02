@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kimlage/crypto-edge-search/schemas/verdict.schema.json",
+  "title": "Verdict",
+  "description": "The aggregated outcome of running a hypothesis through the committed gauntlet (net_of_cost -> baselines -> deflated_sharpe -> block_bootstrap -> cpcv_pbo -> haircut -> surrogate -> holdout). The verdict label is decided by which gate (if any) binds. SURVIVE = every gate passes. PROMISING = passes the core economic gates (net_of_cost, baselines, surrogate, holdout) but trips a multiple-testing / Deflated-Sharpe gate (the structure is real; the honest-N magnitude significance is not). KILL = fails a core economic gate (most hypotheses end here, and that is the point). DEFERRED = not run because the only honest test needs data unavailable at $0. INDETERMINATE = ran but the evidence is too weak/seed-sensitive to assign a confident label.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["hypothesisId", "verdict", "bindingGate", "trialCount", "gates"],
+  "properties": {
+    "hypothesisId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier for the hypothesis / strategy under test."
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["SURVIVE", "PROMISING", "KILL", "DEFERRED", "INDETERMINATE"],
+      "description": "The decisive verdict label."
+    },
+    "bindingGate": {
+      "type": ["string", "null"],
+      "description": "The id of the FIRST gate that failed (the binding constraint), or null when every gate passed (SURVIVE) or when the verdict is DEFERRED (never run)."
+    },
+    "trialCount": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The HONEST N — the true number of distinct configs searched, used to deflate. Never below 1."
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Every gate's outcome, in the binding evaluation order.",
+      "items": { "$ref": "gate.schema.json" }
+    },
+    "rationale": {
+      "type": "string",
+      "description": "One-line human explanation of why this label was assigned."
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp the verdict was produced."
+    }
+  }
+}

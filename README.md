@@ -1,5 +1,7 @@
 # crypto-edge-search
 
+> ⚠️ **Not investment advice — software/research only; the project's own conclusion is that nothing here is deployable.** See [docs/DISCLAIMER.md](docs/DISCLAIMER.md).
+
 **You've got a trading edge. An RSI divergence. A Fibonacci pocket. A clean Supertrend flip. Exchange outflows. The halving cycle. A stop-loss rule that finally fixed your win rate. Something that *works*.**
 
 This project tested ~111 of those edges — the whole retail and quant playbook — on free public data, at $0, through one brutal anti-overfitting protocol that doesn't care about your priors. It tried to **break** each one.

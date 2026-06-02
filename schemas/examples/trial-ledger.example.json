@@ -1,0 +1,34 @@
+{
+  "campaignId": "edgehunt-onchain2-fee-revenue-nvt",
+  "trialCount": 3,
+  "createdAt": "2026-06-01T09:30:00Z",
+  "entries": [
+    {
+      "configId": "nvt-z20-long0.8",
+      "dnaId": "nvt-z20-long0.8",
+      "trialId": null,
+      "statistic": "sharpe",
+      "score": 1.332,
+      "isGridBest": true,
+      "verdict": "KILL"
+    },
+    {
+      "configId": "nvt-z30-long1.0",
+      "dnaId": "nvt-z30-long1.0",
+      "trialId": null,
+      "statistic": "sharpe",
+      "score": 1.105,
+      "isGridBest": false,
+      "verdict": "KILL"
+    },
+    {
+      "configId": "nvt-z40-long1.2",
+      "dnaId": null,
+      "trialId": "trial-0007",
+      "statistic": "sharpe",
+      "score": 0.842,
+      "isGridBest": false,
+      "verdict": "KILL"
+    }
+  ]
+}

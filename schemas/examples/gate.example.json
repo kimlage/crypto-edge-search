@@ -1,0 +1,14 @@
+{
+  "id": "surrogate",
+  "status": "FAIL",
+  "binding": true,
+  "reason": "family-wise MAX-statistic: real grid-best 1.332 < surr95 1.384 (placeboP=0.093) at gridSize=312",
+  "detail": {
+    "realBest": 1.332,
+    "surr95": 1.384,
+    "placeboP": 0.093,
+    "gridSize": 312,
+    "familyWise": true,
+    "surrogateMethod": "phase_randomization"
+  }
+}

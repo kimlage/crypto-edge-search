@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kimlage/crypto-edge-search/schemas/cost-model.schema.json",
+  "title": "CostModel",
+  "description": "The realistic cost model charged before any gate sees a return. Taker fees are charged per side on every |delta position| change; financing/borrow is charged on the FULL levered/short NOTIONAL — not on 1 unit. This encodes the decisive dated-futures-basis lesson: charging the risk-free / financing rate on 1 unit while the book was ~2.95x-levered overstated net returns and collapsed once corrected (Sharpe 1.64 -> 0.69). leverage and shortNotional make the financing base explicit and auditable.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["takerPerSide", "financing"],
+  "properties": {
+    "takerPerSide": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Taker fee per side as a fraction (e.g. 0.0004 = 4 bps). Charged on every |delta position| change."
+    },
+    "makerPerSide": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Optional maker fee per side as a fraction, when fills are passive."
+    },
+    "slippagePerSide": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Optional slippage / market-impact per side as a fraction."
+    },
+    "financing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ratePerPeriod", "chargedOnNotional"],
+      "description": "Financing / borrow cost. MUST be charged on the full levered/short notional, never on 1 unit.",
+      "properties": {
+        "ratePerPeriod": {
+          "type": "number",
+          "description": "Financing / borrow / risk-free rate charged per period (as a fraction)."
+        },
+        "chargedOnNotional": {
+          "type": "boolean",
+          "const": true,
+          "description": "Must be true: financing is charged on the FULL levered/short notional. The dated-futures leak was exactly this flag being effectively false (RF on 1 unit while ~2.95x-levered)."
+        },
+        "leverage": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Gross leverage of the book; the financing base for the long leg. The dated-futures audit ran ~2.95x."
+        },
+        "shortNotional": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Absolute short notional (in units of capital) that borrow is charged on, when the strategy is short or market-neutral."
+        }
+      }
+    },
+    "currency": {
+      "type": "string",
+      "description": "Optional quote currency the costs are denominated in (e.g. USDT)."
+    }
+  }
+}

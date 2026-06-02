@@ -1,0 +1,595 @@
+# references.yml — machine-readable bibliography for crypto-edge-search
+#
+# One entry per cited work in docs/REFERENCES.md (the annotated bibliography).
+# This file is the source of truth that scripts/refs-check.ts validates.
+#
+# Schema (per entry):
+#   key       BibTeX citation key (matches references.bib; unique)
+#   authors   list of author surnames-first strings (verbatim order)
+#   year      publication year (integer; for "rev." works, the original year)
+#   title     work title
+#   venue     journal / publisher / working-paper series
+#   doi       resolving DOI (without the https://doi.org/ prefix), or null
+#   url       canonical resolving URL, or null
+#   status    one of: peer-reviewed | working-paper | practitioner | unverified
+#   used_by   list of gate-ids and/or script-ids this work backs
+#
+# Gate ids (the committed gauntlet, in binding order):
+#   net_of_cost, baselines, deflated_sharpe, block_bootstrap,
+#   cpcv_pbo, haircut, surrogate, holdout
+# Script ids (per-domain harnesses / primitives referenced in docs):
+#   statistical-validation  (src/lib/training/statistical-validation.ts primitives)
+#   edgehunt-D2, edgehunt-D5, edgehunt-D7, edgehunt-D348,
+#   edgehunt-quant, edgehunt-onchain2, edgehunt-deepen, edgehunt-audit
+#
+# INVARIANT enforced by refs-check.ts: every entry has a doi OR url; status is
+# valid; and every peer-reviewed / working-paper entry has a doi OR url (hard fail
+# otherwise). Links web-verified 2026-06-01; BIS WP 1087 authorship web-verified
+# 2026-06-02 (Schmeling, Schrimpf & Todorov — NOT Aramonte/Huang/Schrimpf).
+
+entries:
+  # ---------------------------------------------------------------------------
+  # (A) Gates & methodology
+  # ---------------------------------------------------------------------------
+
+  # Multiple-testing / Sharpe deflation
+  - key: BaileyLopezDePrado2014DSR
+    authors: ["Bailey, David H.", "López de Prado, Marcos"]
+    year: 2014
+    title: "The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting, and Non-Normality"
+    venue: "Journal of Portfolio Management 40(5):94–107"
+    doi: "10.3905/jpm.2014.40.5.094"
+    url: null
+    status: peer-reviewed
+    used_by: [deflated_sharpe, statistical-validation]
+
+  - key: BaileyBorweinLopezDePradoZhu2014
+    authors: ["Bailey, David H.", "Borwein, Jonathan M.", "López de Prado, Marcos", "Zhu, Qiji Jim"]
+    year: 2014
+    title: "Pseudo-Mathematics and Financial Charlatanism: The Effects of Backtest Overfitting on Out-of-Sample Performance"
+    venue: "Notices of the American Mathematical Society 61(5):458–471"
+    doi: "10.1090/noti1105"
+    url: null
+    status: peer-reviewed
+    used_by: [deflated_sharpe, surrogate]
+
+  - key: BaileyLopezDePrado2012PSR
+    authors: ["Bailey, David H.", "López de Prado, Marcos"]
+    year: 2012
+    title: "The Sharpe Ratio Efficient Frontier (Probabilistic Sharpe Ratio)"
+    venue: "Journal of Risk 15(2):3–44"
+    doi: null
+    url: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1821643"
+    status: peer-reviewed
+    used_by: [deflated_sharpe, statistical-validation]
+
+  - key: BaileyBorweinLopezDePradoZhu2017PBO
+    authors: ["Bailey, David H.", "Borwein, Jonathan M.", "López de Prado, Marcos", "Zhu, Qiji Jim"]
+    year: 2017
+    title: "The Probability of Backtest Overfitting"
+    venue: "Journal of Computational Finance 20(4):39–69"
+    doi: "10.21314/JCF.2016.322"
+    url: null
+    status: peer-reviewed
+    used_by: [cpcv_pbo, statistical-validation]
+
+  - key: LopezDePrado2018AFML
+    authors: ["López de Prado, Marcos"]
+    year: 2018
+    title: "Advances in Financial Machine Learning"
+    venue: "Wiley (ch. 7, 8, 11, 12)"
+    doi: null
+    url: "https://www.wiley.com/en-us/Advances+in+Financial+Machine+Learning-p-9781119482086"
+    status: peer-reviewed
+    used_by: [cpcv_pbo, holdout]
+
+  - key: HarveyLiu2015Backtesting
+    authors: ["Harvey, Campbell R.", "Liu, Yan"]
+    year: 2015
+    title: "Backtesting"
+    venue: "Journal of Portfolio Management 42(1):13–28"
+    doi: "10.3905/jpm.2015.42.1.013"
+    url: null
+    status: peer-reviewed
+    used_by: [haircut]
+
+  - key: HarveyLiuZhu2016CrossSection
+    authors: ["Harvey, Campbell R.", "Liu, Yan", "Zhu, Heqing"]
+    year: 2016
+    title: "…and the Cross-Section of Expected Returns"
+    venue: "Review of Financial Studies 29(1):5–68"
+    doi: "10.1093/rfs/hhv059"
+    url: null
+    status: peer-reviewed
+    used_by: [haircut, deflated_sharpe]
+
+  - key: HarveyLiu2020FalseDiscoveries
+    authors: ["Harvey, Campbell R.", "Liu, Yan"]
+    year: 2020
+    title: "False (and Missed) Discoveries in Financial Economics"
+    venue: "Journal of Finance 75(5):2503–2553"
+    doi: "10.1111/jofi.12951"
+    url: null
+    status: peer-reviewed
+    used_by: [haircut]
+
+  # Reality-check / superior-predictive-ability family
+  - key: White2000RealityCheck
+    authors: ["White, Halbert"]
+    year: 2000
+    title: "A Reality Check for Data Snooping"
+    venue: "Econometrica 68(5):1097–1126"
+    doi: "10.1111/1468-0262.00152"
+    url: null
+    status: peer-reviewed
+    used_by: [baselines, surrogate]
+
+  - key: Hansen2005SPA
+    authors: ["Hansen, Peter Reinhard"]
+    year: 2005
+    title: "A Test for Superior Predictive Ability"
+    venue: "Journal of Business & Economic Statistics 23(4):365–380"
+    doi: "10.1198/073500105000000063"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate]
+
+  - key: RomanoWolf2005Stepwise
+    authors: ["Romano, Joseph P.", "Wolf, Michael"]
+    year: 2005
+    title: "Stepwise Multiple Testing as Formalized Data Snooping"
+    venue: "Econometrica 73(4):1237–1282"
+    doi: "10.1111/j.1468-0262.2005.00615.x"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate]
+
+  # Surrogate / placebo controls
+  - key: Theiler1992SurrogateData
+    authors: ["Theiler, James", "Eubank, Stephen", "Longtin, André", "Galdrikian, Bryan", "Farmer, J. Doyne"]
+    year: 1992
+    title: "Testing for nonlinearity in time series: the method of surrogate data"
+    venue: "Physica D 58(1–4):77–94"
+    doi: "10.1016/0167-2789(92)90102-S"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate]
+
+  - key: PolitisRomano1994StationaryBootstrap
+    authors: ["Politis, Dimitris N.", "Romano, Joseph P."]
+    year: 1994
+    title: "The Stationary Bootstrap"
+    venue: "Journal of the American Statistical Association 89(428):1303–1313"
+    doi: "10.1080/01621459.1994.10476870"
+    url: null
+    status: peer-reviewed
+    used_by: [block_bootstrap, statistical-validation]
+
+  # Economic baselines
+  - key: ChenNavet2007GPFailure
+    authors: ["Chen, Shu-Heng", "Navet, Nicolas"]
+    year: 2007
+    title: "Failure of genetic-programming-induced trading strategies: distinguishing genuine edge from random search"
+    venue: "Working note (EvoStar / lecture series)"
+    doi: null
+    url: "https://www.iis.sinica.edu.tw/~chchen/"
+    status: unverified
+    used_by: [baselines]
+
+  - key: Zeng2023DLinear
+    authors: ["Zeng, Ailing", "Chen, Muxi", "Zhang, Lei", "Xu, Qiang"]
+    year: 2023
+    title: "Are Transformers Effective for Time Series Forecasting? (DLinear)"
+    venue: "AAAI 37(9):11121–11128"
+    doi: "10.1609/aaai.v37i9.26317"
+    url: null
+    status: peer-reviewed
+    used_by: [baselines]
+
+  # Cost / financing
+  - key: FrazziniIsraelMoskowitz2018TradingCosts
+    authors: ["Frazzini, Andrea", "Israel, Ronen", "Moskowitz, Tobias J."]
+    year: 2018
+    title: "Trading Costs"
+    venue: "Working paper / AQR"
+    doi: null
+    url: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3229719"
+    status: unverified
+    used_by: [net_of_cost]
+
+  # ---------------------------------------------------------------------------
+  # (B) Hypotheses → paper
+  # ---------------------------------------------------------------------------
+
+  # Momentum / reversal
+  - key: MoskowitzOoiPedersen2012TSMOM
+    authors: ["Moskowitz, Tobias J.", "Ooi, Yao Hua", "Pedersen, Lasse Heje"]
+    year: 2012
+    title: "Time Series Momentum"
+    venue: "Journal of Financial Economics 104(2):228–250"
+    doi: "10.1016/j.jfineco.2011.11.003"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate, baselines]
+
+  - key: JegadeeshTitman1993Momentum
+    authors: ["Jegadeesh, Narasimhan", "Titman, Sheridan"]
+    year: 1993
+    title: "Returns to Buying Winners and Selling Losers: Implications for Stock Market Efficiency"
+    venue: "Journal of Finance 48(1):65–91"
+    doi: "10.1111/j.1540-6261.1993.tb04702.x"
+    url: null
+    status: peer-reviewed
+    used_by: [holdout, baselines]
+
+  - key: DeBondtThaler1985Overreact
+    authors: ["De Bondt, Werner F. M.", "Thaler, Richard"]
+    year: 1985
+    title: "Does the Stock Market Overreact?"
+    venue: "Journal of Finance 40(3):793–805"
+    doi: "10.1111/j.1540-6261.1985.tb05004.x"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate]
+
+  - key: BlitzHuijMartens2011ResidualMomentum
+    authors: ["Blitz, David", "Huij, Joop", "Martens, Martin"]
+    year: 2011
+    title: "Residual Momentum"
+    venue: "Journal of Empirical Finance 18(3):506–521"
+    doi: "10.1016/j.jempfin.2011.01.003"
+    url: null
+    status: peer-reviewed
+    used_by: [deflated_sharpe, edgehunt-D348]
+
+  - key: DaGurunWarachka2014FrogInThePan
+    authors: ["Da, Zhi", "Gurun, Umit G.", "Warachka, Mitch"]
+    year: 2014
+    title: "Frog in the Pan: Continuous Information and Momentum"
+    venue: "Review of Financial Studies 27(7):2171–2218"
+    doi: "10.1093/rfs/hhu003"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-D348, surrogate]
+
+  - key: MoreiraMuir2017VolManaged
+    authors: ["Moreira, Alan", "Muir, Tyler"]
+    year: 2017
+    title: "Volatility-Managed Portfolios"
+    venue: "Journal of Finance 72(4):1611–1644"
+    doi: "10.1111/jofi.12513"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate, baselines]
+
+  - key: Fieberg2025CTREND
+    authors: ["Fieberg, Christian", "Liedtke, Gerrit", "Poddig, Thorsten", "Walker, Thomas", "Zaremba, Adam"]
+    year: 2025
+    title: "A Trend Factor for the Cross Section of Cryptocurrency Returns (CTREND)"
+    venue: "Journal of Financial and Quantitative Analysis 60(7):3116–3153"
+    doi: "10.1017/S0022109024000747"
+    url: null
+    status: peer-reviewed
+    used_by: [baselines, surrogate]
+
+  # Low-vol / idiosyncratic-vol anomaly (Q9)
+  - key: AngHodrickXingZhang2006IVol
+    authors: ["Ang, Andrew", "Hodrick, Robert J.", "Xing, Yuhang", "Zhang, Xiaoyan"]
+    year: 2006
+    title: "The Cross-Section of Volatility and Expected Returns"
+    venue: "Journal of Finance 61(1):259–299"
+    doi: "10.1111/j.1540-6261.2006.00836.x"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-quant, surrogate, deflated_sharpe]
+
+  - key: FrazziniPedersen2014BAB
+    authors: ["Frazzini, Andrea", "Pedersen, Lasse Heje"]
+    year: 2014
+    title: "Betting Against Beta"
+    venue: "Journal of Financial Economics 111(1):1–25"
+    doi: "10.1016/j.jfineco.2013.10.005"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-quant]
+
+  # Pairs / cointegration / stat-arb
+  - key: GatevGoetzmannRouwenhorst2006Pairs
+    authors: ["Gatev, Evan", "Goetzmann, William N.", "Rouwenhorst, K. Geert"]
+    year: 2006
+    title: "Pairs Trading: Performance of a Relative-Value Arbitrage Rule"
+    venue: "Review of Financial Studies 19(3):797–827"
+    doi: "10.1093/rfs/hhj020"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate, deflated_sharpe]
+
+  - key: EngleGranger1987Cointegration
+    authors: ["Engle, Robert F.", "Granger, Clive W. J."]
+    year: 1987
+    title: "Co-integration and Error Correction: Representation, Estimation, and Testing"
+    venue: "Econometrica 55(2):251–276"
+    doi: "10.2307/1913236"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate]
+
+  - key: AvellanedaLee2010StatArb
+    authors: ["Avellaneda, Marco", "Lee, Jeong-Hyun"]
+    year: 2010
+    title: "Statistical Arbitrage in the U.S. Equities Market"
+    venue: "Quantitative Finance 10(7):761–782"
+    doi: "10.1080/14697680903124632"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate, deflated_sharpe]
+
+  # Technical analysis
+  - key: LoMamayskyWang2000FoundationsTA
+    authors: ["Lo, Andrew W.", "Mamaysky, Harry", "Wang, Jiang"]
+    year: 2000
+    title: "Foundations of Technical Analysis: Computational Algorithms, Statistical Inference, and Empirical Implementation"
+    venue: "Journal of Finance 55(4):1705–1765"
+    doi: "10.1111/0022-1082.00265"
+    url: null
+    status: peer-reviewed
+    used_by: [baselines, surrogate]
+
+  - key: SullivanTimmermannWhite1999DataSnooping
+    authors: ["Sullivan, Ryan", "Timmermann, Allan", "White, Halbert"]
+    year: 1999
+    title: "Data-Snooping, Technical Trading Rule Performance, and the Bootstrap"
+    venue: "Journal of Finance 54(5):1647–1691"
+    doi: "10.1111/0022-1082.00163"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate, haircut]
+
+  - key: Bouchaud2018TradesQuotesPrices
+    authors: ["Bouchaud, Jean-Philippe", "Bonart, Julius", "Donier, Jonathan", "Gould, Martin"]
+    year: 2018
+    title: "Trades, Quotes and Prices: Financial Markets Under the Microscope"
+    venue: "Cambridge University Press"
+    doi: "10.1017/9781316659335"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-D2, net_of_cost]
+
+  # Microstructure / order-flow (D2)
+  - key: Kyle1985ContinuousAuctions
+    authors: ["Kyle, Albert S."]
+    year: 1985
+    title: "Continuous Auctions and Insider Trading"
+    venue: "Econometrica 53(6):1315–1335"
+    doi: "10.2307/1913210"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-D2]
+
+  - key: Hasbrouck1991TradeInfo
+    authors: ["Hasbrouck, Joel"]
+    year: 1991
+    title: "Measuring the Information Content of Stock Trades"
+    venue: "Journal of Finance 46(1):179–207"
+    doi: "10.1111/j.1540-6261.1991.tb03749.x"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-D2]
+
+  - key: Hasbrouck1995OneSecurity
+    authors: ["Hasbrouck, Joel"]
+    year: 1995
+    title: "One Security, Many Markets: Determining the Contributions to Price Discovery"
+    venue: "Journal of Finance 50(4):1175–1199"
+    doi: "10.1111/j.1540-6261.1995.tb04054.x"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-D2]
+
+  - key: EasleyLopezDePradoOHara2012VPIN
+    authors: ["Easley, David", "López de Prado, Marcos", "O'Hara, Maureen"]
+    year: 2012
+    title: "Flow Toxicity and Liquidity in a High-Frequency World"
+    venue: "Review of Financial Studies 25(5):1457–1493"
+    doi: "10.1093/rfs/hhr144"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-D2]
+
+  # Limits to arbitrage / carry
+  - key: SchmelingSchrimpfTodorov2023CryptoCarry
+    authors: ["Schmeling, Maik", "Schrimpf, Andreas", "Todorov, Karamfil"]
+    year: 2023
+    title: "Crypto carry"
+    venue: "BIS Working Paper No. 1087 (4 Apr 2023, rev. Oct 2025)"
+    doi: null
+    url: "https://www.bis.org/publ/work1087.htm"
+    status: working-paper
+    used_by: [net_of_cost, holdout]
+
+  - key: ShleiferVishny1997LimitsArb
+    authors: ["Shleifer, Andrei", "Vishny, Robert W."]
+    year: 1997
+    title: "The Limits of Arbitrage"
+    venue: "Journal of Finance 52(1):35–55"
+    doi: "10.1111/j.1540-6261.1997.tb03807.x"
+    url: null
+    status: peer-reviewed
+    used_by: [holdout]
+
+  - key: MakarovSchoar2020CryptoArb
+    authors: ["Makarov, Igor", "Schoar, Antoinette"]
+    year: 2020
+    title: "Trading and Arbitrage in Cryptocurrency Markets"
+    venue: "Journal of Financial Economics 135(2):293–319"
+    doi: "10.1016/j.jfineco.2019.07.001"
+    url: null
+    status: peer-reviewed
+    used_by: [net_of_cost]
+
+  # Anomaly decay
+  - key: McLeanPontiff2016AnomalyDecay
+    authors: ["McLean, R. David", "Pontiff, Jeffrey"]
+    year: 2016
+    title: "Does Academic Research Destroy Stock Return Predictability?"
+    venue: "Journal of Finance 71(1):5–32"
+    doi: "10.1111/jofi.12365"
+    url: null
+    status: peer-reviewed
+    used_by: [holdout]
+
+  # Rotation / lead-lag null
+  - key: LoMacKinlay1990ContrarianProfits
+    authors: ["Lo, Andrew W.", "MacKinlay, A. Craig"]
+    year: 1990
+    title: "When Are Contrarian Profits Due to Stock Market Overreaction?"
+    venue: "Review of Financial Studies 3(2):175–205"
+    doi: "10.1093/rfs/3.2.175"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate]
+
+  - key: Hou2007LeadLag
+    authors: ["Hou, Kewei"]
+    year: 2007
+    title: "Industry Information Diffusion and the Lead-Lag Effect in Stock Returns"
+    venue: "Review of Financial Studies 20(4):1113–1138"
+    doi: "10.1093/rfs/hhm003"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate]
+
+  - key: MoskowitzGrinblatt1999Industries
+    authors: ["Moskowitz, Tobias J.", "Grinblatt, Mark"]
+    year: 1999
+    title: "Do Industries Explain Momentum?"
+    venue: "Journal of Finance 54(4):1249–1290"
+    doi: "10.1111/0022-1082.00146"
+    url: null
+    status: peer-reviewed
+    used_by: [surrogate]
+
+  # Event studies
+  - key: MacKinlay1997EventStudies
+    authors: ["MacKinlay, A. Craig"]
+    year: 1997
+    title: "Event Studies in Economics and Finance"
+    venue: "Journal of Economic Literature 35(1):13–39"
+    doi: null
+    url: "https://www.jstor.org/stable/2729691"
+    status: peer-reviewed
+    used_by: [edgehunt-D6]
+
+  - key: BrownWarner1985DailyReturns
+    authors: ["Brown, Stephen J.", "Warner, Jerold B."]
+    year: 1985
+    title: "Using Daily Stock Returns: The Case of Event Studies"
+    venue: "Journal of Financial Economics 14(1):3–31"
+    doi: "10.1016/0304-405X(85)90042-X"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-D6]
+
+  - key: Ritter1991IPOPerformance
+    authors: ["Ritter, Jay R."]
+    year: 1991
+    title: "The Long-Run Performance of Initial Public Offerings"
+    venue: "Journal of Finance 46(1):3–27"
+    doi: "10.1111/j.1540-6261.1991.tb03743.x"
+    url: null
+    status: peer-reviewed
+    used_by: [holdout, edgehunt-D6]
+
+  # Calendar / seasonality (D7)
+  - key: BoumanJacobsen2002Halloween
+    authors: ["Bouman, Sven", "Jacobsen, Ben"]
+    year: 2002
+    title: "The Halloween Indicator, 'Sell in May and Go Away': Another Puzzle"
+    venue: "American Economic Review 92(5):1618–1635"
+    doi: "10.1257/000282802762024683"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-D7, surrogate]
+
+  - key: CaporalePlastun2019DayOfWeek
+    authors: ["Caporale, Guglielmo Maria", "Plastun, Alex"]
+    year: 2019
+    title: "The day of the week effect in the cryptocurrency market"
+    venue: "Finance Research Letters 31"
+    doi: "10.1016/j.frl.2018.11.012"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-D7]
+
+  # On-chain valuation / flow (D5 / on-chain)
+  - key: PlanB2019StockToFlow
+    authors: ["PlanB"]
+    year: 2019
+    title: "Modeling Bitcoin's Value with Scarcity (Stock-to-Flow)"
+    venue: "Practitioner article (Medium)"
+    doi: null
+    url: "https://medium.com/@100trillionUSD/modeling-bitcoins-value-with-scarcity-91fa0fc03e25"
+    status: practitioner
+    used_by: [edgehunt-D5, surrogate]
+
+  - key: GrangerNewbold1974SpuriousRegressions
+    authors: ["Granger, Clive W. J.", "Newbold, Paul"]
+    year: 1974
+    title: "Spurious Regressions in Econometrics"
+    venue: "Journal of Econometrics 2(2):111–120"
+    doi: "10.1016/0304-4076(74)90034-7"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-D5, edgehunt-onchain2]
+
+  - key: NvtMvrvSoprPractitionerFamily
+    authors: ["Woo, Willy", "Kalichkin, Dmitry", "Mahmudov, Murad", "Puell, David", "Shirakashi", "Glassnode"]
+    year: 2017
+    title: "NVT / MVRV / SOPR / realized-cap / exchange-flow on-chain metric family"
+    venue: "Practitioner metrics (see BACKLOG.md §7.6 for provenance)"
+    doi: null
+    url: "https://docs.glassnode.com/"
+    status: practitioner
+    used_by: [edgehunt-onchain2, edgehunt-D5]
+
+  - key: Metcalfe2013MetcalfesLaw
+    authors: ["Metcalfe, Bob"]
+    year: 2013
+    title: "Metcalfe's Law after 40 Years of Ethernet"
+    venue: "IEEE Computer 46(12):26–31"
+    doi: "10.1109/MC.2013.374"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-onchain2]
+
+  # Regime detection / change-point (quant)
+  - key: Hamilton1989RegimeSwitching
+    authors: ["Hamilton, James D."]
+    year: 1989
+    title: "A New Approach to the Economic Analysis of Nonstationary Time Series and the Business Cycle"
+    venue: "Econometrica 57(2):357–384"
+    doi: "10.2307/1912559"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-quant, baselines]
+
+  - key: AdamsMacKay2007BOCPD
+    authors: ["Adams, Ryan Prescott", "MacKay, David J. C."]
+    year: 2007
+    title: "Bayesian Online Changepoint Detection"
+    venue: "arXiv:0710.3742"
+    doi: null
+    url: "https://arxiv.org/abs/0710.3742"
+    status: working-paper
+    used_by: [edgehunt-quant]
+
+  # Variance risk premium (consensus / options)
+  - key: CarrWu2009VRP
+    authors: ["Carr, Peter", "Wu, Liuren"]
+    year: 2009
+    title: "Variance Risk Premiums"
+    venue: "Review of Financial Studies 22(3):1311–1341"
+    doi: "10.1093/rfs/hhn038"
+    url: null
+    status: peer-reviewed
+    used_by: [edgehunt-deepen, surrogate]

@@ -1,0 +1,30 @@
+{
+  "datasetId": "funding-8h-majors-3y",
+  "source": {
+    "provider": "Binance",
+    "endpoint": "fapi.binance.com",
+    "accessedAt": "2026-05-30T00:00:00Z"
+  },
+  "period": {
+    "start": "2023-05-01",
+    "end": "2026-05-29",
+    "granularity": "8h"
+  },
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "ADAUSDT",
+    "AVAXUSDT",
+    "DOGEUSDT"
+  ],
+  "hash": "sha256:3f1c9b0a7d4e2c5810ab6f2d9e4c7a1b8f0e3d6c2a9b4e7d1c0f5a8b3e6d9c2f",
+  "known_biases": ["survivorship", "regime_specific"],
+  "rate_limits": {
+    "requestsPerMinute": 1200,
+    "weightPerMinute": 2400,
+    "notes": "Binance USDS-M REST request-weight budget; back off on HTTP 429/418."
+  }
+}

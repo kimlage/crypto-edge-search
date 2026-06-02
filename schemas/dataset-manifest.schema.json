@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kimlage/crypto-edge-search/schemas/dataset-manifest.schema.json",
+  "title": "DatasetManifest",
+  "description": "Provenance record for a dataset used by the lab. Every source is free, public, and key-less ($0 cloud spend). The manifest pins the source, the covered period, the symbols, a content hash for reproducibility, the KNOWN BIASES (survivorship, look-ahead, regime, etc.) the data carries, and the rate limits of the public endpoint — so a result can be reproduced and its data caveats are never silent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["datasetId", "source", "period", "symbols", "hash", "known_biases", "rate_limits"],
+  "properties": {
+    "datasetId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier for this dataset artifact."
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "endpoint"],
+      "description": "Where the data came from (a free, public, key-less source).",
+      "properties": {
+        "provider": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Provider name, e.g. Binance, Coin Metrics Community."
+        },
+        "endpoint": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Public host / API endpoint used (no API key)."
+        },
+        "accessedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the data was fetched."
+        }
+      }
+    },
+    "period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "description": "Inclusive coverage window of the dataset.",
+      "properties": {
+        "start": { "type": "string", "format": "date", "description": "First covered date (YYYY-MM-DD)." },
+        "end": { "type": "string", "format": "date", "description": "Last covered date (YYYY-MM-DD)." },
+        "granularity": {
+          "type": "string",
+          "description": "Bar / sampling granularity, e.g. 1d, 15m, 8h."
+        }
+      }
+    },
+    "symbols": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The symbols / instruments included.",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "hash": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Content hash of the materialized dataset (e.g. sha256:...), for reproducibility."
+    },
+    "known_biases": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Known biases this data carries. At least one entry is required (use 'none_known' explicitly if truly none) so caveats are never silent.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "survivorship",
+          "look_ahead",
+          "selection",
+          "regime_specific",
+          "delisting_shock",
+          "low_liquidity",
+          "stablecoin_depeg",
+          "exchange_specific",
+          "none_known"
+        ]
+      }
+    },
+    "rate_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requestsPerMinute"],
+      "description": "Rate limits of the public endpoint, so re-fetches stay within policy.",
+      "properties": {
+        "requestsPerMinute": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Allowed requests per minute against the endpoint."
+        },
+        "weightPerMinute": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Optional weight-based budget per minute (e.g. Binance request weight)."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Free-text notes about throttling / backoff behavior."
+        }
+      }
+    }
+  }
+}

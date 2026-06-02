@@ -1,0 +1,12 @@
+{
+  "takerPerSide": 0.0004,
+  "makerPerSide": 0.0002,
+  "slippagePerSide": 0.0001,
+  "financing": {
+    "ratePerPeriod": 0.00012,
+    "chargedOnNotional": true,
+    "leverage": 2.95,
+    "shortNotional": 1.95
+  },
+  "currency": "USDT"
+}

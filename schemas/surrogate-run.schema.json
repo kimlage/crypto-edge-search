@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kimlage/crypto-edge-search/schemas/surrogate-run.schema.json",
+  "title": "SurrogateRun",
+  "description": "A FAMILY-WISE surrogate run — the methodological hero, and the decisive 2026-06 audit upgrade. For a SEARCHED grid the correct null is the family-wise MAX-statistic: draw a surrogate panel, rebuild EVERY config on it, take the grid-MAXIMUM score per surrogate, and compare the REAL grid-best against that distribution of grid-maxima (surr95). A single-best-config p is wrong and overstates significance: several earlier PASS leads flipped to KILL under the right null (real-best < surr95). This schema records the surrogate method, the grid size, the real grid-best, the surrogate grid-maxima distribution, and the resulting family-wise p.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "surrogateMethod",
+    "familyWise",
+    "gridSize",
+    "iterations",
+    "statistic",
+    "realBest",
+    "surrogateMaxima",
+    "surr95",
+    "placeboP",
+    "pass"
+  ],
+  "properties": {
+    "surrogateMethod": {
+      "type": "string",
+      "enum": [
+        "phase_randomization",
+        "block_bootstrap",
+        "stationary_bootstrap",
+        "cross_sectional_shuffle",
+        "garch_simulation",
+        "bracket_on_surrogate"
+      ],
+      "description": "The null generator, matched to the claim (time-series timing -> phase/block; rotation / lead-lag -> cross-sectional shuffle; vol-clustering -> GARCH; bracket overlays -> bracket-on-surrogate)."
+    },
+    "familyWise": {
+      "type": "boolean",
+      "const": true,
+      "description": "Must be true: a searched grid requires the family-wise MAX-statistic. A single-best-config surrogate is not a valid null for a searched grid."
+    },
+    "gridSize": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of distinct configs rebuilt on EACH surrogate draw (the family). The honest N for the max-statistic — not 1."
+    },
+    "iterations": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of surrogate panels drawn."
+    },
+    "statistic": {
+      "type": "string",
+      "enum": ["compoundReturn", "mean", "sharpe"],
+      "description": "Statistic the surrogate null is scored on. Defaults to sharpe for structure/temporal edges."
+    },
+    "realBest": {
+      "type": "number",
+      "description": "The REAL grid-best score (the selected config's score on real data)."
+    },
+    "surrogateMaxima": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The grid-MAXIMUM score from each surrogate draw (one per iteration). The family-wise null distribution.",
+      "items": { "type": "number" }
+    },
+    "surrogateMean": {
+      "type": "number",
+      "description": "Mean of the surrogate grid-maxima."
+    },
+    "surr95": {
+      "type": "number",
+      "description": "95th percentile of the surrogate grid-maxima. The bar the real grid-best must beat. If realBest < surr95 the lead fails the right null."
+    },
+    "placeboP": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Family-wise p = fraction of surrogate grid-maxima >= realBest (with a +1/+1 small-sample correction). Must be below the bar (default 0.05) to pass."
+    },
+    "pass": {
+      "type": "boolean",
+      "description": "True iff realBest beats the family-wise null (realBest > surr95 and placeboP < bar). A PASS proves the structure/sign is non-random; it does NOT prove tradable magnitude."
+    },
+    "seed": {
+      "type": ["string", "integer"],
+      "description": "Seed for the surrogate draws, so the run is deterministic and reproducible."
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kimlage/crypto-edge-search/schemas/gate.schema.json",
+  "title": "Gate",
+  "description": "A single gate's outcome inside the gauntlet. Gates run in a fixed binding order; the first FAIL is the binding gate. PASS = the gate's standard was met. FAIL = the standard was not met. SKIP = the gate was not applicable / inputs absent (counts as neither pass nor fail). ADVISORY = the gate ran and is reported but is non-binding (e.g. a candidate-vs-zero PBO is structurally unfailable, so it is advisory and never counted as a confident PASS).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "status", "reason"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "enum": [
+        "net_of_cost",
+        "baselines",
+        "deflated_sharpe",
+        "block_bootstrap",
+        "cpcv_pbo",
+        "haircut",
+        "surrogate",
+        "holdout"
+      ],
+      "description": "The canonical gate id, one of the eight committed gauntlet gates."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "SKIP", "ADVISORY"],
+      "description": "The gate status."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One-line human reason: why it passed, what killed it, or why it was skipped / advisory."
+    },
+    "binding": {
+      "type": "boolean",
+      "description": "True if this gate is the binding constraint (the first FAIL). At most one gate in a verdict is binding."
+    },
+    "detail": {
+      "type": "object",
+      "description": "Gate-specific numeric/string/boolean evidence (e.g. dsrProbability, pboValue, placeboP, surr95). Values are scalars for an honest, machine-checkable evidence record.",
+      "additionalProperties": {
+        "type": ["number", "string", "boolean", "null"]
+      }
+    }
+  }
+}

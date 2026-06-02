@@ -8,7 +8,10 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "schema:validate": "tsx scripts/validate-schemas.ts",
+    "refs:check": "tsx scripts/refs-check.ts",
+    "test:property": "vitest run test/property"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
