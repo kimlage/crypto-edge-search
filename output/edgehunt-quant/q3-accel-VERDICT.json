@@ -1,0 +1,28 @@
+{
+  "item": "Q3-ACCEL / D4-M6 Acceleration momentum (momentum-of-momentum)",
+  "design": "Cross-sectional 2nd-derivative of momentum across 30-coin weekly panel, dollar-neutral EW long-top/short-bottom, beta-neutral (BTC beta verified ~0 and hedged). Net of 4bps/side taker.",
+  "null": "cross-sectional shuffle (permute signal->coin map per week; preserves realized return cross-section + dollar-neutrality)",
+  "strengthening_tried": [
+    "DIFF (ROC-of-ROC) and SLOPE (short-minus-long drift) acceleration encodings",
+    "cross-sectional RESIDUAL acceleration (accel orthogonalized vs momentum each week) = THE separable-premium test",
+    "decelerating-winners-reverse book",
+    "momentum x acceleration double-sort (agreement) book",
+    "K in {3,4,5}, multiple window pairs"
+  ],
+  "honest_N": {"binding_search": 96, "conservative_upper_bound_no_dedup": 138},
+  "headline": {
+    "best_inSample_netSharpeAnn": 1.291,
+    "best_variant": "doubleSort (mostly momentum)",
+    "best_btc_beta": -0.19,
+    "best_holdout_OOS_Sharpe": -0.27,
+    "residAccel_inSample_netSharpeAnn": 1.177,
+    "residAccel_holdout_OOS_Sharpe": -0.0002,
+    "residAccel_DSR_p_at_N96": 0.528,
+    "matched_control_best_plain_momentum_Sharpe": 1.162,
+    "XS_shuffle_p": 0.004
+  },
+  "binding_gate": "deflated_sharpe (also fails Harvey-Liu haircut and consume-once holdout)",
+  "interpretation": "In-sample Sharpes up to 1.3 are entirely a multiple-testing artifact across ~96-138 configs (expected-max Sharpe under the null absorbs them; DSR p ~0.51). The XS-shuffle passes because SOME real cross-sectional dispersion is ranked, but the orthogonality test is decisive: acceleration residualized vs momentum has EXACTLY ZERO out-of-sample return (holdout Sharpe -0.0002). Acceleration adds no separable premium over plain momentum (itself already KILLed as T1/TA2); differencing amplified noise and raised the DSR bar exactly as the BACKLOG prior predicted. Decelerating-winners-reverse is outright negative in-sample.",
+  "verdict": "KILL",
+  "confidence": "high"
+}

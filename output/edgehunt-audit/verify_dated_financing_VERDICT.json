@@ -1,0 +1,44 @@
+{
+  "task": "Independent verification of HIGH/MED concerns from the DEEPEN batch audit",
+  "concerns_in_scope": [
+    {
+      "hypothesis": "dated",
+      "audit_severity": "med",
+      "type": "cost/financing-leak + persistence-gap",
+      "verdict": "CONFIRMED",
+      "summary": "RF opportunity-cost is charged on 1 unit of capital while the vol-targeted position is ~2.9x levered and the borrow spread IS charged on the full levered notional. The full RF cost of carrying lev units of long spot (own-capital opp-cost + borrowed-cash interest) is lev*RF; the deepen excess branch charges only 1*RF, under-charging by (lev-1)*RF.",
+      "independent_reproduction": {
+        "avgLeverage": 2.8955,
+        "leaked_RFon1unit": { "sharpeAnnual": 1.6132, "annReturnPct": 12.45, "monthlyAt100k": 1037, "tStat": 2.528, "dsrAtHonestN32": 0.703 },
+        "corrected_RFonLevered": { "sharpeAnnual": 0.7191, "annReturnPct": 5.56, "monthlyAt100k": 463, "tStat": 1.127, "dsrAtHonestN32": 0.171 },
+        "sharpe_collapse_factor": 2.24,
+        "method": "self-contained re-derivation from raw output/dated-futures/*_quarterly_basis.json, three financing models"
+      },
+      "audit_script_reproduction": {
+        "leaked": { "sharpeAnnual": 1.6404, "monthlyAt100k": 1062, "dsrAtHonestN": 0.577 },
+        "corrected": { "sharpeAnnual": 0.6904, "monthlyAt100k": 447, "dsrAtHonestN": 0.132 },
+        "note": "dated_financing_leak_check.ts re-run reproduces its committed JSON exactly"
+      },
+      "smoking_gun_internal_contradiction": {
+        "committed_primaryExcessOfRF_annReturnPct": 12.613,
+        "committed_primaryAbsoluteReturn_annReturnPct": 8.032,
+        "problem": "Excess-of-RF return (12.61%) EXCEEDS absolute return (8.03%) by 4.58%/yr. This is economically impossible for a correctly-computed excess return (excess = absolute - benchmark <= absolute). It can only occur because the excess branch charges RF on 1 unit while the absolute branch charges RF on lev. The report's own two numbers prove the leak."
+      },
+      "corrected_verdict_it_should_be": "Still PROMISING (verdict label unchanged), but headline economics ~2x lower: Sharpe ~0.7 (not 1.64), ~$450-475/mo (not ~$1051), DSR@honestN ~0.13-0.17 (FAIL). The deepen SUMMARY.md states exactly this; only the persisted dated_futures_carry_deepen_report.json still asserts the leaked PROMISING headline (verdict PROMISING, Sharpe 1.639, $1051/mo) with no mention of the correction.",
+      "materiality": "MEDIUM. The leak does NOT flip the scientific verdict: even the leaked artifact FAILS its binding gate deflatedSharpe_excess (dprob 0.719 < threshold) and Harvey-Liu (t 2.57 < 3.16), so it caps at PROMISING either way. The harm is a ~2x economics OVERSTATEMENT that survives only in the committed JSON; the SUMMARY narrative is correct."
+    }
+  ],
+  "skipped_low_severity": [
+    {
+      "hypothesis": "reserve",
+      "audit_severity": "low",
+      "spot_check": "reserve_honest_n_check.ts reproduces: prereg surrogate p=0.135 at N=1 deflates to ~1.0 across N=12 grid -> FAILS multiple testing -> correctly capped at PROMISING. Conservative; verdict unaffected. Skipped per HIGH/MED-only mandate, but confirmed not under-rated."
+    }
+  ],
+  "batch_trust": "MINOR-ISSUES (agrees with the audit). The four scientific verdicts (donchian PROMISING, vrp KILL, dated downgraded-within-PROMISING, reserve PROMISING) are methodologically correct. The one material finding is a documentation/persistence gap: the dated financing-leak correction (a real ~2x economics overstatement) was applied only in SUMMARY prose while the committed result JSON still reports the leaked PROMISING headline.",
+  "artifacts": [
+    "scripts/edgehunt-audit/verify_dated_financing.ts",
+    "output/edgehunt-audit/verify_dated_financing.json",
+    "output/edgehunt-audit/verify_dated_financing_VERDICT.json"
+  ]
+}

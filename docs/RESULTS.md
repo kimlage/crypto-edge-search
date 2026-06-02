@@ -1,617 +1,526 @@
-# RESULTS — The Crypto Edge-Search Program (canonical record)
+# RESULTS — the crypto edge-search ledger (canonical record)
 
 > **What this is.** The single, canonical, English-language record of every hypothesis
-> tested in this project's systematic search for a tradeable crypto edge. **35 distinct
-> hypotheses** were run at full rigor on real public market data (cloud spend **$0**).
-> **33 were KILLED.** **2 are sub-risk-free carry "survivors"** that pass the full-sample
-> gates but are **sub-risk-free in the current (2025–2026) regime** — they are regime
-> trades, not a business.
+> this project has put through its anti-overfitting gauntlet in a systematic, $0,
+> reproducible search for a tradeable crypto edge. **~111 distinct hypotheses** have now
+> been tested at full statistical rigor on free public market data (cloud/data spend
+> **$0**), across three eras: (1) the **prior rounds** (~35: GA/TA/momentum/rotation/
+> event/carry/on-chain POC), (2) the **2026-06 domain campaign** (~58 across eight
+> domains), and (3) the **new $0 backlog** (18: quant/regime/vol + on-chain/price-action).
 >
-> **The durable asset is the methodology, not a strategy.** A committed anti-overfitting
-> gauntlet (honest trial-count `N`, surrogate/placebo controls, and a consume-once
-> holdout) refused to promote 33 pretty in-sample Sharpes that would otherwise have
-> looked like wins. That refusal is the result.
+> **Final, audited verdict: 0 clean SURVIVE. 2 weak PROMISING. Everything else KILL.**
+> Nothing is deployable. The two PROMISING leads are real *structures* that never crossed
+> the PROMISING→SURVIVE boundary — i.e. their realized mean is **not** positive-with-
+> significance at honest trial-count `N` on data the search never saw. Read their full
+> caveats in §1 before quoting any number from them.
 >
-> **Honest framing.** This is a *negative-results + rigorous-methodology* contribution.
-> Carry is **not** "profitable" today; it is real but has decayed below the risk-free
-> rate in the current regime. Nothing here is investment advice.
+> **The durable asset is the methodology, not a strategy.** A committed, fixed-order
+> gauntlet — net-of-cost, matched-exposure baselines, Deflated Sharpe at *honest* `N`,
+> block-bootstrap CI, CPCV/PBO, the Harvey-Liu haircut, the *right* surrogate null
+> (including a **family-wise MAX-statistic** for searched grids), and a consume-once
+> holdout — refused to promote dozens of pretty in-sample Sharpes that would otherwise have
+> read as wins. That refusal *is* the result. This is a falsification lab: we try to
+> *break* every technique, and we publish what survives **and** what dies.
 >
-> **Provenance.** Every number traces to the chronological lab log
-> `docs/EVOLUTION_TRAINING_LOG.md` (the raw provenance, in Portuguese) and to the
-> machine-readable JSON outputs under `output/`. The methodology is documented in
-> `docs/VALIDATION_HARNESS.md`; the durable synthesis and full academic bibliography in
-> `docs/EDGE_SEARCH_SYNTHESIS.md`.
+> **Honest framing.** This is a negative-results + rigorous-methodology contribution.
+> Nothing here is "profitable" today. The two prior carry "survivors" are real but
+> **sub-risk-free** in the current (2025–2026) regime; they are regime trades, not a
+> business. Nothing here is investment advice.
 >
-> **License: MIT (see [`../LICENSE`](../LICENSE)).**
+> **Provenance.** Every number below traces to a machine-readable artifact under `output/`.
+> The 2026-06 campaign roll-up is `docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md`; per-domain
+> syntheses are `output/edgehunt-*/SUMMARY.md`; the two-layer audit that flipped three
+> earlier PROMISINGs to KILL is `output/edgehunt-audit/SUMMARY.md` +
+> `output/edgehunt-audit-nb/SUMMARY.md`; the adversarial-verification deepening is
+> `output/edgehunt-deepen/SUMMARY.md`. The full backlog of hypotheses (with the right null
+> and honest prior for each) is `docs/BACKLOG.md`; the raw chronological lab log (the
+> Portuguese provenance for the prior rounds) is `docs/EVOLUTION_TRAINING_LOG.md`. The
+> gauntlet rules are codified in `AGENTS.md`.
+>
+> **License: MIT.**
 
 ---
 
-## 1. Master table — all 35 hypotheses
+## 0. The headline, in one screen
 
-Columns: **ID** · **Name** · **Class** (prediction / carry / rotation / event /
-structural / adaptive / TA-timing) · **Data used** · **Honest N** (the true number of
-distinct configs searched, fed to the Deflated-Sharpe and haircut gates) · **Binding
-KILL gate** (the first gate that failed) or **SURVIVOR\*** · **Key out-of-sample
-number** (the consume-once holdout return/Sharpe, or — for survivors — the full-sample
-net APR).
+| | Count | What it means |
+|---|---:|---|
+| **Hypotheses tested (all eras, all $0)** | **~111** | ~35 prior rounds + 58 the 2026-06 campaign + 18 the new backlog |
+| **Clean SURVIVE** | **0** | nothing cleared the full gauntlet on unseen data |
+| **PROMISING (weak, caveated)** | **2** | XS Donchian L/S; dated-futures basis carry (unlevered-thin only) |
+| **KILL** | **~109** | every other hypothesis, net of realistic cost |
+| **Audit flips (PROMISING → KILL)** | **3** | reserve-depletion, Q9 low-vol, O3 fee-NVT — all on the *same* defect |
 
-| ID | Name | Class | Data used | Honest N | Binding gate (or SURVIVOR\*) | Key out-of-sample number |
-|---|---|---|---|---|---|---|
-| **E1** | Cross-section weekly momentum | prediction | 30 USDT pairs, Binance daily 2020–2026 | 32 | KILL — holdout + baselines (loses to random-lottery) | holdout **−9.59% net**; DSR=0.041 |
-| **E2** | **Perp funding carry** (delta-neutral: long spot / short perp) | **carry** | 8 majors, Binance 8h funding, 3y | — | **SURVIVOR\*** (passes all gates on 3y sample) | full-sample **net ~5.84% APR**; sub-RF today (§4) |
-| **E3** | BTC time-series trend (daily / weekly) | prediction | BTC full local history | 36 | KILL — Deflated Sharpe + baselines | DSR **0.886** (daily) / **0.593** (weekly) < 0.95; returns = long-beta |
-| **T1** | Cross-section reversal | prediction | 30-coin panel | — | KILL — holdout | holdout **−32%** |
-| **T2** | CS momentum, market-neutral + vol-target | prediction | 30-coin panel | 4 | KILL — Deflated Sharpe (loses to random-lottery) | in-sample +27.9% vs universe −51.6%, but DSR(N=4) fails |
-| **T3** | Vol-target BTC (Moreira–Muir) | prediction | BTC history | — | KILL — holdout | holdout **net −11%** |
-| **T4** | Diversified TSMOM + vol-target | prediction | multi-asset panel | — | KILL — holdout | holdout **−18%**; gross only +2.8% / 2y |
-| **T5** | Regime-gated trend | prediction | BTC / majors | — | KILL — holdout (loses to B&H) | holdout **+1.3%** vs buy-and-hold **+15.3%** |
-| **T6** | Seasonality / turn-of-month | prediction | majors daily | — | KILL — holdout (data-mining trap) | holdout **−32%** |
-| **T7** | Funding as contrarian predictor | prediction | funding panel | — | KILL — dead in-sample | holdout **APR −28%** |
-| **T8** | **Dated-futures basis / cash-and-carry** | **carry** | Binance quarterly delivery futures | 30 | **SURVIVOR\*** (passes all gates) | holdout **net APR +14.6% → +7.31%** post-50% haircut; sub-RF / compressing (§4) |
-| **T9** | ETH/BTC relative value | prediction | ETH, BTC | — | KILL — holdout | holdout **−48%** |
-| **T10** | Cointegration pairs | prediction | majors panel | 420 | KILL — Deflated Sharpe + MinBTL | gross +52.8% but path-fragile; **DSR(N=420)=0.029**, MinBTL fails |
-| **TA1** | Indicators to TIME the carry (ON/OFF) | TA-timing | funding / premium / basis-slope, 3y | 69 | KILL — holdout (oracle ceiling) | passes all gates in-sample (p=5.8e-7); holdout **100% OFF, ties RF**; **oracle bound only +0.52%/yr** |
-| **TA2** | Slow vol-targeted TSMOM (Moskowitz–Ooi–Pedersen) | prediction | 30-coin panel, monthly | 24 | KILL — net-of-cost / holdout | vault Sharpe **−0.076** (−4.74%); 12m lookback is *worst* in crypto |
-| **TA3** | Microstructure / forced-flow 15m BTC (224 variants) | prediction | BTC 15m, 306k bars, 8.75y + funding/OI | 224 | KILL — Deflated Sharpe + holdout | cost kills all 15m/30m; survivor dies **DSR(N=224, p=0.21)** + holdout **−0.98** |
-| **TA4** | Classic indicators (RSI/MACD/BB/MA/ADX/Donchian/Stoch) | prediction | 8 majors daily | 94 | KILL — baselines + holdout | **0/94 beat buy-and-hold**; best flips to holdout Sharpe **−1.01** |
-| **WF-A** | Adaptive walk-forward, premise test (5 families) | adaptive | BTC/ETH/SOL/BNB daily | meta-grid | KILL — net-of-cost (surrogate clean) | trailing-best beats random next window only **50.7%**; OOS net −0.0041/bar |
-| **WF-B** | Adaptive WF on majors (Bollinger/Donchian/MA-cross) | adaptive | majors daily | 27 | KILL — **surrogate** | real 0.0050 ≤ surrogate 0.0085, placeboP=0.59 (optimization artifact) |
-| **WF-C** | Adaptive WF on 15m BTC | adaptive | BTC 15m, 306k bars | meta-grid | KILL — **surrogate (decisive)** | real **−0.063** vs phase +0.129 / block +0.132; 80 surrogates beat real, placeboP=0.63 |
-| **WF-D** | Adaptivity ON THE REAL EDGE (carry threshold) | adaptive-carry | funding, 3y | meta-grid | KILL — edge-vs-RF (oracle ceiling) | tracks perfectly (autocorr 0.97) but **oracle only +0.53%/yr** left to harvest |
-| **R2** | Illiquid corners / small-caps | prediction | 20 non-top-20 names, Binance 6y, real small-cap cost | 1640 | KILL — **surrogate** | champion (CS-mom 7d, search Sharpe 0.738) **worse than noise** (surr mean 1.59 / max 3.14, placeboP=0.90); holdout **−58.5%** |
-| **R3** | GA evolves trading RULES (genetic programming) | prediction | 6 majors, daily perp closes, 3y | 5613 | KILL — **surrogate (placeboP=1.000)** | train +0.088 → holdout **−0.097**; GA on pure noise beats real champion (mean +0.032, max +0.110) |
-| **R4** | GA on STRUCTURAL+technical carry rules | structural | funding/premium/basis primitives, 3y | 2823 | KILL — edge-vs-RF + surrogate | in-sample +3.15%/yr → holdout **−0.015%/yr** (collapses to flat RF); oracle ceiling **+0.51%/yr**; placeboP=0.721 |
-| **C1** | Capital rotation as lead-lag flow ("ride the relay") | rotation | 43-coin tiered panel + volume, 6y | 108 | KILL — **surrogate (cross-sectional shuffle)** | holdout **−39.9%**; PBO **96.4%**; lead-lag reproduced by x-shuffle (p_LL=1.000) |
-| **C2** | Dominance cycle (is there a rotation PERIOD?) | rotation | 30 coins, weekly, 6y | 16 | KILL — Deflated Sharpe | dominance is persistent not cyclic; vault **−52.7%** (Sharpe −1.53), placeboP=1.000 |
-| **C3** | Joint market-state / breadth overlay | rotation | 30-coin panel + volume, 6y | 32 | KILL — baselines (loses to linear) | holdout **−19.56%**; ties equal-weight; the residual timing edge is *aggregate vol*, not breadth |
-| **C4** | Event / listing forced-flow | event | 641 real Binance listing events (incl. delisted), 2019–2026 | 32 | KILL — **surrogate** | real "listing dump" (CAR −5.3% by day 20) but block-boot reproduces 72%; holdout short **−100% compound** |
-| **OC1** | On-chain distribution-pressure overlay (exchange-flow + MVRV) | on-chain / flow | Coin Metrics Community exchange in/out flow (native units) + MVRV, BTC+ETH daily ~3,948 bars | 36 | KILL — **baselines** + **surrogate (placeboP=0.482)** | long/flat overlay loses to B&H + random-lottery + equal-weight; phase/block surrogates reproduce the "edge" ~48% of the time; holdout flat (Sharpe 0.003) |
-| **NF1** | Support/resistance & price levels (pivots, swing H/L, round #s, Fibonacci, Bollinger) | TA / price-action | BTC 15m + 8 majors daily OHLC | 168 | KILL — **surrogate (placeboP=0.609)** | every winner is a *breakout riding trend*; destroy the levels (phase/block/x-shuffle) and the edge is unchanged — levels are decoration on filtered beta |
-| **NF2** | Target + Stop-Loss / professional brackets (path-dependent, intrabar TP/SL) | exit management | BTC 15m HIGH/LOW path + majors daily OHLC | 25 | KILL — **net-of-cost (0/47 pass)** | TP/SL **reshapes** the P&L distribution (win-rate 33→65%, skew −0.64→+2.22) but does **not** move expectancy (~0); bracketed real ≈ bracketed noise |
-| **NF3** | Confluence of rare pre-registered signals (≥k of 6 agree) | confluence / low-N | funding + basis + price + cross-section, BTC daily | 8 | KILL — baselines (loses to random-lottery) | pre-registration genuinely lowers the bar (expMaxSharpe 0.049) but **no k is both rare AND edgeful**; holdout **−0.090** |
-| **NA** | Monthly options-expiry / "max-pain pin" | calendar / event | BTC 15m→4h + derived expiry calendar | 12 | KILL — baselines (loses to buy-and-hold) | the "max-pain pin / pre-expiry dump" is **folklore**: the real pre-weak/post-strong drift is just long-BTC beta; surrogate p=0.77; holdout **−0.010** |
-| **NB** | On-chain valuation suite (exchange-reserve trend, active-address momentum, NVT) | on-chain / valuation | Coin Metrics Community, BTC+ETH daily | 192 | KILL — baselines | on-chain valuation is **coincident, not predictive**; vol-targeting just parks you in cash (mean exposure 0.22); loses to B&H + equal-weight + random-lottery |
-| **NC** | Cross-asset macro regime (BTC vs DXY/gold/SPX risk-on/off) | macro / regime | stooq free macro + BTC daily | 90 | KILL — Deflated Sharpe (PBO 0.964) | macro conditioning is **coincident beta** — BTC/SPX/$ share the same global risk tape; the small bump is de-risking, not timing |
-| **ND** | Intraday/weekly calendar (weekend, day-of-week, sessions) | seasonality / calendar | BTC 15m, 306k bars, 8.75y | 28 | KILL — Deflated Sharpe | no calendar edge — a data-mining mirage like T6; best **+447% in-sample → negative holdout**; surrogate p=0.752 |
-| **—** | BTC-15m direction (retired legacy GA target) | prediction | BTC 15m | 659 evals | KILL (retired as an alpha generator) | best **+2.2%** < luck-of-N expectation **+11.76%**; mean negative |
-
-**\*** The two survivors are **structural carry**, not prediction. Both passed the full
-anti-overfitting gauntlet on the 3-year full sample, but both have **decayed below the
-risk-free rate** in the current regime — see **§4**. A dash (`—`) in *Honest N* means the
-hypothesis was a single pre-specified rule (no config grid searched), so deflation is by
-construction; the holdout still governs the verdict.
-
-**Canonical totals: 35 hypotheses tested · 33 KILL · 2 sub-risk-free carry survivors (both
-sub-RF now).** This is the project's authoritative tally (lab log, 28th-test entry). The 2
-survivors are **E2** (perp funding carry) and **T8** (dated-futures basis). The 33 kills
-are every other entry in the table — the prediction / TA / rotation / event / adaptive /
-on-chain hypotheses (E1, E3, T1–T7, T9, T10, TA1–TA4, WF-A–D, R2–R4, C1–C4, **OC1**)
-together with the **retired legacy BTC-15m direction target**, which is counted among the
-kills as the program's origin point (it is what the whole search replaced).
-
-> **Note on the count.** The master table lists every distinct identifier the program
-> touched, so a reader can audit each one independently. Counting the two carry survivors
-> (E2, T8) inside their E/T ranges and the retired legacy target as one kill, the program
-> total is **35 hypotheses: 33 KILL + 2 survivors.** (The Round-1–4 synthesis,
-> `docs/EDGE_SEARCH_SYNTHESIS.md`, reports the running total of 23 at the end of Round 4;
-> Rounds 5–6 added R2–R4 and C1–C4 to reach 27, and the 28th-test on-chain
-> distribution-pressure POC (**OC1**) added the 28th = the 26th KILL.)
+**The one sentence.** A right-null surrogate **pass** proves a signal's *structure/sign is
+non-random*; it does **not** prove the realized mean is positive-with-significance at honest
+`N` on unseen data. That gap is exactly the PROMISING/SURVIVE boundary, and **no lead in any
+era crossed it.** The two prior carry survivors (perp funding, dated-futures basis) remain
+sub-risk-free regime trades. Nothing is deployable; the deliverable is the methodology plus
+this body of negative evidence.
 
 ---
 
-## 2. Reading the gates (how a "KILL" is decided)
+## 1. The two weak PROMISING leads (full caveats — read before quoting)
 
-Every hypothesis runs through the same fixed-order gauntlet (documented in
-`docs/VALIDATION_HARNESS.md`). The **first failing gate is the binding gate** reported
-above. Cheap economic gates run first so a gross-only or baseline-losing signal dies
-immediately:
+Both passed the *right* surrogate null (so the structure is real), beat their baselines, and
+survived a consume-once holdout in *sign* — but each trips a magnitude / multiple-testing
+gate on unseen data, which is why neither is SURVIVE and neither is deployable. Both carry a
+**financing caveat**: the campaign's harness charged zero borrow on the short/levered
+notional (a systemic leak; see §4), so the OOS economics below are reported *after* charging
+it, as a range.
 
-1. **`net_of_cost`** — positive *net* of realistic cost (taker ≈ 4 bps/side perp ⇒ 8 bps
-   round-trip, charged on every position change). A gross-only signal is an automatic KILL.
-2. **`baselines`** — must beat buy-and-hold + equal-weight + random-lottery + a one-layer
-   linear model, net of cost.
-3. **`deflated_sharpe`** — Deflated Sharpe probability ≥ 0.95 **at the honest `N`** (the
-   true number of distinct configs, not 1, not a per-family length).
-4. **`cpcv_pbo`** — Probability of Backtest Overfitting < 0.5 over combinatorial splits.
-5. **`haircut`** — Sharpe survives the Harvey-Liu multiple-testing haircut.
-6. **`surrogate`** — real edge beats a phase-randomized + block-bootstrap (+ cross-sectional
-   shuffle, for rotation/lead-lag) null. *The methodological hero (§5).*
-7. **`holdout`** — out-of-sample slice scored **exactly once** (consume-once vault).
+### Lead 1 — Cross-sectional Donchian channel-position long-short (beta-neutral)
 
-> **Change the target, never the gates.** An empty parent pool under this gauntlet means
-> the target lacks edge net of cost — not that the gauntlet is too strict.
+Rank a 30-coin panel by each coin's position within its N-day high-low channel (breakout
+strength); go long high-position, short low-position, dollar-neutral, continuous z-scored
+weights. *(`output/edgehunt-requeue/SUMMARY.md`; deepened in `output/edgehunt-deepen/SUMMARY.md`.)*
 
----
+- **What is real.** Genuinely **beta-neutral** (betas on {BTC, equal-weight} ≈ [−0.09, +0.08],
+  alpha t ≈ 3.4–3.6 in-sample), so it is not timed long-beta. It **beats every baseline**
+  (B&H, equal-weight-long, random dollar-neutral) and **passes the right null** — the
+  cross-sectional-shuffle placebo at **p = 0.009** (the shuffled book is ≈ −1.1 Sharpe).
+  The tilt is positive at **every** channel length N ∈ [20, 200] and in **every** holdout
+  quarter. Harvey-Liu adjP = 0.0099; PBO = 0.000; per-config DSR@N=1 ≈ 0.999.
+- **Why it is *not* SURVIVE.** On the **388-row consume-once holdout the magnitude is
+  statistically indistinguishable from zero**: DSR@N=1 = **0.79** (< 0.95), Newey-West
+  t(mean) = **0.96**, block-bootstrap mean CI-lower < 0. The full grid carries an honest
+  **N = 72** search penalty that the per-config DSR ignores. The 30-coin panel is
+  **survivorship-biased** (LUNA / FTT absent), so even the holdout is an upper bound — a
+  −90% delisting shock flips the holdout negative in **17%** of draws.
+- **The financing caveat.** The first pass cited a beta-hedge gate of 0.318, which the
+  deepening showed was an **in-sample over-hedge artifact** (honest-OOS hedge β = 0.78).
+  Charging borrow on the continuous ~1.0× short notional erodes the OOS holdout Sharpe from
+  ~0.53 toward 0 / negative under expensive alt borrow (DOGE/AVAX/INJ…). **Report the OOS
+  Sharpe as a range ~0.3–0.5, never a point.**
+- **Money (canonical N=120 z-score-HIGH config, gross-2×, full-sample, illustrative only).**
+  ~4.1%/mo gross → ~$412/mo @ $10k, ~$4,116/mo @ $100k; the deepening's corrected,
+  financing-aware figure is **~$2,298/mo @ $100k**. *These are in-sample/full-history upper
+  bounds — the honest OOS magnitude is ~0.* Trade the canonical, not the grid-best (1.69),
+  which DSR correctly haircuts.
+- **Verdict: PROMISING.** Next step is **not** more backtesting: pre-register the canonical
+  config, rebuild the panel point-in-time / survivorship-free, and track the beta-hedged
+  holdout Sharpe live (graduates only if it stabilizes above ~0.4 hedged; dies if XS-momentum
+  decay continues).
 
-## 3. Narrative — by round and theme
+### Lead 2 — Dated-futures basis cash-and-carry (BTC+ETH), **unlevered-thin only**
 
-The program ran in six rounds over a single intensive cycle (lab log entries dated
-2026-05-31), plus a follow-up on-chain POC (Round 7 below, the 28th test). Each round
-attacked a distinct economic prior. The recurring structure of
-each kill — *pretty in-sample Sharpe → passes the selection gates → dies at baselines +
-consume-once holdout* — is summarized in §5.
+Short the contango quarterly future + long spot, hold to convergence; harvest the
+term-structure premium *beyond* perp funding. *(`scripts/edgehunt/dated_futures_carry.ts`,
+`output/edgehunt/SUMMARY.md`; corrected in `output/edgehunt-deepen/SUMMARY.md` and
+`output/edgehunt-audit/SUMMARY.md`.)*
 
-### Round 0 — Origin: the retired GA alpha engine (a rigorous TRUE NEGATIVE)
+- **The headline was a financing-leak artifact.** The script charged the risk-free rate on
+  **1 unit** of cash while the book is **~2.95×-levered**, and charged **zero** borrow on the
+  levered notional. Correcting it collapses the *levered* series from Sharpe 1.64 → **0.69**,
+  ~$1,062/mo → **~$447/mo**, DSR@honest-N 0.58 → **0.13** (and it fails the 0.95 gate at *any*
+  RF charge ≥ 0.75%/yr). The original "+12.6%/yr, Sharpe 2.3, ~$640–1,051/mo" figures should
+  **not** be quoted.
+- **What honestly survives.** Only a **thin, unlevered, market-neutral excess**: **~4.9%/yr,
+  t = 2.41, DSR ≈ 0.60, ~$475/mo @ $100k**. There is a genuine term-structure premium beyond
+  perp funding (daily alpha controlling for perp carry was t = 3.25 before the leak
+  correction), but at honest, unlevered economics it is **sub-every-multiple-testing-bar** and
+  **regime-fragile** (sub-RF in 2023; the 2021 cohort was −37%).
+- **Verdict: PROMISING (unlevered-thin).** A real but sub-risk-free regime carry, not a
+  business. Next: honest financing on a vol-targeted spread, live basis + borrow data, and an
+  explicit stress of the thin-contango regime.
 
-**Why this matters.** Before any of the hypothesis tests above, the project was a different
-thing entirely: a **genetic-algorithm engine evolving populations of neural "DNAs"** to predict
-**BTC 15-minute direction**. The pivot away from that engine — to the theory-first,
-hypothesis-by-hypothesis gauntlet documented here — was not a whim; it was forced by a clean,
-quantified negative result. That negative is the program's **origin point**, and it strengthens
-the negative-results story rather than detracting from it.
-
-**The conclusion (preserved).** An honest population audit
-(`scripts/audit-population-significance.ts`) returned the verdict **does not survive**: across
-**659 evaluations**, the best single DNA returned **+2.2%**, which is *weaker* than the
-**+11.76% expected-max** of that many pure-noise strategies (the luck-of-N benchmark — the best
-of 659 random strategies is *expected* to look better than +2.2% by selection alone), and the
-population **mean was negative**. In other words, the GA's best result is what you would get —
-and worse than what you would expect to get — by drawing 659 random strategies and keeping the
-luckiest. That is a textbook **true negative**: the engine did not find edge, and we can show it
-did not find edge. The realistic probability of single-pair 15-minute direction prediction
-becoming a profitable method was estimated at ~1–2% (effectively zero; an earlier legacy C#
-attempt at the same target had also failed).
-
-**What it triggered.** This true negative is exactly what motivated the **pivot to theory-first
-hypothesis testing** — *change the target, never the gates* — and the construction of the
-committed anti-overfitting harness that then killed 25 further hypotheses (and now 29, with
-OC1). The GA-over-neural-DNAs engine itself is **retired as an alpha generator**; its source is
-**preserved/archived in the repository for provenance, not maintained or recommended for use**.
-The durable win was never the engine — it was retiring a dead target and keeping the rigor.
-*(Log: 2026-05-31 "Strategic Decision" entry. The later Round-5 R3 result independently confirms
-the same lesson from the other direction: a genetic program *is* the definitive overfitter, and
-the surrogate control catches it every time.)*
-
-### Round 1 — Theory-first reorientation (E1–E3) and the wide battery (T1–T10)
-
-Three theory-first experiments (no ML), on real free-API data, through the committed
-gates + a one-shot consume-once holdout.
-
-- **E1 — cross-section weekly momentum** (Jegadeesh–Titman). The pretty in-sample result
-  is a survivorship + long-bull artifact. **KILL:** holdout 2024–2026 **−9.59% net**, DSR
-  0.041, MinBTL fails, haircut 0, loses to random-lottery. *(`output/funding/*`.)*
-- **E3 — BTC time-series trend** (daily/weekly). The large returns are simply long
-  exposure to the bull (buy-and-hold with less drawdown). Deflated by the true N=36:
-  **DSR 0.886 (daily) / 0.593 (weekly) < 0.95**. Daily does not beat B&H on the holdout;
-  weekly beats on the holdout (+38.5% vs +11.1%) but fails baselines + DSR in-sample. **KILL.**
-- **E2 — perp funding carry** (delta-neutral, structural — not prediction). **The one
-  survivor of Round 1.** A continuously-held diversified book over the 8 majors: gross
-  ~7.55% APR, **net ~5.84% APR** (16 bps round-trip), vol ~0.37%, max drawdown 5.37%, all
-  8 legs net-positive; survives a 50% decay haircut (2.88% APR); post-2024 holdout still
-  positive (+0.91% APR — funding had already compressed). The **dominant risk is
-  counterparty / venue (FTX-style), not the funding signal**: survives a counterparty gap
-  up to ~50% of notional, dies at ~75%. **PROMOTE (modest, with caveats).** Round 2 then
-  re-examined it under real operating frictions (§4).
-
-The wide battery (T1–T10) then stress-tested every remaining standard academic prior.
-**9 of 10 are KILL** (all prediction / trend / relative-value): T1 reversal (holdout −32%),
-T2 market-neutral CS-momentum + vol-target (fixed E1's long-only artifact — +27.9% vs
-universe −51.6% — but DSR(N=4) loses to random-lottery), T3 vol-target BTC (holdout net
-−11%), T4 diversified TSMOM (holdout −18%, gross only +2.8%/2y), T5 regime-gated trend
-(holdout +1.3% vs B&H +15.3%), T6 seasonality (holdout −32%, a data-mining trap), T7
-funding-as-contrarian (dead in-sample, holdout APR −28%), T9 ETH/BTC relative value
-(holdout −48%), T10 cointegration pairs (gross +52.8% but path-fragile, **DSR(N=420)=0.029**,
-MinBTL fails).
-
-- **T8 — dated-futures basis / cash-and-carry** (Binance quarterly delivery). **The second
-  survivor.** Holdout per-contract **net APR +14.6% → +7.31%** after a 50% decay haircut,
-  cross-contract Sharpe 9.17, max drawdown at delivery 0.00%, robust to costs of 28–80 bps,
-  DSR(N=30)=1.0, and a no-hallucination check passes (a null with no convergence yields
-  −0.22% vs real +2.1%, p≈0.000). Basis is locked at entry and converges to zero at
-  delivery — a structurally clean limits-to-arbitrage premium.
-
-**Round-1 conclusion (13 hypotheses: E1–E3 + T1–T10):** 11 prediction strategies dead;
-the only 2 survivors (E2 funding carry, T8 dated basis) are **both structural carry**
-(cash-and-carry / basis convergence = a limits-to-arbitrage premium, BIS WP 1087). The
-edge that survives cost in crypto is **basis/carry, not prediction.**
-
-### Round 2 — Carry, examined honestly (D1–D4): a regime trade, not a business
-
-Four parallel deep-dives on the survivors, all on real public data (Binance reuse +
-fresh Bybit/OKX REST, live depth, open interest), cloud $0. *(`scripts/carry/*`,
-`output/carry/*`.)*
-
-- **D1 — multi-venue surface + cross-venue dispersion.** Gross 3y funding (Binance/Bybit):
-  BTC 7.4/7.8%, ETH 7.7/7.8%, XRP 7.6/9.1%, DOGE 8.2/9.5%, SOL 5.3/6.8%, and **BNB is
-  NEGATIVE** (−2.2/−0.04% — short-carry would *lose*). **Cross-venue dispersion arbitrage
-  is a mirage at taker cost:** Binance↔Bybit funding is 0.66–0.87 correlated; the spread
-  is 0.4–0.9 bps vs a 10–19 bps round-trip cost, so a cost-aware policy fires **0–2× in 3
-  years ≈ 0%/yr**. *(`output/carry/d1-report.json`.)*
-- **D2 — full cost/capital model.** The key insight: funding is earned on the short
-  *notional*, but you immobilize ~1.5–2× the notional (margin + survival buffer), so
-  gross-on-capital is roughly half. Monthly-roll fees (~3.4%/yr of notional) ≈ *all* of
-  current funding. Trailing-12-month funding has collapsed to **3.2–3.5% — below the 4.5%
-  risk-free.** Incremental edge over T-bills is **negative at every tier**:
-  **−$28/mo @ $10k, −$276/mo @ $100k, −$2,822/mo @ $1M** (and across all 40 sensitivity
-  cells). **Minimum viable capital: none up to $5M.** Break-even needs funding ≈ 8.4–9.8% —
-  only seen at the 2024 peak. *(`output/carry/d2_full_cost_model.json`,
-  `output/carry/d2_sensitivity.json`.)*
-- **D3 — tail / survival risk.** Risk is gap-dominated (an FTX-style venue failure), not
-  signal: the worst real negative-funding regime is a shallow 16-day / −1.49% cumulative
-  bleed, and liquidation is manageable on core majors at 3×. Multi-venue does **not** lower
-  the *expected* gap loss (it is linear) but cuts the **tail**: P(ruin) **2%/yr (1 venue) →
-  0.032%/yr (4 venues)**. Using the *non-decayed* 5.84% headline, post-survival edge is
-  +0.82%/yr; **stack the 50% decay haircut and the edge goes negative.**
-  *(`output/carry/d3/d3-tail-survival-results.json`.)*
-- **D4 — capacity + decay.** **Decay is severe and real:** equal-weight 8-major gross
-  funding APR went **2023H2 6.53% → 2024 10.99% (the one-off bull blowout) → 2025 2.55% →
-  2026 YTD −0.05%**. The forward (trailing-12m BTC+ETH) gross is ~**3.35%** — below the
-  risk-free in every cadence. Capacity is ample ($440–518M @ 2% of OI) but irrelevant —
-  there is no edge to scale. **US persons are geo-blocked** from the deep venues, making
-  the economics strictly worse. *(`output/carry/capacity-decay-report.{txt,json}`.)*
-
-**Round-2 verdict (honest):** the "+6–7% APR" headline was true for the *full 3-year
-sample* dominated by the now-fully-reverted 2024 funding blowout. **In today's regime
-carry does not beat the risk-free rate** at any tier after fees + capital efficiency +
-buffer; incremental edge vs T-bills ≈ **−2% to −3.3%/yr**. **Carry is a regime trade**
-(turn it on only when funding is rich, >~8–9%, and rising, as in 2024) — **not an
-always-on business.** Dated basis is structurally cleaner (~7% historical, basis locked
-at entry) but also compresses, is quarterly-lumpy, and carries the same counterparty tail.
-
-### Round 3 — Technical analysis / indicators (TA1–TA4): ~411 variants, 4/4 KILL
-
-The user's prior was that classic indicators could improve the decision. Four
-economically distinct angles, all through the committed gates, realistic cost on every
-trade. *(`scripts/ta-research/*`, `output/ta-research/*`.)*
-
-- **TA1 — indicators to TIME the carry (ON/OFF).** 69 causal gating rules (funding
-  level/momentum, perp-spot premium, basis slope). In-sample, the honest winner
-  *genuinely* beats always-on and RF and passes DSR (p=5.8e-7, N=69), PBO 0.075, all
-  baselines and the haircut — it really does dodge the bad months. **KILL by the holdout:**
-  in 2025-10..2026-05 the gate sits **100% OFF and ties RF** (0% excess). The decisive
-  proof is the **oracle bound**: a gate with *perfect foresight* earns only **+0.52%/yr**
-  over RF on the holdout, because realized funding there is ≈0.36%/yr. **The structural
-  edge decayed below the cost of harvesting it** — not even a clairvoyant timer extracts
-  edge now; the only out-of-sample "gain" from timing is *not trading*.
-- **TA2 — slow vol-targeted TSMOM** (Moskowitz–Ooi–Pedersen, the best academic prior).
-  30-coin panel, monthly rebalance, N=24. In-sample net Sharpe 1.20; **out-of-sample vault
-  −0.076** (−4.74%). The 12-month lookback (the "slowest", best in TradFi) is the *worst*
-  in crypto (2021–22 whipsaw). Turnover is low, so this did not die from cost — trend
-  autocorrelation simply does not persist out-of-sample. **KILL.**
-- **TA3 — microstructure / forced-flow on 15m BTC** (306k bars, 8.75y) + funding/OI. 224
-  variants (4 families × grid × 15m/30m/1h/4h). **Cost annihilates every 15m/30m variant**
-  (net-negative). Only the lowest-frequency (4h vol-breakout) survives cost (net Sharpe
-  1.30), but it dies at **DSR (N=224, p=0.21)** + holdout (−0.98, edge inverts) + Bonferroni
-  (adjP=0.28). A technical signal is a gross-only mirage. **KILL.**
-- **TA4 — classic indicators, definitive** (RSI, MACD, Bollinger, MA-cross, ADX, Donchian,
-  Stochastic), 8 majors daily, N=94. **0 of 94 configs beat buy-and-hold** on net daily
-  mean return. The best (Bollinger breakout) passes DSR (p=0.00025), PBO (0.00) and the
-  haircut — but those gates only certify *"this Sharpe is not luck-of-selection."* It then
-  **dies at the two gates that test real edge**: baselines (loses to B&H, random-lottery,
-  and linear) and the holdout (flips to net Sharpe **−1.01**). Every top config is
-  long/flat — the "edge" is filtered long-beta in a bull, not timing skill. **KILL.**
-
-### Round 4 — Adaptive walk-forward (WF-A–D): the user's premise was *partly right*
-
-The user's sophisticated hypothesis: the market is non-stationary ⇒ the optimal indicator
-config *drifts* ⇒ a fixed parameter decays ⇒ you must **adapt** (re-optimize on a rolling
-walk-forward). Tested with maximal rigor: strict causality (param chosen only with data
-< t, trades the next slice, rolls), four honest benchmarks (buy-and-hold,
-param-frozen-at-first-window, random-param-WF, and a **surrogate/placebo**), cost on every
-switch, honest N = the meta-parameter grid, consume-once holdout. *(`scripts/walkforward/*`,
-`output/walkforward/*`.)*
-
-- **WF-A — direct premise** (daily, 5 families). The optimal param *is* persistent
-  (autocorr lag1 = 0.57, stickiness 0.70) — it does not jump randomly. **But the
-  persistence test kills it:** trailing-best beats a *random* param next window only
-  **50.7%** of the time (a coin flip; OOS net −0.0041/bar). The objective surface is
-  **flat** — "best" is statistically indistinguishable from "arbitrary" in the future.
-  The **surrogate is clean** (real −0.10 is *worse* than typical noise, placeboP=0.81) —
-  the machine does not invent edge in noise, so this failure is genuine.
-- **WF-B — adaptive WF on majors** (Bollinger/Donchian/MA-cross, N=27). Here the param does
-  *not* drift trackably (autocorr ~0.035, 44% churn ≈ noise). Adaptive ≈ fixed (−33.4% vs
-  −35.9%) but pays **+43% more cost** to adapt and gains nothing. **The surrogate FAILS:**
-  the same machine scores **equal-or-better in noise** (real 0.0050 vs surrogate 0.0085,
-  placeboP=0.59) ⇒ the "edge" is an optimization artifact.
-- **WF-C — adaptive WF on 15m BTC** (306k bars). The premise is confirmed *more* strongly
-  (autocorr lag1 0.39–0.64). But adaptive net **−0.063** loses to B&H +0.376 and to fixed
-  +0.265. **The surrogate is decisive:** 80 surrogates (phase-randomized + block-bootstrap,
-  which preserve vol/autocorrelation but destroy regime) score *higher* than the real run
-  (phase mean +0.129, block +0.132 vs real −0.063); placeboP=0.63 (the real run sits at the
-  37th percentile of its *own* noise).
-- **WF-D — adaptivity on the ONE real edge** (auto-calibrating carry threshold, rolling
-  quantile). The premise is *perfect* (regime autocorr 0.97, calibrates beautifully). But
-  adaptive +1.41%/yr does not beat the risk-free (−3.09%/yr) and even *loses* to the fixed
-  threshold (−1.49%/yr, having paid 3 extra toggles). **Surrogate fails** (placeboP=0.19).
-  Structural cause: the perfect-foresight oracle yields only **+0.53%/yr** over RF in this
-  regime — adaptivity tracks a real edge but **cannot create carry the market already shed.**
-
-**Round-4 lesson (the project's most instructive):** the user is *right* that the optimal
-config drifts (confirmed in 4/4: autocorr 0.39–0.97). But adapting fails for two distinct
-reasons: (1) for **TA/price**, the drift is real but *not predictive* — the surface is flat
-(trailing-best = random at 50.7% OOS) and the surrogate proves the adaptive machine
-manufactures "edge" in pure noise as well as in real data (fitting noise, not tracking
-regime); (2) for **carry**, the drift *is* predictive and auto-calibrates (autocorr 0.97),
-but there is nothing left to harvest (oracle +0.53%/yr < cost). **Adaptivity tracks an edge
-that exists; it does not manufacture one that vanished.**
-
-### Round 5 — Illiquid corners + GA-evolved rules (R2, R3, R4): 3/3 KILL, surrogate decisive again
-
-Three search fronts, all on real data, cloud $0. *(`scripts/{r2-illiquid,front-r3,front-r4}/`,
-`output/{r2-illiquid,front-r3,front-r4}/`.)*
-
-- **R2 — illiquid corners / small-caps.** 20 names outside the top-20 (Binance REST, 6y),
-  with realistic small-cap cost (median spread **6.93 bps** + depth-based slippage). **KILL
-  by the SURROGATE (decisive):** the real champion (CS-momentum 7d, search Sharpe **0.738**)
-  is *worse than noise* — surrogates yield mean **1.59** / max **3.14**, **placeboP=0.90**
-  (36/40 surrogates ≥ real). It also fails DSR (0.015), holdout (**−58.5%**), all baselines,
-  and the haircut. Capacity ceiling ~**$108k**. Survivorship inflates this (only coins alive
-  today are in the panel), so it is an *upper bound* — and even so it is a KILL, at both
-  $5k and $25k sizes (monthly net **−$74 @ $5k**, **−$488 @ $25k**).
-- **R3 — GA that EVOLVES trading RULES** (real genetic programming: population 160, tournament
-  selection, subtree/condition crossover, multi-mode mutation, elitism, 40 generations; genome
-  = AND/OR conjunction of (indicator, comparator, threshold) → position). **KILL, surrogate
-  placeboP=1.000** — a GA run on *pure noise* (phase-rand + block-bootstrap) finds champions
-  that are *better* out-of-sample (mean +0.032, max +0.110) than the real champion (−0.097).
-  Honest N = **5613 unique genomes** ⇒ DSR ≈ 9e-12. The real champion collapses train +0.088 →
-  holdout **−0.097** (a textbook overfit collapse), robust across 4 seeds. **The GA is the
-  definitive overfitter; without the surrogate control it would have *looked like* an in-sample
-  win.**
-- **R4 — GA on STRUCTURAL + technical rules** (same machine + funding/premium/basis-slope
-  primitives). **KILL** — the GA found a purely structural rule that is beautiful in-sample
-  (**+3.15%/yr** over RF, 28% deployed) but **collapses to 0% deployed (flat RF) on the
-  holdout** (**−0.015%/yr**). The perfect-foresight holdout oracle = **+0.51%/yr** (confirming
-  WF-D's ceiling). Surrogate placeboP=0.721, DSR p≈1.0 (N=2823). An evolutionary search
-  *confirms* the hand-made conclusion: there is no structural decision rule to operate in the
-  current regime.
-
-**Round-5 lesson:** giving an evolutionary search (the definitive overfitting machine) both
-technical (R3) and structural (R4) primitives does **not** produce edge — the surrogate
-control catches the self-deception every time (the GA scores equal-or-better in pure noise).
-
-### Round 6 — Capital rotation / cycles + event flow (C1–C4): 4/4 KILL
-
-The user's hypothesis: the market is a single pool of volume that *circulates* among
-assets/tiers in *cycles*, and looking at many assets *together* would reveal exploitable
-cycles. Also requested: test event/listing flow. Five fronts, real data (fresh Binance
-public volume), cloud $0. *(`scripts/{c1-rotation,front-c2,front-c3,front-c4,validation}/`.)*
-
-- **C1 — rotation as lead-lag flow** ("ride the relay" of conserved volume circulating
-  between tiers). **KILL.** N=108, DSR deflatedP=0.45, **PBO 96.4%** (severe overfit),
-  holdout **−39.9%**. Surrogate: in-sample net Sharpe 1.076, but the phase-surrogate q95 is
-  1.138 (p=0.080, not significant) and the lead-lag statistic is *reproduced* by the
-  cross-sectional shuffle (p_LL=1.000) — the "lead-lag" is an artifact, not real capital
-  rotation. *(`output/c1-rotation/rotation-report.json`.)*
-- **C2 — dominance cycle** (is there a rotation *period*?). **KILL.** Dominance is
-  *persistent, not cyclic* (acf1=0.55, stay-rate 68%, 32%/week switch). The 14-week spectral
-  peak is reproduced by phase/block surrogates (cycle = autocorrelated noise). The strategy:
-  in-sample Sharpe 1.14 → **vault −1.53 (−52.7%)**, surrogate placeboP=1.000. The
-  volume-dominance variant is degenerate (majors win 93% ⇒ it is buy-and-hold-majors). The
-  apparent "rotation edge" is single-asset momentum (Jegadeesh–Titman at short K), not tier
-  rotation. *(`output/front-c2/dominance-cycle-result.json`.)*
-- **C3 — joint market-state / breadth overlay.** **KILL.** The joint view *carries real
-  descriptive information* (dispersion/correlation predict forward vol — "correlation→1 in
-  risk-off" is real), but it does not become a tradeable overlay: it ties equal-weight on the
-  test, loses on the holdout (**−19.56%**), loses to a trivial linear model, DSR 0.89, PBO
-  0.90. **The cross-sectional shuffle (placeboP=0.244, not significant) proves the residual
-  timing edge is *aggregate vol state*, NOT breadth/rotation** — the multi-asset view adds
-  nothing an aggregate vol series would not. *(`output/front-c3/c3-report.json`.)*
-- **C4 — event / listing forced-flow** (token unlocks have no free data, so listing was used
-  as a tractable proxy: 641 real events via onboardDate, including delisted names = no
-  survivorship at the event). **KILL.** There is a real descriptive "listing dump" (CAR
-  **−5.3% by day 20**, individual days significant), but it is not tradeable: block-bootstrap
-  reproduces 72% of the "edge", DSR(N=32)=0.77, and the consume-once holdout (the 2025–26
-  cohort) *pumped* — so shorting it returned **−100% compound**. *(`output/front-c4/listing-event-result.json`.)*
-- **C5 — methodology + references (delivered, not a hypothesis).** The reusable harness
-  `src/lib/validation/strategy-validator.ts` → `validateStrategy(returns | fn, opts)`
-  composes the 7 committed gates into one `{ verdict, bindingGate, perGate }`. The smoke-run
-  `scripts/validation/demo-validate.ts` (exit 0) kills a noise series *and* the real carry
-  series (sub-RF today, which is the honest, expected outcome; the surrogate independently
-  flags it at placeboP≈0.67). Documented in `docs/VALIDATION_HARNESS.md`; the full academic
-  bibliography is in `docs/EDGE_SEARCH_SYNTHESIS.md`.
-
-**Round-6 lesson:** once again the user's intuition has a *true descriptive kernel*
-(rotation/persistence exists; the joint view carries vol regime; the listing-dump is real) —
-but none of it is exploitable, cost-surviving, out-of-sample edge. The cross-sectional
-shuffle (this round's new null) is decisive: it proves the "rotation edge" is single-asset
-momentum + aggregate vol state, not cross-tier capital circulation.
-
-### Round 7 — On-chain distribution-pressure (OC1): the only genuinely new data class, also a KILL
-
-The on-chain feasibility scout (`docs/ONCHAIN_FEASIBILITY.md`) had established that a rigorous
-on-chain edge test is **fully fundable at $0** (Coin Metrics Community + DefiLlama, no paid
-keys) and recommended exactly one shot: a **BTC+ETH exchange-net-flow + MVRV "distribution-pressure"
-overlay**. That POC was run through the committed `validateStrategy` harness as the program's
-**28th hypothesis** (OC1). *(`scripts/onchain-poc/`; `output/onchain-poc/verdict.json`.)*
-
-- **OC1 — on-chain distribution-pressure overlay.** Features: exchange in/out flow in **native
-  units** (CM `FlowInExNtv − FlowOutExNtv`, native to avoid the USD-denomination tautology) +
-  **MVRV** cost-basis (`CapMVRVCur`), long/flat vol-targeted spot on BTC+ETH, ~3,948 daily bars.
-  **Look-ahead was controlled**: features are lagged ≥1 day (z-score and MVRV read at *d=t−1*;
-  vol-target uses past returns only), and Coin Metrics' revision (`flash`/`reviewed`) flags were
-  quantified (BTC 8,336 flash; ETH 2,924 flash + 4,992 reviewed) — proof the series is **not**
-  point-in-time, which is exactly why the lag is mandatory. **Honest N = 36** (2 assets × 3
-  lookbacks × 3 MVRV thresholds × 2 agreement rules). **KILL.** The **binding gate is baselines**
-  (the long/flat overlay loses to buy-and-hold, random-lottery, *and* equal-weight — it forfeits
-  beta in a sample that rose), and the **surrogate also fails** (**placeboP=0.482**, `crossSectional:
-  false`: phase-randomized + block-bootstrap of the *same* BTC/ETH trajectories reproduce the
-  "edge" ~48% of the time, so the on-chain feature's timing carries no information beyond each
-  asset's drift + autocorrelation). DSR *passed* (0.96 at N=36) but is not the decisive gate, and
-  the consume-once holdout was flat (Sharpe 0.003). *(Note: the PBO gate here ran on self-derived
-  folds and is **not** load-bearing — this is an internal-review finding (H5).)*
-
-**Round-7 lesson (and the honest framing):** KILL was the explicit prior — on-chain
-NVT/MVRV/SOPR/active-address/flow metrics are heavily published and arbitraged, and this data
-class most resembles the rotation tests (C1, C2) that both died on the surrogate. The POC simply
-**closed the gap on the only genuinely new data source** (on-chain / flow) with real evidence,
-under the same rigor, without manufacturing a survivor. The frontier is now tested, not just
-scouted.
-
-### Round 8 — Trader-style forms (NF1–NF3): support/resistance, target+stop-loss, low-N confluence — 3/3 KILL
-
-Three trade *forms* categorically different from the indicator strategies above — level-based
-discretionary techniques, path-dependent exit management, and rare-signal confluence — each forcing
-an explicit methodological upgrade to stay honest. Full reflection in
-`docs/TRADER_FORMS_REFLECTION.md`. *(`scripts/{nf1,nf2-brackets,nf3-confluence}/`.)*
-
-- **NF1 — Support/Resistance & price levels** (floor pivots, swing H/L, round numbers, Fibonacci,
-  Bollinger edges × bounce/breakout/retest, N=168). **KILL by the surrogate (placeboP=0.609).**
-  Floor-trader pivots are flat-to-negative net of cost; only *breakout* variants "work," and they
-  just ride trend. Destroying the level structure (phase/block/cross-sectional shuffle) leaves the
-  edge unchanged — the levels are decoration on filtered beta, the same failure as the classic
-  indicators in TA4.
-- **NF2 — Target + Stop-Loss / professional brackets** (path-dependent, intrabar TP/SL on the real
-  HIGH/LOW path, N=25). **KILL by net-of-cost (0/47 configs pass).** The decisive question — does
-  TP/SL *create* edge or *reshape* the distribution? — resolves cleanly: bracketing swings the
-  win-rate 33%→65% and per-trade skew −0.64→+2.22 while **gross expectancy stays ≈0**. Bracketed
-  real (−0.0795 Sharpe/trade) ≈ bracketed noise (GBM −0.0948, phase −0.0906). This is the
-  *fair-game / optional-stopping theorem* made operational: **"risk management" manages variance, it
-  does not manufacture edge — only the entry signal's edge matters,** and the entry was itself
-  indistinguishable from the surrogate null.
-- **NF3 — Confluence of rare pre-registered signals** (6 economically-motivated signals, act when
-  ≥k agree, N=8). **KILL by baselines (loses to random-lottery).** The honest nuance: pre-registration
-  *genuinely* lowers the deflation bar (N=8 ⇒ expected-max Sharpe only 0.049 — the intuition is
-  statistically correct), but **there is no threshold k that is simultaneously rare AND edgeful** —
-  loosen it (k=3) and it fires 735/1082 days = a long-biased trend filter beaten by the
-  random-lottery; tighten it (k=6) and it fires twice. The small honest N helps the statistics; it
-  cannot manufacture an edge that is not there.
-
-**Round-8 lesson:** each form forced a methodological upgrade (path-dependent exits need a per-trade
-P&L series + a bracket-on-surrogate null; low-N confluence needs genuine pre-registration so N stays
-small; discretionary levels need the level-construction counted in N) — and each KILL is one more
-falsified trader-favorite technique. The deepest, now-operational result: **stop-loss / take-profit
-is variance management, not alpha.**
-
-### Round 9 — Four more popular beliefs (NA–ND): expiry pins, on-chain valuation, macro regime, calendar — 4/4 KILL
-
-Four widely-held retail beliefs, each fundable at $0, run through the gauntlet. All KILL — and
-three of the four die the *same* way: a real descriptive pattern that is just **long-BTC beta in
-disguise**, losing to buy-and-hold once costed. *(`scripts/{options-expiry,onchain-nb,nc,track-nd}/`.)*
-
-- **NA — Monthly options-expiry / "max-pain pin"** (N=12). The folklore *looks* alive descriptively
-  (BTC is weak into the last-Friday expiry, drifts up after), but **KILL by baselines**: the
-  post-expiry "rally" is just being long BTC in a subset of a bull market — it loses to buy-and-hold
-  and to a random-lottery of equal trade count, the surrogate places it at the 23rd percentile of
-  its own null (p=0.77), and the holdout is negative. A cautionary tale: a claim-specific "expiry
-  beats random windows" placebo returned **p=0.000** — it *would* have looked like a SURVIVE without
-  the committed baselines + consume-once-holdout gates, which correctly expose it as beta.
-  (Historical option OI-by-strike is not free, so the robust price-vs-calendar test is the
-  falsifiable one.)
-- **NB — On-chain valuation suite** (exchange-reserve trend, active-address momentum, NVT; N=192).
-  **KILL by baselines.** Free on-chain valuation metrics are **coincident, not predictive**: scaling
-  exposure to them lifts the Sharpe only because vol-targeting parks you in cash (mean exposure
-  0.22), mechanically cutting drawdown while sacrificing more return than it saves. It loses to
-  buy-and-hold, equal-weight, and a random-lottery of the same exposure; phase/block surrogates
-  reproduce it. (Distinct features from the MVRV+flow OC1 test — same conclusion.)
-- **NC — Cross-asset macro regime** (BTC vs DXY/gold/SPX risk-on/off; N=90). **KILL by Deflated
-  Sharpe** (PBO 0.964, surrogate). Macro conditioning is **coincident beta**: BTC, equities, and the
-  dollar all respond to the same global risk-on/off tape, so "risk-on ⇒ long BTC" mostly recovers
-  long-BTC exposure with lower time-in-market. The small in-sample bump is de-risking (volatility
-  reduction), not predictive timing, and it does not survive deflation.
-- **ND — Intraday/weekly calendar** (weekend pump, day-of-week, Asia/EU/US sessions, turn-of-week;
-  N=28). **KILL by Deflated Sharpe.** No real, cost-surviving, out-of-sample calendar edge — a
-  seasonality data-mining mirage exactly like T6: the best rule is **+447% in-sample → negative
-  Sharpe in the untouched holdout**, its temporal structure matched by phase/block surrogates
-  (p=0.752).
-
-**Round-9 lesson:** three of the four (NA, NB, NC) are the same trap — a *real* descriptive pattern
-that is **long-BTC beta sampled part of the time**, which the baselines and Deflated-Sharpe gates
-correctly unmask; the fourth (ND) is pure calendar data-mining. "Trade with the macro" and the
-"max-pain pin" join the kill list as folklore, not edge.
+> **Neither lead is investable today.** Their common next step is the same: pre-register one
+> config, acquire the missing data (survivorship-free universe / live basis + borrow), and
+> validate **strictly forward** — not more in-sample search.
 
 ---
 
-## 4. The two survivors — real, but a regime trade, sub-RF now
+## 2. Era 1 — prior rounds (~35 hypotheses: 33 KILL, 2 sub-RF carry "survivors")
 
-Both survivors are **structural carry** (a limits-to-arbitrage premium, BIS WP 1087), not
-prediction: **E2 perp funding carry** and **T8 dated-futures basis / cash-and-carry**.
-Both pass the full anti-overfitting gauntlet on the 3-year full sample. **Neither beats
-the risk-free rate in the current regime.**
+The program's first phase ran six rounds (chronological lab log, `docs/EVOLUTION_TRAINING_LOG.md`,
+entries dated 2026-05-31) plus a follow-up on-chain POC. It tested ~35 hypotheses under the
+same bar: **33 KILL, 2 sub-risk-free carry survivors** (perp funding carry, dated-futures
+basis). The earlier public ledger counted these as "28 IDs (26 KILL + 2 carry)"; the
+inventory was subsequently expanded to 35 as the round-1 wide battery and the rotation/event
+fronts were itemized individually. Both framings agree on the bottom line: **the only thing
+that survived prediction-vs-carry is structural carry, and it decayed below the risk-free rate.**
 
-| Survivor | Full-sample headline | Why it is sub-RF *now* | Oracle proof |
+### Era-1 KILL ledger (selected, by theme)
+
+| ID / theme | Class | Binding gate (first failure) | Decisive number |
 |---|---|---|---|
-| **E2 — perp funding carry** | net ~**5.84% APR** (3y, 8 majors, all legs net-positive, max DD 5.37%) | trailing-12m gross collapsed to **~3.35%** < RF 4.5%; incremental edge vs T-bills **−2% to −3.3%/yr**; min viable capital none up to $5M | TA1 timing oracle (perfect foresight) earns only **+0.52%/yr**; realized funding ≈0.36%/yr |
-| **T8 — dated-futures basis** | holdout net APR **+14.6% → +7.31%** post-50% haircut (cross-contract Sharpe 9.17, 0.00% DD at delivery) | also compresses; quarterly-lumpy; same counterparty tail; structurally cleaner but ~7% historical and falling | WF-D adaptive-carry oracle ceiling **+0.53%/yr**; R4 GA structural oracle **+0.51%/yr** |
+| Legacy GA neural BTC-15m direction (the retired alpha engine, program origin) | ML / prediction | true-negative population audit (luck-of-N) | best of **659** evals **+2.2%** < +11.76% luck-of-N expected-max; mean negative |
+| E1 — cross-section weekly momentum | prediction | holdout + baselines (loses to random-lottery) | holdout **−9.59% net**; DSR 0.041 (N=32) |
+| E3 — BTC time-series trend (daily/weekly) | prediction | Deflated Sharpe + baselines | DSR **0.886** daily / 0.593 weekly < 0.95 (N=36); returns = long-beta |
+| T1 — cross-section reversal | prediction | holdout | holdout **−32%** |
+| T2 — market-neutral CS-mom + vol-target | prediction | Deflated Sharpe (loses to random-lottery) | +27.9% IS vs universe −51.6% but **DSR(N=4)** fails |
+| T3 — vol-target BTC (Moreira-Muir) | prediction | holdout | holdout net **−11%** |
+| T4 — diversified TSMOM + vol-target | prediction | holdout | holdout **−18%**; gross only +2.8%/2y |
+| T5 — regime-gated trend | prediction | holdout (loses to B&H) | holdout **+1.3%** vs B&H +15.3% |
+| T6 — seasonality / turn-of-month | prediction | holdout (data-mining trap) | holdout **−32%** |
+| T7 — funding-as-contrarian | prediction | dead in-sample | holdout APR **−28%** |
+| T9 — ETH/BTC relative value | prediction | holdout | holdout **−48%** |
+| T10 — cointegration pairs | prediction | Deflated Sharpe + MinBTL | gross +52.8% but **DSR(N=420) = 0.029** |
+| TA1 — indicators to TIME the carry (ON/OFF) | TA-timing | holdout (oracle ceiling) | IS p=5.8e-7 but holdout **100% OFF, ties RF**; perfect-foresight oracle only **+0.52%/yr** |
+| TA2 — slow vol-targeted TSMOM (MOP) | prediction | net-of-cost / holdout | vault Sharpe **−0.076** (−4.74%); 12m lookback is *worst* in crypto |
+| TA3 — microstructure / forced-flow 15m BTC (224 variants) | prediction | Deflated Sharpe + holdout | cost kills all 15m/30m; survivor **DSR(N=224)=0.21** + holdout −0.98 |
+| TA4 — classic indicators (RSI/MACD/BB/MA/ADX/Donchian/Stoch) | prediction | baselines + holdout | **0/94 beat buy-and-hold**; best flips to holdout Sharpe **−1.01** |
+| WF-A — adaptive walk-forward premise (5 families) | adaptive | net-of-cost (surrogate clean) | trailing-best beats random next window only **50.7%**; OOS net −0.0041/bar |
+| WF-B — adaptive WF on majors | adaptive | **surrogate** | real 0.0050 ≤ surrogate 0.0085, placeboP=0.59 (optimization artifact) |
+| WF-C — adaptive WF on 15m BTC | adaptive | **surrogate (decisive)** | real **−0.063** vs phase +0.129 / block +0.132; placeboP=0.63 |
+| WF-D — adaptivity on the real edge (carry threshold) | adaptive-carry | edge-vs-RF (oracle ceiling) | tracks perfectly (autocorr 0.97) but **oracle only +0.53%/yr** |
+| R2 — illiquid corners / small-caps | prediction | **surrogate** | champion (Sharpe 0.738) worse than noise (surr max 3.14, placeboP=0.90); holdout **−58.5%** |
+| R3 — GA evolves trading RULES (genetic programming) | prediction | **surrogate (placeboP=1.000)** | train +0.088 → holdout **−0.097**; GA on noise beats real champion; DSR(N=5613) ≈ 9e-12 |
+| R4 — GA on structural + technical carry rules | structural | edge-vs-RF + surrogate | IS +3.15%/yr → holdout **−0.015%/yr** (flat RF); oracle ceiling +0.51%/yr; placeboP=0.721 |
+| C1 — capital rotation as lead-lag flow | rotation | **surrogate (cross-sectional shuffle)** | holdout **−39.9%**; PBO **96.4%**; lead-lag reproduced by shuffle (p_LL=1.000) |
+| C2 — dominance cycle (rotation period?) | rotation | Deflated Sharpe | dominance is *persistent not cyclic*; vault **−52.7%** (Sharpe −1.53), placeboP=1.000 |
+| C3 — joint market-state / breadth overlay | rotation | baselines (loses to linear) | holdout **−19.56%**; residual timing edge is *aggregate vol*, not breadth (shuffle p=0.244) |
+| C4 — event / listing forced-flow (641 real events) | event | **surrogate** | real "listing dump" CAR −5.3% by day 20 but block-boot reproduces 72%; holdout short **−100% compound** |
+| OC1 — on-chain distribution-pressure overlay (exchange-flow + MVRV) | on-chain / flow | **baselines** + **surrogate (placeboP=0.482)** | long/flat overlay loses to B&H + random-lottery + equal-weight; holdout flat (Sharpe 0.003), N=36 |
 
-**The deepest finding** is the oracle proof, which appears *three independent times*
-(TA1, WF-D, R4): a gate or rule with **perfect foresight** earns only **+0.51–0.53%/yr**
-over the risk-free rate in the current holdout, because realized carry there is ≈0.36%/yr.
-**The structural edge has decayed below the cost of harvesting it — not even a clairvoyant
-timer can extract it now.**
+### Era-1 carry "survivors" — real, but sub-risk-free now
 
-> **Verdict on carry.** It is a **regime trade** — arm it only when funding is rich
-> (>~8–9%) and rising, as in 2024 — not an always-on business. For an indie at
-> $10k–$100k today it does not beat the risk-free rate after fees + capital efficiency +
-> buffer (incremental edge vs T-bills ≈ −2% to −3.3%/yr). US persons are also geo-blocked
-> from the deep venues, making the economics strictly worse.
+| Survivor | Class | Full-sample headline | Why it is sub-RF *now* | Oracle proof |
+|---|---|---|---|---|
+| **E2 — perp funding carry** (delta-neutral) | carry | net ~**5.84% APR** (3y, 8 majors, all legs net-positive, max DD 5.37%) | trailing-12m gross collapsed to **~3.35%** < RF 4.5%; incremental edge vs T-bills **−2% to −3.3%/yr**; no minimum-viable capital up to $5M | TA1 timing oracle (perfect foresight) earns only **+0.52%/yr**; realized funding ≈ 0.36%/yr |
+| **T8 — dated-futures basis** | carry | holdout net APR **+14.6% → +7.31%** post-50% haircut (full-sample framing) | compresses; quarterly-lumpy; same counterparty tail; the **2026-06 re-anchor shows the levered headline was a financing leak** — only a thin unlevered ~4.9%/yr survives (§1, §4) | WF-D adaptive-carry oracle ceiling **+0.53%/yr**; R4 GA structural oracle **+0.51%/yr** |
+
+> **The oracle proof appears three independent times (TA1, WF-D, R4):** a gate or rule with
+> *perfect foresight* earns only **+0.51–0.53%/yr** over the risk-free rate in the current
+> regime, because realized carry there is ≈ 0.36%/yr. **The structural edge has decayed below
+> the cost of harvesting it — not even a clairvoyant timer can extract it now.** Carry is a
+> regime trade: arm it only when funding is rich (>~8–9%) and rising, as in 2024.
 
 ---
 
-## 5. Patterns across all 35 tests
+## 3. Era 2 — the 2026-06 domain campaign (~58 hypotheses, 8 domains)
 
-Two patterns recur so consistently they are the meta-findings of the program.
+One large, parallelized campaign pushed ~58 hypotheses across eight domains through the
+committed gauntlet at $0, as a fan-out of domain workflows each genuinely trying to *find*
+edge. Cross-domain roll-up: `docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md`. Per-domain syntheses are
+cited inline. After deepening + the two-layer audit (§4) the campaign's audited tally is
+**0 SURVIVE, 2 PROMISING (the Donchian + dated-futures-unlevered leads in §1), ~51 KILL.**
 
-### Pattern A — the "two-gate" death
+### 3.1 Consensus / carry-arb family (`output/edgehunt/SUMMARY.md`) — 9 tested, 7 KILL, 2 PROMISING→(audited)
 
-A signal produces a **pretty in-sample Sharpe** and *passes* DSR / PBO / Harvey-Liu
-haircut. **Those gates only certify "this Sharpe is not luck-of-selection." They do not
-test economic edge.** Every such candidate then **dies at the two gates that test real
-edge**:
+| Hypothesis | Verdict | Binding gate | Decisive number |
+|---|---|---|---|
+| Dated-futures cash-and-carry (BTC+ETH) | PROMISING → **unlevered-thin** (§1, §4) | financing re-anchor + cross-sectional-shuffle p=0.66 (7/8 gates pass) | levered headline a leak; honest unlevered **~4.9%/yr, t=2.41** |
+| VRP harvest + crash-gate (BTC/ETH options) | PROMISING → **KILL** (deepen) | Deflated Sharpe 0.53 @ N=90 + shuffled-VRP placebo p=0.14 | a **2021 DVOL-onset regime artifact** (leave-2021-out Sharpe 1.257 → 0.560) |
+| Cross-venue funding dispersion | KILL | beats-funding-level baseline (−$296/mo) + DSR 0.124 | wedge ~0.5 bps/8h vs 16 bps round-trip cost (~30× too small) |
+| Perp-spot cash-and-carry | KILL | Deflated Sharpe (p=0.0023 @ N=96); loses to cash | a short-crash option: skew −12.9, kurtosis 175; excess-vs-cash Sharpe −0.17 |
+| TSMOM trend overlay on carry | KILL | left-tail control + calendar-reanchor surrogate p=0.33–0.36 | the "hedge" is just lower average leverage; incremental ≈ 0 |
+| Residual / idiosyncratic momentum (Blitz-Huij-Martens) | KILL (signal real) | Deflated Sharpe @ N=192 (0.18) | beta-neutral, surrogate p=0.0033, but the 30-coin cross-section is too thin even at zero cost |
+| PCA basket stat-arb (Avellaneda-Lee s-score) | KILL | surrogate ≈ 0.20 | gross residual-reversion Sharpe **negative** at proper breadth (0/81 configs > 0.5) |
+| Vol-targeting (Moreira-Muir) | KILL | matched-exposure control + GARCH null p=0.386 | apparent lift flips **−0.17 OOS**; PBO=0.95; it is levered beta, not alpha |
+| Funding-sentiment contrarian fade | KILL | Deflated Sharpe @ N=24 (fade p=0.001); placebo p=0.88 | backwards — extreme funding *persists*, it does not revert (0/8 coins) |
 
-1. **Baselines** — beat buy-and-hold + equal-weight + random-lottery + a one-layer linear
-   model, *net of cost*.
-2. **Consume-once holdout** — performance on data the search never saw.
+### 3.2 D1 — indicators & price action (`output/edgehunt-D1/SUMMARY.md`, `output/edgehunt-requeue/SUMMARY.md`)
 
-This killed TA1, TA3, TA4, T2, T10, R2, R3, R4, C1, C3, C4, and more. The canonical example
-is **TA4**: its best Bollinger-breakout config passes DSR (p=0.00025), PBO (0.00) and the
-haircut, then **loses to buy-and-hold, random-lottery, and linear**, and the holdout flips
-to net Sharpe **−1.01**. The apparent "edge" is **filtered long-beta in a bull**, not timing
-skill — every top config is long/flat. The honest `N` is what makes this work: deflating by
-the *true* number of trials turned every "p<0.001" champion into noise (TA3 at N=224 → p=0.21;
-T10 at N=420 → DSR 0.029; R3 at N=5613 → DSR ≈ 9e-12).
+The XS Donchian PROMISING (§1) lives here (re-queue batch). The rest are KILL:
 
-### Pattern B — the "true descriptive kernel, no tradeable edge" meta-finding
+| Hypothesis | Verdict | Binding gate | Decisive number |
+|---|---|---|---|
+| Supertrend (ATR-band trend overlay) | KILL | deflated-Sharpe-vs-own-B&H 0.307; excess-over-B&H CI straddles 0 | net 1.645 but vol-preserving surrogate scores **1.926 > observed** (p=0.801) |
+| CCI (z-scored typical-price oscillator) | KILL | deflated-Sharpe-vs-killed-RSI 0.009 | net 1.768 but surrogate scores **2.3–2.4 > observed** (p=1.0) — pure long-beta/path artifact |
+| XS Ichimoku long-short | KILL | DSR / haircut @ N=48 | decayed XS-momentum (yearly Sharpe 2.65 → −2.55 by 2026); pre-registered Hosoda **−0.72 OOS** |
+| XS Bollinger %b reversion | KILL | wrong-signed every year | the only profitable rescue is the opposite-sign factor, which dies on the holdout (−0.38) |
+| Candlestick reversal patterns | KILL | DSR + PBO 0.50 + holdout | best grid 0.92 but textbook canonical **−0.50**, holdout −0.66 |
 
-Round after round, the user's intuition contained a **genuinely true descriptive fact** —
-and that fact still produced **no tradeable, cost-surviving, out-of-sample edge**:
+### 3.3 D2 — volume & microstructure (`output/edgehunt-D2/SUMMARY.md`) — all 8 KILL
 
-- **Adaptive drift is real** (WF-A/B/C/D: optimal-config autocorr 0.39–0.97) — but for
-  TA/price it is not *predictive* (flat surface, trailing-best = random at 50.7%), and the
-  surrogate proves the adaptive machine fits noise as well as it "tracks regime."
-- **Correlation→1 in risk-off is real** (C3: dispersion/correlation predict forward vol) —
-  but the residual timing edge is *aggregate vol state*, not breadth, and the multi-asset
-  view adds nothing a single aggregate series would not.
-- **Dominance persistence is real** (C2) — but it is *persistent, not cyclic*; the spectral
-  "cycle" is autocorrelated noise.
-- **The listing dump is real** (C4: CAR −5.3% by day 20) — but block-bootstrap reproduces
-  72% of it, and the next cohort pumped.
+The **whole free-tier order-flow belief set is dead at h ≥ 1.** Any Sharpe lives in the
+**h=0 contemporaneous / look-ahead** version (Hasbrouck/Easley tautology — the trades *are*
+the move); the strictly-lagged component is ~0.
 
-The **surrogate / placebo control is the hero** of both patterns. By preserving each
-asset's volatility and autocorrelation while destroying genuine regime / cross-asset
-structure (phase randomization, block bootstrap, and the cross-sectional shuffle for
-rotation), it directly answers: *"Is this 'edge' just dispersion the machine would
-manufacture in noise?"* When the answer is yes (WF-B, WF-C, R2, R3, C1, and the descriptive
-kernels above), the candidate is an optimization artifact, full stop. Without this single
-control, the in-sample WF-B/WF-C/R3 results would have looked like wins.
+| Hypothesis | Verdict | Binding gate | Decisive number |
+|---|---|---|---|
+| CVD divergence (h≥1) | KILL | net-sharpe>0.3 | net 0.237 (< B&H 0.815); lagged IC ≈ 0 |
+| Taker buy/sell ratio extreme imbalance | KILL | net-sharpe>0.3 | lagged edge = **5%** of the h=0 ceiling (gross 4.58) |
+| Anchored / session VWAP reversion | KILL | beats-buy-hold | breakeven 1.46 bps < 4 bps taker; session-anchor worse than rolling |
+| Volume-profile POC / value-area reversion | KILL | net-sharpe>0.3 | canonical reversion **wrong-signed**; holdout net negative both cadences |
+| OBV / A-D trend confirmation | KILL | ≤0 excess over price-trend | volume adds **−0.122** over the identical price-trend overlay |
+| Amihud illiquidity premium | KILL | boot-CI-lower>0 | 74% of P&L from 20 of 1971 days — a **2021-only** premium |
+| Whale-print momentum | KILL | DSR@N>0.95 (0.513) | prints **mean-revert**; only the p99.9 tail is positive (t<2) |
+| Liquidation-cascade fade/follow | KILL | net-sharpe>0.3 | events too rare; conditional forward returns all |t|<1.5 |
 
-### The synthesis
+*DEFERRED, not killed:* the paid-L2 family (VPIN, Kyle's λ, microprice, book imbalance) — but
+the free belief each was meant to proxy is dead.
 
-**The edge is NOT in (a) direction prediction, (b) cross-section / relative value at
-retail cost, (c) classic or microstructure TA, (d) timing the carry, (e) adaptively
-re-fitting any of the above, (f) illiquid small-caps, (g) GA-evolved rules, or (h) capital
-rotation / dominance cycles / breadth / event flow, or (i) on-chain / exchange-flow + MVRV
-distribution-pressure overlays.** Twenty-six independent attempts — all the standard academic
-priors, fixed and adaptive, plus the only genuinely new (on-chain) data class — all dead net
-of realistic cost. The only thing that survived the gauntlet is **structural carry**, and it
-has decayed below the risk-free rate in the current regime.
+### 3.4 D5 — on-chain / crypto-native (`output/edgehunt-D5/SUMMARY.md`, `output/edgehunt-D5-followup/VERDICT.md`) — 7 KILL, 1 PROMISING→**KILL** (audit)
 
-**The durable asset of this project is the methodology** — committed gates + surrogate /
-placebo controls + honest trial-count `N` + a consume-once holdout — packaged as the
-reusable `validateStrategy(...)` harness. A KILL is a valid, valuable outcome. The empty
-parent pool is the gates working correctly, not a failure of effort. **Change the target,
-never the gates.**
+| Hypothesis | Verdict | Binding gate | Decisive number |
+|---|---|---|---|
+| Exchange reserve / netflow trend (BTC) | PROMISING → **KILL** (§4 audit) | family-wise MAX-stat surrogate | pre-registered config clears DSR@N=1=0.988 forward, but it is the **argmax of a searched ~12-config neighborhood**; family-wise surrogate p ≈ **0.24** (vs surr95 ≈ 1.19) → FAIL; also inverts on ETH (forward Sharpe −0.85) |
+| Hash Ribbons | KILL | hash-only surrogate | highest raw Sharpe 1.13, passes 7/8 gates; incremental hash edge **−0.084** (edge is the price-confirmation clause = long beta) |
+| MVRV-Z extreme bands | KILL | baselines | byte-identical to B&H OOS; all timing days sit in the 2015–17 in-sample window |
+| Stock-to-Flow deviation | KILL | baselines | residual is a price clock (corr 0.78 with price-vs-time) → Granger-Newbold spurious regression |
+| SSR (stablecoin supply ratio) | KILL | baselines / holdout | holdout **inverts** (−0.239); mints *lag* price (reverse-causality echo) |
+| Puell Multiple | KILL | baselines | **93%** the Mayer price/365d-MA oscillator (R²=0.87) |
+| Realized-price cost-basis S/R | KILL | baselines / surrogate | a fixed line whose phase-randomized surrogate scores *higher* (p=0.841) |
+| Metcalfe active-address residual | KILL | baselines / surrogate | mean-reverting noise (0/162 configs cleared surrogate AND held OOS) |
+
+### 3.5 D6 — sentiment & cross-asset / macro (`output/edgehunt-D6/SUMMARY.md`, re-queue) — all KILL
+
+Every macro/sentiment timer collapses to the **coincident-beta trap**: raw predictive corr ≈ 0,
+an AR-matched placebo of the same shape times BTC as well or better, the edge is SPX/risk-on
+beta, and it inverts out-of-regime on the holdout.
+
+| Hypothesis | Verdict | Binding gate | Decisive number |
+|---|---|---|---|
+| Rates + 2s10s yield-curve timer | KILL | baselines (< B&H, < random-lottery-95) | net 1.548 < B&H 1.522; holdout **−1.65**; AR-matched p=0.319 |
+| Real yields / "digital gold" | KILL | AR(1)-matched placebo p=0.096 + holdout | β=0.443; IS +1.34 → **OOS −0.77** (vs B&H +0.91) |
+| GDELT news-tone timer | KILL | baselines | tone corr **0.00**, hit-rate 0.516 (coin-flip); holdout −1.48 |
+| Fear & Greed contrarian | KILL | baselines | net 0.38 < B&H 0.59; surrogate p=0.992 |
+| Google Trends contrarian | KILL | holdout | holdout **inverts** −0.25 |
+| Global net-liquidity / M2 | KILL | residual-alpha | net 1.31 but residual alpha exactly **0.000** — pure beta |
+| Options put/call contrarian | KILL | DSR / placebo | selection-inflated 1.57 → 0.89 honest; placebo 0.29 |
+
+### 3.6 D7 — calendar & event (`output/edgehunt-D7/SUMMARY.md`, re-queue) — all KILL
+
+| Hypothesis | Verdict | Binding gate | Decisive number |
+|---|---|---|---|
+| Four-year halving cycle | KILL | Deflated Sharpe @ N=2 | honest N hard-capped at **2** genuine post-halving years (2020, 2024); DSR cannot mathematically clear 0.95 |
+| Stablecoin mint-as-event | KILL | family-wise MAX-stat placebo | per-cell p=0.007 is the data-mining trap; **family-wise p = 0.31** over the 128-cell grid |
+| Funding-settlement timing | KILL | must-add-over-carry | every overlay cell loses standalone; injecting variance into a delta-neutral stream only lowers it |
+| Sell-in-May / month seasonality | KILL | calendar-reanchor p=1.000 | Halloween effect is autocorrelated noise |
+| Day-of-week | KILL | drift-removed ≈ 0 | tail-driven by shared crash Wednesdays |
+| Turn-of-month | KILL | holdout | holdout sign-flips **−0.93** (an equity-flow effect crypto lacks) |
+| CME weekend-gap fill | KILL | canonical | canonical −0.26 |
+
+### 3.7 D3/D4/D8 remainder — vol/momentum/ML (`output/edgehunt-D348/SUMMARY.md`, `output/edgehunt-D348/SUMMARY.json`) — 10 KILL, 2 DEFERRED
+
+| Hypothesis | Verdict | Binding gate | Decisive number |
+|---|---|---|---|
+| Dual momentum (abs+rel) | KILL | consume-once holdout + BTC-beta | gated IS 1.60 = **timed beta** (β=0.65); holdout **0.03** |
+| Funding dispersion (cross-venue) | KILL | Deflated Sharpe @ N | dispersion 0.52 bps/8h << flip cost; adds nothing over funding level |
+| Short-term reversal (weekly+daily XS) | KILL | gross-negative | **−0.39** best of 36, negative even gross |
+| 52-week-high nearness (anchoring) | KILL | **Harvey-Liu haircut → 0** (binds even at lenient N=6) | raw 1.04 → haircut 0; liquidity decay 1.04 → 0.51 *(audit: the haircut, not the cited DSR, is the real binding gate)* |
+| Frog-in-the-pan / information discreteness | KILL | incremental-over-momentum CI spans 0 + holdout | adds **+0.00004/wk** over plain momentum; lowID holdout **−0.82** (β=1.26, *more* timed beta) |
+| Ensemble stacking of weak signals | KILL | fails to beat naive 1/k | holdout 0.58 vs 1/k 0.96 |
+| Rebalancing premium / vol harvesting | KILL | corr-matched + XS-shuffle surrogate | best 0.17; a structural vol+corr artifact, monotone in correlation |
+| Risk parity (inverse-vol / ERC) | KILL | residualize-vs-low-vol-factor | RP−EW spread is a low-vol beta tilt (t ≈ 7.6), construction-α ~0 |
+| GARCH/EGARCH vol-forecast timing | KILL | GARCH-simulated zero-edge surrogate (p=0.575) + matched-exposure | net 0.45 < B&H@matched 0.49; real lift **−0.037** (smoother beta, not alpha) |
+| DVOL signals (spike/mom/level/timer) | KILL | strict-forward-lag | lag0 1.01 → lag1 **0.11** (boundary look-ahead) |
+| GEX / dealer gamma (walls, flip) | **DEFERRED** | data-availability | needs paid per-strike OI+gamma history; $0 proxy −0.17 |
+| 25-delta risk reversal / skew | **DEFERRED** | data-availability | needs paid per-delta IV history; $0 proxy fails lead-lag + boot + DSR |
+
+---
+
+## 4. AUDIT CORRECTIONS (the two-layer independent methodology audit)
+
+Every batch was re-reviewed by an independent auditor **and** an audit-of-the-audit that
+re-derived each disputed number from the committed primitives in
+`src/lib/training/statistical-validation.ts`. The audits are
+`output/edgehunt-audit/SUMMARY.md` (9 batches) and `output/edgehunt-audit-nb/SUMMARY.md`
+(the Q9/O3 family-wise re-test). The conservative "nothing deployable" stands and is, if
+anything, **stronger** than first reported.
+
+**No false-KILL was found anywhere.** Every spot-run of a survivor candidate collapsed out of
+sample, on a matched baseline, or on honest-N deflation. But two systematic defects were
+confirmed, and **three earlier PROMISINGs were flipped to KILL on the *same* defect.**
+
+### 4.1 Three PROMISING → KILL flips (one shared defect)
+
+The defect is identical in all three: the harness ran the surrogate null on a **single,
+in-sample-selected, grid-best config with no family-wise correction**, while the config was
+actually the **argmax of a searched grid**. The correct null for a searched family is the
+**family-wise MAX-statistic** (scramble every signal, rebuild *all* configs, take the
+per-surrogate grid-MAX). Under it, each surrogate gate fails — and each lead **independently**
+fails honest-N Deflated Sharpe at the full grid.
+
+| Flipped lead | Era / source | Harness single-config p | Family-wise MAX-stat p | Honest-N DSR (full grid) | Verdict |
+|---|---|---|---|---|---|
+| **BTC exchange reserve-depletion / netflow** | campaign D5 (`output/edgehunt-audit/SUMMARY.md`) | 0.013 | **≈ 0.24** (real best 0.994 < surr95 ≈ 1.19) | 0.73 @ N=54 | **KILL** (argmax of a ~12-config neighborhood; also inverts on ETH) |
+| **Q9 — cross-sectional low-volatility anomaly** | backlog quant (`output/edgehunt-audit-nb/SUMMARY.md`) | 0.002 | **≈ 0.06** (borderline, seed-sensitive) | **0.476** @ N=96 (Harvey-Liu adjP 0.673) | **KILL** (killed robustly by honest-N DSR; surrogate only a secondary contributor) |
+| **O3 — fee-revenue NVT signal (BTC)** | backlog on-chain (`output/edgehunt-audit-nb/SUMMARY.md`) | 0.005 | **0.093** @ broad N=312 (real best 1.332 < surr95 1.384) | **0.894** @ N=312 (the N=54 pass was a post-hoc carve-out) | **KILL** |
+
+The audit-of-audit also **self-corrected**: its first pass over-stated the Q9 family-wise p as
+0.397 (an inflated *independent-per-config* null); the precedent-faithful *coherent* null
+(one shared per-day permutation applied to all configs) gives ≈ 0.06. The verdict is
+unchanged — Q9 dies on honest-N DSR 0.476 and Harvey-Liu 0.673 regardless — but the
+correction is logged for honesty.
+
+### 4.2 The systemic financing leak
+
+**Every short/levered book in the campaign charged zero borrow/financing on the levered or
+short notional** (error class i — it recurs in dated-futures, Donchian, Bollinger, Ichimoku,
+MVRV-Z short, GARCH vol-timing). On the KILLs it only **deepens** the kill; on the two carries
+it **inflated the headline**:
+
+- **Dated-futures basis (re-anchored).** At the correct levered RF charge (avg lev **2.95×**),
+  Sharpe **1.64 → 0.69**, ~$1,062 → **~$447/mo**, DSR **0.58 → 0.13** — and it fails the 0.95
+  gate at *any* RF ≥ 0.75%/yr. Only a thin **unlevered** ~4.9%/yr (t=2.41) excess survives.
+  The corrected dated-futures lead is therefore PROMISING **unlevered-thin only** (§1).
+- **Donchian L/S.** Charging borrow on the continuous ~1.0× short notional erodes the OOS
+  holdout from ~0.53 toward **0 / negative** under expensive alt borrow — so its OOS Sharpe is
+  reported as a **range ~0.3–0.5**, never a point (§1).
+
+### 4.3 Two doc-level (non-flipping) corrections
+
+- **Tautological metric.** `residual_alpha_sharpe = sharpe(OLS residuals)` is **~0 by
+  construction** (the residual mean is exactly 0), so the "residual-α ≈ 0 → timed beta"
+  narrative is unsupported as stated. The dual-momentum / 52-week-high KILLs stand on the
+  **holdout collapse**, not on this metric; the correct beta-hedged alpha is `sharpe(y − β·x)`.
+- **Re-attributed binding gate.** The **52-week-high** KILL binds on the **Harvey-Liu haircut
+  → 0** (which binds even at a lenient N=6) plus liquidity decay, **not** the cited DSR@N=30
+  (which was N-inflated, and whose surrogate is actually *passed*).
+
+### 4.4 Corrected tally and the meta-conclusion
+
+**Audited final state: 0 clean SURVIVE; 2 weak PROMISING (XS Donchian; dated-futures
+unlevered-thin); everything else KILL** (~109 across all eras, with the 3 flips above moving
+from PROMISING to KILL). The financing leak re-anchors the dated-futures carry; the
+family-wise surrogate flips reserve, Q9, and O3.
+
+> **The meta-conclusion.** A right-null surrogate **PASS** proves the structure/sign is
+> non-random — **not** that the realized mean is positive-with-significance at honest `N` on
+> unseen data. That gap is exactly the PROMISING/SURVIVE boundary, and **no lead, in any era,
+> crossed it.** Nothing is deployable. The durable deliverable is the **methodology** plus
+> this body of negative evidence. The two prior carry "survivors" (perp funding, dated-futures
+> basis) remain **sub-risk-free** regime trades.
+
+---
+
+## 5. Era 3 — the new $0 backlog (18 hypotheses: quant 10 + on-chain/price-action 8)
+
+Two further $0 batches ran after the main campaign, same gauntlet and same traps. Both
+produced **one provisional PROMISING each**, and the family-wise audit (§4) **flipped both to
+KILL**. Net: **18 KILL, 0 surviving PROMISING.**
+
+### 5.1 Quant / regime / vol / momentum (`output/edgehunt-quant/SUMMARY.md`) — 10 KILL
+
+HMM and BOCPD regime timers, acceleration momentum, weekly residual reversal, time-of-day,
+DVOL term-structure vol-carry, vol-regime conditioning, efficiency-ratio/ADX gate, and a
+carry+momentum combo — all KILL on documented mechanisms: **de-risking masquerading as
+timing** (exposed by the matched-exposure control), **detection latency**, **no separable
+premium over an already-killed parent**, and **search inflation vs honest N**.
+
+| ID | Hypothesis | Verdict | Binding gate | Decisive number |
+|---|---|---|---|---|
+| Q1-HMM | Gaussian HMM regime timer (BTC) | KILL | deflated_sharpe @ N=72 | net 0.779; GARCH surrogate p=0.065 |
+| Q2-BOCPD | Bayesian online change-point timer | KILL | deflated_sharpe @ N=108 | detectors fire *after* the move |
+| Q3-ACCEL | Acceleration momentum | KILL | deflated_sharpe @ N=96 | 1.29 IS / **−0.27 OOS** |
+| Q4-STREV | Weekly residual reversal | KILL | baselines | net **0.000**; negative gross spread |
+| Q5-TOD | Time-of-day / UTC-hour timing | KILL | deflated_sharpe @ N=576 | 0.71 IS / **−0.78 OOS** |
+| Q6-DVOLTS | DVOL term-structure vol-carry | KILL | matched-exposure control | mined 3.40, but de-risking not alpha |
+| Q7-VOLREGIME | Revive killed signal via vol-regime gate | KILL | baselines / matched-exposure | no separable premium over the dead parent |
+| Q8-EFFRATIO | Efficiency-ratio + ADX gate on TSMOM | KILL | deflated_sharpe @ N=1456 | 1.324 IS / **−0.058 OOS** |
+| Q9-LOWVOL | XS low-volatility anomaly (β-neutral L/S) | **PROMISING → KILL** (§4) | deflated_sharpe @ N=96 (0.476) + Harvey-Liu 0.673 | β-neutral, XS-shuffle p=0.002, holdout +2.08 — but the canonical is only 0.70; family-wise surrogate ≈ 0.06; survivorship-biased panel |
+| Q10-CARRYMOM | Carry + momentum combo | KILL | cpcv_pbo + holdout | 2.722 IS / **−0.04 WF** |
+
+### 5.2 On-chain (free Coin Metrics) + price-action (`output/edgehunt-onchain2/SUMMARY.md`) — 8 KILL
+
+Network-activity momentum, realized-cap/MVRV, stablecoin-supply flow, and four price-transform
+overlays (Heikin-Ashi, Williams fractals, Mayer Multiple, Renko) — all KILL: the overlays
+reduce to a lagged moving-average / long-beta tilt (reproduced by the surrogate-recompute
+null), and the "adoption" series are repackaged price momentum (reverse causality).
+
+| ID | Hypothesis | Verdict | Binding gate | Decisive number |
+|---|---|---|---|---|
+| O1-ADRACT | Network-growth (AdrAct+TxCnt) momentum, price-orthogonalized | KILL | baselines (BTC) / holdout (ETH OOS −0.19) | corr 0.55–0.73 with price momentum (reverse causality) |
+| O2-REALCAP | Realized-cap / MVRV valuation band | KILL | baselines | loses to B&H + price-only Mayer control (realized cap recovered algebraically; thermocap DEFERRED) |
+| O3-NVTS | Fee-revenue NVT signal (BTC, contrarian) | **PROMISING → KILL** (§4) | deflated_sharpe @ broad N=312 (0.894) + family-wise surrogate 0.093 | net 1.33, 10/10 years positive, holdout +0.59 — but the N=54 pass was a post-hoc carve-out; canonical only 0.74; no ETH confirmation; a free *proxy* for paid `NVTAdj90` (DEFERRED) |
+| O4-STABLEFLOW | Stablecoin supply growth as lagged flow | KILL | deflated_sharpe @ honest N | "survive" only under a dishonest N=3 carve-out; clean holdout **−0.276** |
+| O5-HEIKIN | Heikin-Ashi trend / HA-EMA timer | KILL | deflated_sharpe (dsr-vs-B&H 0.102) | a lagged-MA long-beta tilt |
+| O6-FRACTAL | Williams 5-bar fractal breakout | KILL | baselines | ties/loses to B&H |
+| O7-MAYER | Mayer Multiple (price / SMA200) | KILL | deflated_sharpe (surrogate-recompute) | classic rule −0.380 |
+| O8-RENKO | Causal Renko brick trend timer | KILL | holdout (fails own B&H OOS) | a lagged-MA long-beta tilt |
+
+---
+
+## 6. Reading the gates (how a KILL / PROMISING / SURVIVE is decided)
+
+Every hypothesis runs through the same fixed-order gauntlet (codified in `AGENTS.md`; the
+harness is `scripts/edgehunt-D5/harness.ts::runGauntlet`, chaining the committed primitives in
+`src/lib/training/statistical-validation.ts` — `computeDeflatedSharpeRatio`, `estimateCscvPbo`,
+`blockBootstrapConfidenceInterval`, `summarizeReturnSeries`). The **first failing gate is the
+binding gate** reported in every table. The binding order:
+
+1. **`net_of_cost`** — positive *net* of realistic cost (taker ≈ 4 bps/side ⇒ 8 bps
+   round-trip) on every position change. **Financing/borrow is charged on the FULL
+   levered/short notional, not 1 unit** (the systemic-leak rule, §4). A gross-only signal is
+   an automatic KILL.
+2. **`baselines`** — beat buy-and-hold **and** a matched-exposure benchmark (matched-leverage /
+   exposure-matched random-lottery). A low-exposure long/flat overlay structurally cannot
+   out-Sharpe 100%-long B&H, so scoring it only vs B&H is an artifact. Cross-sectional books
+   must be **beta-neutral** (book β ≈ 0, alpha-t on the residual, using an honest-OOS hedge β,
+   never an in-sample over-hedge).
+3. **`deflated_sharpe`** — Deflated Sharpe probability ≥ 0.95 **at the honest `N`** (the true
+   number of distinct configs searched).
+4. **`block_bootstrap`** — block-bootstrap mean CI strictly positive.
+5. **`cpcv_pbo`** — Probability of Backtest Overfitting < 0.5 over combinatorial splits.
+6. **`haircut`** — Sharpe survives the Harvey-Liu multiple-testing haircut (often the *true*
+   binding gate; see the 52-week-high KILL, §4).
+7. **`surrogate`** — the real edge beats the **right** null for the claim, using the
+   **family-wise MAX-statistic** for a searched grid:
+   - time-series timing → phase-randomization / block-bootstrap
+   - rotation / relative-value → cross-sectional shuffle
+   - path-dependent exits → bracket-on-surrogate
+   - vol-clustering → GARCH-simulated zero-edge
+   - variance-risk-premium → shuffled-VRP placebo
+   - calendar / event → calendar-reanchor + family-wise MAX-statistic
+8. **`holdout`** — out-of-sample slice scored **exactly once** (consume-once vault).
+
+**Labels:** SURVIVE = all gates pass. **PROMISING** = passes net + baselines + surrogate +
+holdout but trips a multiple-testing / DSR gate (curable only by genuine pre-registration to
+collapse `N → 1`). Otherwise KILL.
+
+> **Change the target, never the gates.** An empty parent pool under this gauntlet means the
+> target lacks edge net of cost — not that the gauntlet is too strict. A KILL is a valid,
+> valuable outcome.
+
+---
+
+## 7. Synthesis — what the whole ledger says
+
+**The edge is NOT in** (a) direction prediction, (b) cross-section / relative value at retail
+cost, (c) classic or microstructure TA, (d) timing the carry, (e) adaptively re-fitting any of
+the above, (f) illiquid small-caps, (g) GA-evolved rules, (h) capital rotation / dominance
+cycles / breadth / event flow, (i) on-chain valuation / flow overlays (NVT, MVRV, SOPR,
+exchange-flow, network-activity), (j) macro / sentiment timers, (k) calendar / seasonality
+effects, (l) regime / change-point timers, or (m) variance-risk-premium harvesting. ~111
+independent attempts — the standard academic priors, fixed and adaptive, plus the genuinely
+new on-chain data class — almost all dead net of realistic cost.
+
+Two patterns recur so consistently they are the meta-findings:
+
+- **The "two-gate" death.** A signal posts a pretty in-sample Sharpe and *passes* DSR / PBO /
+  haircut — gates that only certify "this Sharpe is not luck-of-selection." It then dies at the
+  two gates that test *economic* edge: **baselines** (loses to B&H / matched exposure /
+  random-lottery) and the **consume-once holdout**. Honest `N` is what makes this work
+  (TA3 at N=224 → DSR 0.21; T10 at N=420 → DSR 0.029; R3 at N=5613 → DSR ≈ 9e-12;
+  Q9 at N=96 → DSR 0.476).
+- **The "true descriptive kernel, no tradeable edge."** Many intuitions contained a genuinely
+  true fact — adaptive drift is real (WF autocorr 0.39–0.97), correlation→1 in risk-off is real
+  (C3), dominance is persistent (C2), the listing dump is real (C4), flow carries
+  price-orthogonal information on BTC (reserve), the low-vol and breakout tilts are real
+  structures (Q9, Donchian) — and *none* became a tradeable, cost-surviving, out-of-sample
+  edge. The **surrogate / family-wise null is the hero**: it separates real structure from a
+  realized mean that is significant at honest `N` on unseen data.
+
+**The durable asset of this project is the methodology** — committed gates + the right
+(family-wise) surrogate null + honest trial-count `N` + a consume-once holdout — together with
+this exhaustive body of negative evidence. The empty parent pool is the gates working
+correctly, not a failure of effort. **Change the target, never the gates.**
 
 ---
 
 ## Provenance and related documents
 
+- **`docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md`** — the 2026-06 campaign roll-up (~58 hypotheses, 8
+  domains), with the four-leads-in-detail and the per-domain KILL ledger.
+- **`output/edgehunt-*/SUMMARY.md`** — the per-domain syntheses cited throughout §3 and §5
+  (`edgehunt/`, `edgehunt-D1/`, `edgehunt-D2/`, `edgehunt-D5/`, `edgehunt-D6/`, `edgehunt-D7/`,
+  `edgehunt-D348/`, `edgehunt-requeue/`, `edgehunt-quant/`, `edgehunt-onchain2/`), plus the
+  pre-registered reserve follow-up `output/edgehunt-D5-followup/VERDICT.md`.
+- **`output/edgehunt-audit/SUMMARY.md`** + **`output/edgehunt-audit-nb/SUMMARY.md`** — the
+  two-layer independent audit that confirmed the financing leak and flipped reserve, Q9, and O3
+  to KILL under the family-wise MAX-statistic null.
+- **`output/edgehunt-deepen/SUMMARY.md`** — the adversarial-verification deepening (pre-registered
+  consume-once forward tests + a default-to-refute skeptic).
+- **`docs/BACKLOG.md`** — the full research backlog (the right surrogate null, honest-N concern,
+  and honest prior for each hypothesis).
 - **`docs/EVOLUTION_TRAINING_LOG.md`** — the raw chronological lab log (Portuguese), the
-  source of truth for every number above (entries dated 2026-05-31, Rounds 1–6).
-- **`docs/EDGE_SEARCH_SYNTHESIS.md`** — the durable synthesis + full academic bibliography
-  (every gate and every hypothesis mapped to its peer-reviewed or working-paper source).
-- **`docs/VALIDATION_HARNESS.md`** — the reusable anti-overfitting gauntlet, documented as
-  one API (`src/lib/validation/strategy-validator.ts`).
-- **Machine-readable outputs** — `output/{funding,carry,ta-research,walkforward,front-r3,front-r4,r2-illiquid,c1-rotation,front-c2,front-c3,front-c4,dated-futures,onchain-poc,validation}/`.
+  source-of-truth provenance for the Era-1 prior rounds.
+- **Gauntlet primitives** — `src/lib/training/statistical-validation.ts`, chained by the
+  per-domain `runGauntlet` wrappers (e.g. `scripts/edgehunt-D5/harness.ts`). *(A single
+  `validateStrategy()` entry-point wrapper is exposed in the published lean repo; it is not
+  present on this working branch, where the primitives are chained directly by the harness.)*
 
-> **License: MIT** (see [`../LICENSE`](../LICENSE)). The repository is released under the MIT
-> License, copyright Kim Lage.
+> **License: MIT.** A negative result, honestly gated, is the result.

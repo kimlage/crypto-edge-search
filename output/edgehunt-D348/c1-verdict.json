@@ -1,0 +1,27 @@
+{
+  "item": "D8-C1 cross-venue funding-rate dispersion (Binance vs Bybit)",
+  "n_aligned_8h": 3287,
+  "symbols": ["BTC","ETH","BNB","SOL","XRP","DOGE"],
+  "build": "executable lagged-sign (no look-ahead): position p_t=sign(d_{t-1}) per symbol, pnl=p_t*d_t, market-neutral; 4 taker legs/flip @5bps; deadband hysteresis swept; dual-venue holding haircut charged in realistic case",
+  "real_signal_found": true,
+  "evidence_signal_real": {
+    "dispersion_AR1": "0.11..0.54 across symbols",
+    "sign_persistence": "61..70%",
+    "surrogate_venue_shuffle_p": 0.0,
+    "block_bootstrap_recentered_p": 0.0,
+    "pbo": 0.0,
+    "net_mean_per8h_CI95_bps": [0.048, 0.113]
+  },
+  "why_KILL": {
+    "deflated_sharpe_p_favorable": 0.700,
+    "deflated_sharpe_p_realistic": 0.585,
+    "expected_max_sharpe_under_null_N48_ann": 4.0,
+    "monthly_at_100k_favorable_usd": 75,
+    "monthly_at_100k_realistic_usd": 36,
+    "dispersion_adds_over_level_GROSS": false,
+    "level_carry_gross_sharpe": 27.2,
+    "dispersion_gross_sharpe": 6.4,
+    "flip_rate_at_best_pct": 0.07
+  },
+  "interpretation": "Lagged dispersion IS predictable and harvestable gross, but (1) the wedge is ~0.08 bps/8h net -> economically trivial ($36-75/mo on $100k), (2) it fails Deflated Sharpe at honest N (the high annualized Sharpe is a 1095-periods/yr annualization artifact; realized 4.9 sits at the 4.0 multiple-testing noise floor), and (3) on a pure-signal/gross basis the funding LEVEL carry (27.2) dominates dispersion (6.4) -> dispersion is redundant with and sub-cost relative to level. Confirms and strengthens the prior KILL with a non-look-ahead executable build."
+}

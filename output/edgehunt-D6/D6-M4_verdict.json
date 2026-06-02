@@ -1,0 +1,38 @@
+{
+  "test": "D6-M4 Real yields & 'digital gold' (falling 10Y TIPS real yield -> buy BTC)",
+  "date": "2026-06-01",
+  "verdict": "KILL",
+  "data": {
+    "btc": "output/nf1/BTC_daily_ohlc.json (2017-08..2026-05-18) tail-extended w/ output/edgehunt-D5/cm_extra_btc.json PriceUSD -> 2026-05-31",
+    "real_yield": "FRED DFII10 no-key CSV, 2003-01-02..2026-05-29, output/edgehunt-D6/DFII10.csv",
+    "gold_leg": "DEFERRED — FRED GOLDPMGBD228NLBM bot-blocked, stooq XAU needs apikey; load-bearing thesis tested via DFII10 alone",
+    "panel_rows": 3209,
+    "panel_window": "2017-08-18..2026-05-31",
+    "causality": "STRICT t-1: real-yield level/change known at close t-1 positions for return realized t-1->t; carry-forward of last business-day yield to BTC trading days (point-in-time, never uses a yield dated after t)"
+  },
+  "strategy_family": "16 configs: change timers (long when L-day real-yield change<0, L in {5,10,20,40,60}, long-only & long/short) + level timers (long when yield below rolling-W median, W in {60,120,250}, LO & LS). 4bps/flip net cost.",
+  "honest_N": 16,
+  "best_config": {
+    "id": "chg-L5-LO",
+    "net_sharpe": 0.828,
+    "gross_sharpe": 0.903,
+    "ann_ret_pct": 45.8,
+    "exposure_pct": 48,
+    "max_dd_pct": 69,
+    "note": "beats B&H 0.473 gross but only because it is long ~half the time on a trending asset"
+  },
+  "benchmark_buy_and_hold": { "sharpe": 0.473, "ann_ret_pct": 38.2, "max_dd_pct": 83 },
+  "raw_signal": "corr(real-yield change, next-day BTC return) in [-0.024, +0.006] across all lookbacks — essentially noise; confirms prior 'weak/unstable correlation'",
+  "gates": {
+    "deflated_sharpe_at_N16": { "deflated_prob": 0.741, "need": ">0.95", "pass": false },
+    "pair_shuffle_surrogate_p": { "p": 0.1198, "need": "<0.05", "pass": false },
+    "ar1_matched_placebo_p": { "p": 0.0958, "need": "<0.05", "pass": false, "note": "the coincident-beta killer: fake AR(1) yield paths time BTC ~10% as well as the real series" },
+    "beta_neutralization": { "alpha_ann_pct": 23.1, "beta": 0.443, "t_alpha": 2.02, "note": "barely significant, does not survive placebo -> lift is risk-on beta not real-yield edge" },
+    "regime_split_holdout": { "is_pick": "lvl-W250-LS", "is_net_sharpe": 1.343, "oos_net_sharpe": -0.768, "oos_bh_sharpe": 0.914, "pass": false, "note": "OOS collapse: negatively predictive out of regime" },
+    "cpcv_pbo": { "pbo": 0.729, "need": "<0.5", "pass": false },
+    "long_block_bootstrap_mean_bps_day": { "est": 10.33, "ci95": [1.87, 18.80], "note": "CI excludes 0 but this is the only non-failing diagnostic and reflects beta, not alpha" }
+  },
+  "binding_gate": "ar1_matched_placebo (coincident-beta) + regime-split holdout OOS collapse + DSR@N",
+  "monthly_at_100k": "n/a (no surviving deployable edge)",
+  "conclusion": "The 'digital gold' / inflation-hedge timing thesis fails on free FRED DFII10 over 2017-2026. Raw predictive correlation is ~0. The best timer's apparent edge is risk-on beta (long ~half the time on a bull-trending asset): it does NOT beat an AR(1)-matched persistent-series placebo (p=0.096), does NOT survive pair-shuffle (p=0.120), is overfit (PBO=0.73), and inverts out-of-regime (IS +1.34 -> OOS -0.77). Confirms the documented prior KILL (inflation-hedge failed OOS in 2021-22)."
+}

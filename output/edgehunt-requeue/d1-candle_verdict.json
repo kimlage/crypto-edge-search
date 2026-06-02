@@ -1,0 +1,19 @@
+{
+  "hypothesis": "D1-CANDLE (D1-16): Candlestick reversal patterns (engulfing/hammer/doji/star) on daily BTC, strictly-lagged next-day entry",
+  "data": "output/nf1/BTC_daily_ohlc.json, 3197 daily bars 2017-08-17..2026-05-18 (8.75y), $0 reuse",
+  "cost": "4 bps taker/side",
+  "honestN": 192,
+  "right_null": "MAX(pattern-label placebo with matched base rate, phase-randomization+re-detect)",
+  "best_config": "doji|trendWin50|hold5|contrarian",
+  "best_net_sharpe_IS": 0.921,
+  "binding_gate": "deflated_sharpe (p=0.4254 vs >0.95 required)",
+  "other_kills": {
+    "cpcv_pbo": 0.500,
+    "harvey_liu_adjP": 0.993,
+    "holdout_oos_sharpe": -0.663
+  },
+  "surrogate": {"pPlacebo": 0.0066, "pPhase": 0.0398, "combined_max": 0.0398},
+  "canonical_textbook_reversal": {"net_sharpe_IS": -0.503, "placebo_p": 0.8206, "holdout_sharpe": -0.308},
+  "confound": "best book is a slow contrarian-to-50d-trend long-beta overlay (exposure 0.46, turnover 0.13); edge concentrated in 2019-2022 bull (seg Sharpe 1.55) and decays to -0.06 in 2024-2026; phase-surrogate already recovers Sharpe 0.33",
+  "verdict": "KILL"
+}

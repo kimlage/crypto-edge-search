@@ -1,0 +1,23 @@
+{
+  "id": "D6-TRENDS (D6-S4)",
+  "claim": "Google Trends weekly 'bitcoin' attention; high-attention fade / low-attention accumulate, strictly-lagged",
+  "verdict": "KILL",
+  "data": "stitched weekly Google Trends 'bitcoin' interest 490 wk 2017-01-01..2026-05-17 (fresh fetch, cookie-primed, 35s 429-backoff) + native monthly backbone 113 pts; BTC daily close 3197d on-disk. Strictly-lagged: weekly value applied only PUB_LAG=3d after the week closes.",
+  "honestN": 96,
+  "best_config": "zWin=52,k=2,dir=+1(momentum/accumulate-on-high),transform=level,longonly",
+  "best_net_sharpe_IS": 0.839,
+  "key_findings": {
+    "thesis_direction_wrong": "level-attention-z forward IC is POSITIVE (+0.10@21d,+0.14@42d) i.e. high attention precedes HIGHER returns -- opposite of 'fade'. Even granting the best (momentum) direction, it dies.",
+    "fade_canonical_negative": "the pre-registered fade-both-legs rule is net Sharpe -0.79 IS.",
+    "baselines": "best momentum config 0.839 > B&H 0.509 and > random-lottery95 0.701 (the only gate it passes besides net-of-cost/bootstrap) -- this is the long-beta+vintage 'looks good' trap.",
+    "deflated_sharpe": "p=0.378 @N=96 (need>0.95) FAIL -- apparent Sharpe explained by best-of-96 selection.",
+    "cpcv_pbo": "0.55 (>0.5) FAIL.",
+    "harvey_liu_haircut": "Bonferroni adjP=1.0 (single p=0.0137 x96) FAIL.",
+    "AR_matched_placebo_RIGHT_NULL": "p=0.055 @N=1000 (placebo95=0.851 >= real 0.839). Indistinguishable from an AR(1) wiggle with matched autocorrelation riding BTC bull drift -> zero attention content.",
+    "consume_once_holdout": "OOS net Sharpe -0.250 (first-half +0.44, second-half -1.01); edge inverts out of sample.",
+    "PIT_note": "1-week CHANGE in attention-z (the differencing that removes the rescaled trend) has forward IC ~0 (+0.017..-0.016). The only 'signal' lives in the slow level, which is exactly the vintage/rescaling + long-beta artifact the BACKLOG flagged."
+  },
+  "binding_gate": "deflated_sharpe (and independently fails cpcv_pbo, haircut, AR-placebo, holdout)",
+  "monthly_at_100k": "n/a (does not survive)",
+  "confidence": "high"
+}

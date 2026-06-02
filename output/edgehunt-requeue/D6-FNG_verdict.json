@@ -1,0 +1,48 @@
+{
+  "id": "D6-FNG",
+  "thesis": "Crypto Fear & Greed contrarian timer — buy extreme fear, lighten extreme greed, strictly-lagged",
+  "verdict": "KILL",
+  "data": {
+    "source": "output/edgehunt-D6/fng_history.json (alternative.me CFGI) x output/nf1/BTC_daily_ohlc.json",
+    "alignedDays": 3038,
+    "dateRange": ["2018-02-01", "2026-05-31"],
+    "honestN_contrarian": 210,
+    "honestN_with_devilsadvocate_momentum_arm": 338
+  },
+  "rawDiagnostics": {
+    "corr_FNG_t_PAST7d_ret": 0.424,
+    "corr_FNG_t_FWD7d_ret": 0.074,
+    "corr_dFNG_t_ret_tminus1_priceLeadsFNG": 0.570,
+    "corr_dFNG_t_fwdret_FNGleadsPrice": 0.006,
+    "corr_FNG_t_fwd1d_ret": 0.0371,
+    "note": "FNG is a lagged price transform; price Granger-leads sentiment; the contrarian SIGN is wrong (greed predicts HIGHER fwd ret, not lower)."
+  },
+  "ar1Placebo": { "phi": 0.9565, "sigma": 6.417, "mean": 45.95, "sd": 21.99 },
+  "gauntlet_contrarian": {
+    "bestNetSharpeAnn": 0.378,
+    "bhSharpeAnnIS": 0.592,
+    "randomLottery95": 0.781,
+    "bindingGate": "baselines",
+    "surrogate_AR1_placebo_p": 0.992,
+    "placebo_best_median": 0.707,
+    "placebo_best_p95": 1.216,
+    "holdoutSharpeAnn": -0.356,
+    "deflatedSharpeP": 0.0318,
+    "pbo": 0.500,
+    "bonferroniAdjP": 1.0,
+    "allGatesFailedExceptNetOfCost": true
+  },
+  "devilsAdvocate_proCyclicalMomentumFNG": {
+    "comment": "OPPOSITE of the hypothesis (long only in greed). Best-signed FNG rule. Still fails the right null.",
+    "bestNetSharpeAnn": 1.171,
+    "bhSharpeAnnIS": 0.592,
+    "holdoutSharpeAnn": 0.496,
+    "surrogate_AR1_placebo_p": 0.0559,
+    "placebo_best_p95": 1.207,
+    "interpretation": "Best-of-grid AR(1) placebo (p95=1.207) matches the real signal (1.171); p=0.056>0.05. Sentiment content indistinguishable from persistent noise timing BTC drift."
+  },
+  "mechanism": "Coincident-beta trap, identical to D6-M1/M4/S5. FNG carries no exogenous predictive content beyond a lagged, persistent echo of price. A persistent random (AR(1)-matched) series times BTC's bull drift as well or better than the real index. The literal contrarian sign is additionally wrong (it fights momentum).",
+  "confidence": "high",
+  "consumedOnceHoldout": true,
+  "monthlyAt100k": null
+}

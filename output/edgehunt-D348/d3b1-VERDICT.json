@@ -1,0 +1,25 @@
+{
+  "test": "D3-B1 — Dealer GEX / gamma walls / zero-gamma flip",
+  "verdict": "DEFERRED",
+  "date": "2026-06-01",
+  "reason": "Canonical test needs point-in-time per-strike OI + per-strike gamma history (Laevitas/Amberdata/Tardis PAID, or Deribit forward-record small-N). NONE on disk: zero per-strike OI, zero per-strike gamma (current or historical). The two claims that LOCATE structure — walls=S/R and the zero-gamma flip — are not testable at $0 at all. The dealer-sign assumption is unfalsifiable on public data.",
+  "strongestHonestZeroDollarProbe": {
+    "scope": "PROXY-ONLY directional core of claim (1): DVOL-dynamics as a long/short-gamma regime proxy on BTC daily (2021-03..2026-05, n=1882). No walls, no flip, no per-strike data.",
+    "honestN": 14,
+    "costRoundTrip": 0.0008,
+    "bestProxyNetSharpeAnn": -0.17,
+    "bestProxyGrossSharpeAnn": 0.09,
+    "allSevenConfigsNetNegative": true,
+    "labelShuffle_p": 0.419,
+    "blockSurrogate_p": 0.507,
+    "dsr_p_at_honestN14": 0.017,
+    "pbo": 0.186,
+    "blockBootstrapSharpeCI": [-0.051, 0.030],
+    "rvOnlyRegimeControl_A4_netSharpeAnn": -1.32,
+    "interpretation": "No gross edge; dies on cost; indistinguishable from surrogate null; the fixed dealer-sign convention is the only 'signal'. Consistent with the prior KILL: the proxy collapses into a (losing) vol regime."
+  },
+  "dataFidelity": "PROXY-ONLY, NOT provider-canonical. A SURVIVE was structurally impossible on this data. Even so, the proxy showed nothing.",
+  "forwardRecordOrPaidPanelOnly": true,
+  "protocol": "Per BACKLOG growing-holdout protocol (D3-B1/B3/B4): pre-register on the first forward-recorded block, accrue consume-once holdout in real time, score once at a pre-committed small forward-N with DSR bar set to that N. Null = strike-shuffle placebo (walls) + gamma-regime block + flip label-shuffle. Until a per-strike-greeks panel exists, DEFER.",
+  "confidence": "high — data requirement is unambiguous and the $0 directional proxy is unambiguously null/negative"
+}

@@ -1,85 +1,95 @@
-# Reproducibility — how a stranger re-runs this
+# Reproducibility — how a stranger re-runs this at $0
 
-> **Purpose.** This document lets anyone reproduce the edge-search program from scratch:
-> the data, the environment, a worked validation example, and an index of every audit
-> script. The program tested **35 crypto trading hypotheses** through an anti-overfitting
-> validation harness; **33 were KILLED** and **2 structural-carry "survivors"** are real
-> but **sub-risk-free in the current regime** (see `docs/EDGE_SEARCH_SYNTHESIS.md` for the
-> tally and `docs/EVOLUTION_TRAINING_LOG.md` for the chronological lab record). The
-> durable asset is the **methodology** — committed gates + surrogate/placebo controls +
-> an honest trial count `N` + a consume-once holdout — packaged as
-> `validateStrategy()` in `src/lib/validation/strategy-validator.ts` and documented in
-> `docs/VALIDATION_HARNESS.md`.
+> **Purpose.** This document lets anyone reproduce the edge-search lab from scratch — the
+> free public data, the environment, the committed validation harness, the exact run
+> command, the verdict scheme, the script families, and the on-disk caches — at a hard
+> **$0 data cost** and within a **US$100 cloud ceiling** that was, in practice, never
+> touched (every fetch hits unauthenticated public endpoints; the campaign's cloud bill is
+> **$0**).
+>
+> This is a falsification lab. We do not hunt for a story that fits a backtest; we try to
+> *break* every technique with the same anti-overfitting gauntlet, and we publish whatever
+> survives **and** whatever dies. The program tested **~111 hypotheses across 8 domains**
+> (~35 prior rounds + 58 in the 2026-06 domain campaign + 18 in two later $0 backlog
+> batches), all on free public data, all through the committed gauntlet. **Final audited
+> tally: 0 clean SURVIVE, 2 weak/caveated PROMISING, everything else KILL — nothing
+> deployable.** The durable deliverable is the **methodology** + the body of negative
+> evidence (see `docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md` for the cross-domain roll-up and the
+> per-domain `output/edgehunt-*/SUMMARY.md` files for the detail).
 >
 > **License: MIT (see [`../LICENSE`](../LICENSE)).**
 
 ---
 
-## 1. Data — every source is free and public (cloud spend $0)
+## 1. Data — every source is free, public, and key-less (cloud spend $0)
 
-Every number in this program comes from **free, public** market data. **No paid feeds,
-no API keys, no authentication, and no cloud compute were required** — all fetches hit
-unauthenticated public REST endpoints, and the cloud bill for the entire edge search was
-**$0**. The fetched panels are committed under `output/` so the analysis is reproducible
-even without re-fetching.
+Every number in this program comes from **free, public** data. **No paid feeds, no API
+keys, no authentication, and no cloud compute were required** — all fetches hit
+unauthenticated public REST endpoints or no-key CSV downloads, and the cloud bill for the
+entire edge search is **$0**. The fetched panels are committed under `output/` so the
+analysis is reproducible even without re-fetching.
 
-### Public REST endpoints used
+### Public data sources used (all free, all no-key)
 
-| Domain | Host(s) | What was pulled | Used by |
+| Source | Host / access | What it provides | Used by |
 |---|---|---|---|
-| Binance spot/USDⓈ-M | `api.binance.com`, `fapi.binance.com`, `dapi.binance.com`, `data-api.binance.vision` | Daily klines (prices), 8h perpetual funding rates, dated-futures (quarterly) basis, `exchangeInfo` `onboardDate` (listing events), daily quote-volume, order-book depth, open interest | E1–E3, T1–T10, TA1–TA4, WF-A–D, R2–R4, C1–C4, carry D1–D4 |
-| Bybit | `api.bybit.com` | 8h perpetual funding rates (multi-venue cross-check) | Carry round 2 (D1) |
-| OKX | `www.okx.com` | 8h perpetual funding rates (multi-venue cross-check) | Carry round 2 (D1) |
+| **Binance** spot + USDⓈ-M + COIN-M | `api.binance.com`, `fapi.binance.com`, `dapi.binance.com`, `data-api.binance.vision` | Daily/15m klines, 8h perpetual funding, dated-futures (quarterly) basis, `exchangeInfo` listing dates, quote-volume, order-book depth, open interest | most price/funding/basis/microstructure domains |
+| **Bybit** | `api.bybit.com` | 8h perpetual funding (multi-venue cross-check) | carry / cross-venue dispersion |
+| **OKX** | `www.okx.com` | 8h perpetual funding (multi-venue cross-check) | carry / cross-venue dispersion |
+| **Coin Metrics Community** | `community-api.coinmetrics.io` (no key) | ~32 free daily metrics, full history — BTC+ETH exchange FlowIn/FlowOut (native units), MVRV, realized cap, active addresses, NVT, fee revenue, PriceUSD | on-chain (D5), on-chain-2, reserve-depletion lead |
+| **Deribit** | public DVOL endpoint | BTC/ETH DVOL implied-vol index (history since 2021-03) | variance-risk-premium (VRP) |
+| **DefiLlama** | `stablecoins.llama.fi` (no key) | Stablecoin circulating-supply aggregate | stablecoin-supply / SSR signals |
+| **FRED** | no-key CSV download | DFII10 (10Y TIPS real yield), DGS10/DGS2, T10Y2Y (2s10s), SP500 | macro / cross-asset (D6) |
+| **stooq** | no-key CSV | Equity-index reference series (SP500 cross-check) | macro / cross-asset (D6) |
+| **alternative.me** | public Fear & Greed API | Crypto Fear & Greed index history | sentiment (D6) |
+| **Google Trends** | public | Search-interest series | sentiment (D6) |
+| **GDELT** | public | Global news-tone series | sentiment (D6) |
 
-The Binance/Bybit/OKX endpoints above are the data sources behind verdicts **E1–C4**. The
-**28th test (OC1)** additionally uses **Coin Metrics Community** (`community-api.coinmetrics.io`,
-no key, daily, full history) for BTC+ETH exchange in/out flow (native units) and MVRV; this is
-free and unauthenticated, so cloud spend stays **$0**. (The earlier `scripts/onchain-scout/`
-probes reference several other vendor hosts — CoinGecko, DefiLlama, Glassnode, Messari, Dune,
-Etherscan, The Graph, etc. — but those were preliminary on-chain *feasibility probes*; most of
-those vendors gate the useful series behind a paid key, which is exactly why both the core edge
-search and the OC1 POC stayed on free, no-key data.)
+> Where a series is offered by more than one of these (e.g. an equity index via both FRED
+> and stooq), both were used as a reliability cross-check; see
+> `output/edgehunt-D6/_data_reliability_notes.json`.
 
-### Committed panels (so you do not have to re-fetch)
+### On-disk data caches (so you do not have to re-fetch)
 
-| Path | Contents | Provenance |
-|---|---|---|
-| `output/funding/` | 8 majors: 8h funding (`*_funding_8h.json`, 3288 rows each ≈ 3y) + daily prices (`*_prices_daily.json`) + `manifest.json` | Binance public REST, fetched 2026-05-31, window 2023-06-01 → 2026-05-31 |
-| `output/carry/` | Multi-venue funding (`bybit_*`, `okx_*`), depth snapshots, OI, `market-structure.json`, plus the round-2 cost/capacity/tail reports | Binance + Bybit + OKX public REST |
-| `output/dated-futures/` | Quarterly futures basis panel | Binance dated-futures (`dapi`) public REST |
-| `output/crossxs/`, `output/r2-illiquid/`, `output/c1-rotation/`, `output/front-c2/`, `output/front-c3/` | 30-coin / small-cap / volume panels for the cross-sectional and rotation rounds | Binance public REST |
-| `output/front-c4/` | Listing-event panel (~644 dated USDT-perp listings via `onboardDate`, **including delisted/settling symbols**) | Binance Futures `exchangeInfo` + first-60-day klines |
+The fetched panels are committed under `output/`. The analysis reads these caches directly;
+re-running a `fetch_*` script only refreshes them against the live public APIs.
 
-> Each fetched panel carries a `manifest.json` (or an equivalent header) recording the
-> source string (e.g. `"source": "binance_public_rest"`), the fetch timestamp, the
-> requested window, and per-symbol row counts. Read it to confirm provenance.
+| Path | Contents |
+|---|---|
+| `output/funding/` | 8 majors: 8h funding (~3y) + daily prices + `manifest.json` (Binance public REST) |
+| `output/carry/` | Multi-venue funding (Bybit/OKX), depth, OI, `market-structure.json`, cost/capacity/tail reports |
+| `output/dated-futures/` | Quarterly futures basis panel (Binance COIN-M) |
+| `output/crossxs/`, `output/nf1/` | Cross-sectional / daily-OHLC panels for the 30-coin and 8-major cross-sections |
+| `output/onchain-poc/` | Coin Metrics Community BTC+ETH panels (`cm_btc.json`, `cm_eth.json`) + verdict |
+| `output/bigquery/btc_ohlcv_15m.ndjson` | ~100 MB committed 15m BTCUSDT OHLCV (the intraday microstructure base) |
+| `output/edgehunt/` | Consensus/carry batch: dated-futures carry report, DVOL panels, VRP, PCA stat-arb, etc. |
+| `output/edgehunt-D1` … `output/edgehunt-D7`, `-D348` | Per-domain panels + `SUMMARY.md` (D6 also holds the FRED/stooq CSVs, `fng_history.json`, `gdelt_tone.json`) |
+| `output/edgehunt-quant/`, `output/edgehunt-onchain2/` | The two later $0 backlog batches |
+| `output/edgehunt-requeue/`, `output/edgehunt-D5-followup/` | Low-concurrency re-queue + the reserve pre-registration follow-up |
+| `output/edgehunt-deepen/`, `output/edgehunt-audit/`, `output/edgehunt-audit-nb/` | Deepening + the two-layer independent audit |
 
-### Survivorship caveat (read this before trusting any in-sample number)
+### Survivorship caveat (read before trusting any in-sample number)
 
-The cross-sectional universes (30-coin, small-cap, rotation tiers) are **the coins that
-are liquid *today***. Coins that delisted or died are not in the daily-close panels, so
-every cross-sectional/relative-value in-sample result is an **upper bound** —
-survivorship inflates it. The verdicts already account for this: the survivorship-biased
-in-sample numbers were all **killed out-of-sample** anyway, and the synthesis flags the
-universes as upper bounds. The one place where delisted names *were* deliberately
-retained is the **C4 listing event study** (the `onboardDate` panel keeps SETTLING /
-delisted symbols), so the listing-event result has **no survivorship bias on the event
-itself** — and it was still a KILL.
+The cross-sectional universes (30-coin panels) are **the coins that are liquid today**
+(LUNA / FTT / UST are absent), so every cross-sectional in-sample number is an **upper
+bound** — survivorship inflates it. The verdicts already account for this: even the
+consume-once holdouts on these panels are treated as upper bounds, and the two leads that
+ride a 30-coin panel are flagged as survivorship-biased (a −90% delisting shock flips the
+Donchian holdout negative in ~17% of draws). The listing-event study deliberately keeps
+delisted/settling symbols, so it carries no survivorship bias on the event itself — and was
+still a KILL.
 
 ---
 
 ## 2. Environment
 
-- **Language:** TypeScript. The committed gates live in `src/lib/training/` (the
-  individually-tested anti-overfitting primitives) and the composed harness lives in
-  `src/lib/validation/strategy-validator.ts`. Validation/audit scripts are TypeScript
-  (`.ts`) or Node ESM (`.mjs`).
-- **Runtime:** Node.js, with TypeScript scripts run directly via
-  [`tsx`](https://github.com/privatenumber/tsx) (no build step). `tsx` is a dev
-  dependency (`package.json` → `"tsx": "^4.x"`); after `npm install` it is at
-  `node_modules/.bin/tsx`.
-- **Type check:** the whole program type-checks clean — `npx tsc --noEmit` reports
-  **0 errors**.
+- **Language:** TypeScript, run directly via [`tsx`](https://github.com/privatenumber/tsx)
+  (no build step). `tsx` is a dev dependency; after `npm install` it lives at
+  `node_modules/.bin/tsx`. A few fetchers are plain Node ESM (`.mjs`).
+- **Committed gates:** `src/lib/training/statistical-validation.ts` exposes the
+  anti-overfitting primitives; the per-domain `runGauntlet` wrappers (e.g.
+  `scripts/edgehunt-D5/harness.ts`) chain them with the claim-appropriate null.
+- **Type check:** `npx tsc --noEmit` is clean over `src/` (the committed gates); the `scripts/edgehunt-*` campaign files run under `tsx`.
 
 ### Install
 
@@ -87,224 +97,245 @@ itself** — and it was still a KILL.
 npm install
 ```
 
-### Exact invocation pattern (how every audit/validation script is run)
+### Exact run command (how every audit/validation script is run)
 
-TypeScript scripts are executed with `tsx` from the **repo root**. If your environment
-pins a bundled Node runtime, put its `bin/` directory on `PATH` first so `tsx` finds a
-consistent Node:
+TypeScript scripts are executed with `tsx` from the **repo root**. If your environment pins
+a bundled Node runtime, put its `bin/` on `PATH` first so `tsx` finds a consistent Node:
 
 ```bash
 PATH=/path/to/node/bin:$PATH \
   ./node_modules/.bin/tsx <script-path>
 ```
 
-If you have a normal Node on your `PATH` already (Node 18+), the prefix is unnecessary
-and the portable invocation is simply:
+If you already have Node 18+ on `PATH`, the prefix is unnecessary:
 
 ```bash
-npx tsx scripts/validation/demo-validate.ts        # or any scripts/.../*.ts
-node scripts/fetch-funding-rates.mjs               # the .mjs fetchers run on plain Node
+npx tsx scripts/edgehunt-D5/run_d5.ts        # any scripts/.../*.ts
+node scripts/edgehunt-D5/fetch_extra.ts      # plain-Node .mjs fetchers run under node
 ```
 
-`.mjs` fetch scripts (e.g. `scripts/fetch-funding-rates.mjs`) run under plain `node`.
-Scripts write their machine-readable results into the matching `output/<round>/`
-directory.
+Scripts write machine-readable results into the matching `output/<batch>/` directory.
 
 ### Tests
 
 ```bash
-npm test        # vitest run — unit tests for the gates and reorientation cores
+npm test        # vitest run — unit tests for the gate primitives
 ```
 
 ---
 
-## 3. How to validate a strategy — worked example
+## 3. The validation harness — committed gates + per-domain `runGauntlet`
 
-`validateStrategy()` (in `src/lib/validation/strategy-validator.ts`) composes the seven
-committed gates into one ordered gauntlet and returns a structured verdict. You feed it a
-**gross per-period return series** (or a `() => number[]` producing one); the harness
-charges realistic cost itself, runs the gates in order, and reports the **first failing
-gate as the binding constraint**. A `KILL` is a valid, valuable outcome — the gates do
-not manufacture survivors.
+The composed gauntlet is the methodological hero. Each hypothesis must clear **every** gate,
+**in this binding order** — and the **first failing gate is the binding constraint**:
 
-```ts
-import { validateStrategy } from "@/lib/validation/strategy-validator";
-
-// grossReturns: the strategy's GROSS per-period return series (cost is applied inside).
-// position:     per-period exposure in [-1, 1], same length — turnover is derived from it.
-const verdict = validateStrategy(grossReturns, {
-  // HONEST N — the TRUE number of distinct configs you searched (from your trial ledger).
-  // This is REQUIRED and ≥ 1; feeding N=1 silently skips the deflation. Pass the real N.
-  trialCount: 224,
-
-  statistic: "compoundReturn",                 // net P&L (the cost-realism default)
-
-  // Cost: 4 bps/side perp ⇒ 8 bps round-trip, charged on |Δposition| every change.
-  cost: { takerPerSide: 0.0004, position },
-
-  // Baselines the edge must beat NET of cost (buy-and-hold + equal-weight + linear;
-  // a random-lottery baseline is generated internally from marketReturns + turnover).
-  baselines: { marketReturns, equalWeightReturns, linearReturns },
-
-  // Surrogate / placebo null (the methodological hero): phase-randomized + block-
-  // bootstrap, plus an optional cross-sectional shuffle for rotation/lead-lag tests.
-  surrogate: { iterations: 200, crossSectional: true, panel: { assetReturns } },
-
-  // Consume-once holdout: a final most-recent slice, scored EXACTLY once.
-  holdout: { holdoutFraction: 0.15, testFraction: 0.15 },
-});
-
-verdict.verdict;       // "PASS" | "KILL"
-verdict.bindingGate;   // the first gate that failed (the binding constraint) | null
-verdict.perGate;       // every gate's { id, passed, reason, detail }, in order
-verdict.netStats;      // net-of-cost summary incl. turnover + grossSharpe
-verdict.trialCount;    // the honest N actually used for DSR / haircut
+```
+net_of_cost → baselines → deflated_sharpe → block_bootstrap → cpcv_pbo → haircut → surrogate → holdout
 ```
 
-**Gate order** (the first failing gate binds):
+1. **`net_of_cost`** — turnover-aware net return; taker ~4 bps/side charged on every
+   position change, and **financing/borrow charged on the full levered/short notional, not
+   1 unit**. (A systemic financing leak — RF charged on 1 unit while ~2.95×-levered —
+   collapsed the dated-futures carry from Sharpe 1.64→0.69; the same uncharged ~1.0× short
+   borrow eroded the Donchian OOS holdout from ~0.53 toward 0.) A gross-only signal is an
+   automatic KILL.
+2. **`baselines`** — beat buy-and-hold **and** a matched-exposure benchmark **and** a
+   random-lottery null; cross-sectional books must be **beta-neutral** (book β≈0, alpha-t
+   on the residual) using an honest **OOS** hedge beta, never an in-sample over-hedge.
+3. **`deflated_sharpe`** — Deflated Sharpe at **honest N** (every config tried counts).
+4. **`block_bootstrap`** — block-bootstrap confidence interval on the mean.
+5. **`cpcv_pbo`** — CPCV / Probability of Backtest Overfitting `< 0.5`.
+6. **`haircut`** — Harvey–Liu multiple-testing haircut (often the true binding gate).
+7. **`surrogate`** — the **right** null per claim, and for any *searched* grid the
+   **family-wise MAX-statistic** null, not a single-best-config p.
+8. **`holdout`** — a consume-once out-of-sample slice, scored **exactly once**.
 
-1. `net_of_cost` — turnover-aware net return; a gross-only signal is an automatic KILL.
-2. `baselines` — beat buy-and-hold + equal-weight + random-lottery + one-layer linear.
-3. `deflated_sharpe` — Deflated Sharpe probability ≥ bar **at the honest `trialCount`**.
-4. `cpcv_pbo` — Probability of Backtest Overfitting `< 0.5` (flags `<8` folds degenerate).
-5. `haircut` — Sharpe survives the Harvey-Liu multiple-testing haircut.
-6. `surrogate` — real edge must beat the phase + block (+ optional cross-sectional) null.
-7. `holdout` — out-of-sample slice scored exactly once.
+**The right null per claim is non-negotiable:** time-series timing → phase-randomization /
+block bootstrap; rotation / relative-value → cross-sectional shuffle; path-dependent exits →
+bracket-on-surrogate; vol-clustering → GARCH-simulated zero-edge; variance-risk-premium →
+shuffled-VRP placebo; calendar / event → calendar-reanchor + family-wise MAX-statistic;
+macro / sentiment → AR(1)-matched placebo.
 
-### Runnable demo
+### Primitives and wiring
 
-A self-contained smoke-run is committed at **`scripts/validation/demo-validate.ts`**. It
-runs `validateStrategy()` on three series and writes
-`output/validation/demo-validate-report.{json,txt}`:
+The committed primitives live in **`src/lib/training/statistical-validation.ts`**:
 
-1. **REAL** — equal-weight perp funding carry over the 8 majors, built from
-   `output/funding/`. In the current regime this **KILLs** (carry has decayed sub-RF) —
-   the honest, expected outcome.
-2. **NOISE** — a seeded Gaussian series. Must **KILL** (the surrogate/holdout/baseline
-   gates refuse to certify noise).
-3. **AR(1) artifact** — a series whose only "structure" is autocorrelation a surrogate
-   reproduces; demonstrates the surrogate gate catching what the cheaper gates miss.
+| Export | Role |
+|---|---|
+| `summarizeReturnSeries` | net-of-cost summary stats (Sharpe, turnover, drawdown) |
+| `computeDeflatedSharpeRatio` | Deflated Sharpe at the honest trial count `N` |
+| `blockBootstrapConfidenceInterval` | block-bootstrap CI on the mean |
+| `estimateCscvPbo` | CPCV / PBO overfitting probability |
 
-Run it:
+Each domain has a thin **`runGauntlet`** wrapper that loads its panel, lags features
+causally, charges realistic cost, and chains the primitives with the claim-appropriate null
+and a consume-once holdout. The canonical reference wrapper is
+**`scripts/edgehunt-D5/harness.ts`** (`runGauntlet()` at line 332; it imports the four
+primitives directly at line 23). **Do not relax the gates; change the target. A KILL is a
+valid, valuable outcome — the gates do not manufacture survivors.**
+
+> Note on branches: this branch (`codex/crypto-rebuild-plan`) ships the raw primitives +
+> per-domain `runGauntlet` wrappers. A single `validateStrategy()` convenience wrapper and a
+> `src/lib/training/significance/*` tree exist on the lean public-release branch but are
+> **not** present here; cite the primitives + `runGauntlet` when reproducing on this branch.
+
+---
+
+## 4. Verdict scheme
+
+Every hypothesis lands in one of three buckets, decided only by the gauntlet:
+
+- **SURVIVE** — clears **all** gates on data it had never seen. *(Final count across the
+  whole program: **0**.)*
+- **PROMISING** — clears net-of-cost + baselines + the right surrogate + the holdout (the
+  structure/sign is non-random) but trips a multiple-testing / Deflated-Sharpe gate at
+  honest N. *(Final count: **2**, both weak and caveated — see below.)*
+- **KILL** — fails an earlier gate; binding gate + the decisive number are recorded so the
+  verdict can be challenged or revived against the *same* gates. *(Everything else.)*
+
+**The PROMISING / SURVIVE boundary is the whole point.** A right-null surrogate **PASS**
+proves the structure/sign is non-random — it does **not** prove the realized *mean is
+positive with significance at honest N on unseen data*. That gap is exactly the
+PROMISING/SURVIVE line, and **no lead crossed it**.
+
+### The two surviving PROMISINGs (both weak, both caveated)
+
+1. **XS Donchian channel-position long-short** — beta-neutral cross-sectional breakout.
+   Structure is real (cross-sectional-shuffle null **p=0.009**, positive at every N∈[20,200]
+   and every holdout quarter), but on the **388-row consume-once holdout the magnitude is
+   indistinguishable from zero**: DSR@N=1 **0.79**, Newey-West t(mean) **0.96**,
+   block-bootstrap CI-lower < 0. Charging borrow on the continuous ~1.0× short notional
+   erodes the OOS Sharpe to a range **~0.3–0.5**. Survivorship-biased panel.
+2. **Dated-futures basis carry** — structural carry, **unlevered-thin only**: ~**4.9%/yr,
+   t=2.41**, sub-every-multiple-testing-bar and regime-fragile. The levered headline was a
+   **financing-leak artifact** (RF charged on 1 unit while ~2.95×-levered; correcting it
+   collapses the levered series to DSR 0.13, ~$447/mo).
+
+### What the audit flipped (and why it matters)
+
+A two-layer independent audit (`output/edgehunt-audit/SUMMARY.md` +
+`output/edgehunt-audit-nb/SUMMARY.md`) re-derived every disputed number from the committed
+primitives. It found **no false-KILL anywhere** (the conservative "nothing deployable" call
+held and got *stronger*), and flipped **three** earlier PROMISINGs to KILL on the **same
+defect** — a single-best-config surrogate p masking a **searched grid**, where the correct
+null is the **family-wise MAX-statistic**, plus honest-N Deflated-Sharpe failure at the full
+grid:
+
+- **BTC exchange reserve-depletion** — harness surrogate p=0.013 was single-config; under
+  the family-wise MAX-stat null p≈0.24 (real best 0.994 < surr95 ≈1.19) → **KILL**. The
+  "pre-registered" config was the argmax of a ~12-config neighborhood, so honest N≠1; also
+  inverts on ETH.
+- **Q9 cross-sectional low-vol anomaly** — DSR 0.476 @ N=96, Harvey-Liu adjP 0.673, family-
+  wise surrogate borderline ~0.06 → **KILL**.
+- **O3 fee-revenue NVT (BTC)** — DSR 0.894 @ honest N=312, family-wise surrogate p=0.093 →
+  **KILL** (the N=54 pass was a post-hoc carve-out riding the argmax).
+
+The audit also confirmed a **systemic financing leak** (zero borrow charged on the
+levered/short notional) that inflated both carries; on KILLs it only deepens the kill.
+
+---
+
+## 5. Script families — the `edgehunt-*` campaign
+
+The 2026-06 campaign ran as a fan-out of per-domain workflows, each genuinely trying to
+*find* edge, then judging honestly. Each family has its scripts under `scripts/edgehunt-*/`
+and its synthesis at `output/edgehunt-*/SUMMARY.md`.
+
+| Family | Domain | Per-domain synthesis |
+|---|---|---|
+| `scripts/edgehunt/` | Consensus / carry-arb (dated-futures carry, VRP, PCA stat-arb, vol-targeting, funding fade) | `output/edgehunt/SUMMARY.md` |
+| `scripts/edgehunt-D1/` | Classic TA & price action | `output/edgehunt-D1/SUMMARY.md` |
+| `scripts/edgehunt-D2/` | Volume & microstructure (the free-tier order-flow belief set; all KILL at h≥1) | `output/edgehunt-D2/SUMMARY.md` |
+| `scripts/edgehunt-D348/` | D3/D4/D8 remainder (pairs, dual-momentum, GARCH vol-timing, risk-parity, …) | `output/edgehunt-D348/SUMMARY.json` |
+| `scripts/edgehunt-D5/` | On-chain / crypto-native (the reserve lead lives here) | `output/edgehunt-D5/SUMMARY.md` |
+| `scripts/edgehunt-D5-followup/` | Reserve pre-registration follow-up | `output/edgehunt-D5-followup/VERDICT.md` |
+| `scripts/edgehunt-D6/` | Sentiment & cross-asset / macro (FRED, stooq, F&G, Google Trends, GDELT) | `output/edgehunt-D6/SUMMARY.md` |
+| `scripts/edgehunt-D7/` | Calendar & event (halving cycle, seasonality, stablecoin-mint) | `output/edgehunt-D7/SUMMARY.md` |
+| `scripts/edgehunt-quant/` | Quant / regime / vol / momentum ($0 backlog batch; Q9 here) | `output/edgehunt-quant/SUMMARY.md` |
+| `scripts/edgehunt-onchain2/` | On-chain (free Coin Metrics) + price-action ($0 backlog batch; O3 here) | `output/edgehunt-onchain2/SUMMARY.md` |
+| `scripts/edgehunt-requeue/` | Low-concurrency re-queue (the Donchian lead's canonical run is here) | `output/edgehunt-requeue/SUMMARY.md` |
+| `scripts/edgehunt-deepen/` | Pre-registered consume-once + adversarial-skeptic deepening | `output/edgehunt-deepen/SUMMARY.md` |
+| `scripts/edgehunt-audit/` | Independent two-layer methodology audit (9 batches) | `output/edgehunt-audit/SUMMARY.md` |
+| `scripts/edgehunt-audit-nb/` | Family-wise audit-of-audit on the two backlog PROMISINGs (Q9, O3) | `output/edgehunt-audit-nb/SUMMARY.md` |
+
+Naming conventions inside a family: a `fetch_*` / `load_*` script refreshes the cache, a
+`probe_*` / `_diag` explores, a `harness.ts` defines `runGauntlet`, a `run_*` executes the
+batch, and `strengthen_*` / `_followup` / `confirm_*` carry a lead into a stricter test. The
+family-wise audit reconstructions are e.g.
+`scripts/edgehunt-audit/d5_08_familywise_surrogate_v2.ts`,
+`scripts/edgehunt-audit/d7-18-fullfamily-maxstat.ts`, and
+`scripts/edgehunt-audit-nb/q9_familywise_surrogate.ts`.
+
+### Run a domain end to end
 
 ```bash
-npx tsx scripts/validation/demo-validate.ts
+# 1. (optional) refresh a cache against the live public API
+npx tsx scripts/edgehunt-D5/fetch_extra.ts
+
+# 2. run the domain gauntlet — reads output/ caches, writes output/edgehunt-D5/
+npx tsx scripts/edgehunt-D5/run_d5.ts
+
+# 3. read the verdict
+cat output/edgehunt-D5/SUMMARY.md
 ```
 
-It exits non-zero if the harness fails to run all 7 gates or fails to KILL the noise; on
-success it prints `SMOKE PASSED`.
+(Prefix with `PATH=/path/to/node/bin:$PATH ./node_modules/.bin/tsx …` if you pin a bundled
+Node runtime, per §2.)
 
 ---
 
-## 4. Scripts index — audit scripts by round
+## 6. Re-running the fetchers (drift note)
 
-Each row is one audit/run script, what it tests, and the machine-readable JSON it writes
-under `output/`. Hypothesis IDs (E*, T*, TA*, WF-*, R*, C*) map to the tally in
-`docs/EDGE_SEARCH_SYNTHESIS.md` §1 and the chronological detail in
-`docs/EVOLUTION_TRAINING_LOG.md` (the `2026-05-31` entries).
+The committed `output/` caches are a frozen snapshot. **If you re-run a `fetch_*` script it
+hits the live public API**, which returns data up to the moment you call it — so the panels
+extend, recent values differ, and newly-listed / newly-delisted symbols change the
+universes. The **exact quantitative numbers can drift slightly** between a fresh fetch and
+the snapshot; the **verdicts are robust** to this drift (they were confirmed out-of-sample
+and against surrogate nulls). To reproduce a published number to the decimal, analyze the
+committed caches rather than re-fetching. Endpoint availability, rate limits, and history
+depth are subject to each venue's policies.
 
-### Round 1 — reorientation: prediction vs structural carry (E1–E3) — `scripts/`
-
-| Hypothesis | Script | Tests | Output |
-|---|---|---|---|
-| E1 | `build-crossxs-panel.mjs`, `audit-crossxs-momentum.ts`, `holdout-crossxs-momentum.ts` | Cross-section weekly momentum (30 coins) | `output/crossxs/*` |
-| E2 | `fetch-funding-rates.mjs`, `audit-funding-carry-feasibility.ts` | **Perp funding carry, delta-neutral** (survivor) | `output/funding/*` |
-| E3 | `audit-btc-tsmomentum.ts` | BTC time-series trend (daily/weekly) | (console / `output/funding/*`) |
-| legacy | `audit-population-significance.ts` | Retired BTC-15m direction GA target (true-negative) | — |
-
-### Round 1 (cont.) — broad 10-target battery (T1–T10) — `scripts/`
-
-| Hypothesis | Script | Tests | Output |
-|---|---|---|---|
-| T1 | `audit-crossxs-reversal.ts` | Cross-section reversal | `output/crossxs/*` |
-| T2 | `audit-crossxs-neutral.ts` | CS momentum, market-neutral + vol-target | `output/crossxs/*` |
-| T3 | `audit-vol-targeted-btc.ts` | Vol-target BTC (Moreira–Muir) | (console) |
-| T4/T5 | `audit-tsmom-panel.ts`, `audit-regime-gated-trend.ts` | Diversified TSMOM + vol-target; regime-gated trend | (console) |
-| T6 | `audit-crypto-seasonality.ts`, `calendar-seasonality.ts` | Seasonality / turn-of-month | (console) |
-| T7 | `audit-funding-contrarian.ts` | Funding as a contrarian predictor | `output/funding/*` |
-| T8 | `fetch-dated-futures-basis.mjs`, `audit-dated-futures-basis.ts` | **Dated-futures basis / cash-and-carry** (survivor) | `output/dated-futures/*` |
-| T9 | `audit-ethbtc-relvalue.ts` | ETH/BTC relative value | (console) |
-| T10 | `audit-cointegration-pairs.ts` | Cointegration pairs | (console) |
-
-### Round 2 — carry deep-dive feasibility (D1–D4) — `scripts/carry/`
-
-| Sub | Script | Tests | Output |
-|---|---|---|---|
-| D1 | `fetch-multivenue-funding.mjs`, `analyze-multivenue-carry.ts`, `fetch-market-structure.mjs` | Multi-venue surface + cross-venue dispersion arb | `output/carry/d1-report.json`, `market-structure.json` |
-| D2 | `d2_full_cost_model.ts`, `d2_sensitivity.ts` | Full cost/capital model; sensitivity grid | `output/carry/d2_full_cost_model.json`, `d2_sensitivity.json` |
-| D3 | `d3-fetch-survival-data.mjs`, `d3-survival-tail-risk.ts` | Tail/survival (counterparty gap, P(ruin)) | `output/carry/d3/d3-tail-survival-results.json` |
-| D4 | `audit-capacity-decay.ts` | Capacity + funding decay over time | `output/carry/capacity-decay-report.{json,txt}` |
-
-### Round 3 — technical analysis / indicators (TA1–TA4) — `scripts/ta-research/`
-
-| Hypothesis | Script | Tests | Output |
-|---|---|---|---|
-| TA1 | `carry-gating.ts` (`carry-gating-diagnose.ts`) | Indicators to TIME the carry (ON/OFF), incl. oracle bound | `output/ta-research/carry-gating-report.json` |
-| TA2 | `ta2-slow-tsmom.ts` | Slow vol-targeted TSMOM (Moskowitz–Ooi–Pedersen) | `output/ta-research/ta2-slow-tsmom-summary.json` |
-| TA3 | `ta3-microstructure.ts` | Microstructure / forced-flow 15m BTC (224 variants) | `output/ta-research/ta3-results.json` |
-| TA4 | `ta4-classic-indicators.ts` | Classic indicators (RSI/MACD/BB/MA/ADX/Donchian/Stoch), N=94 | `output/ta-research/ta4-classic-indicators-result.json` |
-
-### Round 4 — adaptive / walk-forward (WF-A–D) — `scripts/walkforward/`
-
-| Hypothesis | Script | Tests | Output |
-|---|---|---|---|
-| WF-A | `premise-test.ts` | Adaptive WF premise test (daily, 5 families) | `output/walkforward/premise-test-result.json` |
-| WF-B | `run-wf-b.ts` | Adaptive WF on majors (N=27) — surrogate fails | `output/walkforward/wf-b-result.json` |
-| WF-C | `run-wf-c.ts` | Adaptive WF on 15m BTC (306k bars) — surrogate decisive | `output/walkforward/wf-c-result.json` |
-| WF-D | `wf-d-adaptive-carry.ts` | Adaptivity on the real edge (carry threshold) | `output/walkforward/wf-d-adaptive-carry-report.json` |
-| (engine) | `engine.ts`, `run-wf-c.ts` helpers, `verify-fast-path.ts`, `wf-lib.ts`, `lib.ts` | Walk-forward engine + fast-path verification | — |
-
-### Round 5 — GA-over-rules + small-caps (R2–R4) — `scripts/{r2-illiquid,front-r3,front-r4}/`
-
-| Hypothesis | Script | Tests | Output |
-|---|---|---|---|
-| R2 | `r2-illiquid/fetch-smallcap-panel.ts`, `r2-illiquid/audit-smallcap-edge.ts` | Illiquid / small-cap TA / momentum / reversal at real small-cap cost | `output/r2-illiquid/smallcap-audit-report.json` |
-| R3 | `front-r3/run-ga-rules.ts` (`lib-ga-rules.ts`) | GA that EVOLVES trading rules (genetic programming) + surrogate control | `output/front-r3/ga-rules-result.json` |
-| R4 | `front-r4/ga-structural-carry.ts` | GA over STRUCTURAL + technical carry rules | `output/front-r4/ga-structural-carry-result.json` |
-
-### Round 6 — rotation / cycles + event flow + methodology (C1–C4) — `scripts/{c1-rotation,front-c2,front-c3,front-c4}/`
-
-| Hypothesis | Script | Tests | Output |
-|---|---|---|---|
-| C1 | `c1-rotation/fetch-volume-panel.ts`, `c1-rotation/rotation-analysis.ts` | Capital rotation as lead-lag flow ("ride the relay") | `output/c1-rotation/rotation-report.json` |
-| C2 | `front-c2/fetch-volume.mjs`, `front-c2/run-dominance-cycle.ts` (`sweep-robustness.ts`) | Dominance CYCLE / periodicity | `output/front-c2/dominance-cycle-result.json` |
-| C3 | `front-c3/fetch-volume-panel.ts`, `front-c3/run-c3.ts` (`lib-c3.ts`) | JOINT market-state / breadth overlay | `output/front-c3/c3-report.json` |
-| C4 | `front-c4/fetch-listing-events.ts`, `front-c4/run-listing-event-study.ts` | Event / forced-flow LISTING study (~644 dated events, incl. delisted) | `output/front-c4/listing-event-result.json` |
-| C5 | `validation/demo-validate.ts` | Methodology package: smoke-run for `validateStrategy()` | `output/validation/demo-validate-report.{json,txt}` |
-
-### Round 7 — on-chain distribution-pressure POC (OC1, the 28th test) — `scripts/onchain-poc/`
-
-| Hypothesis | Script | Tests | Output |
-|---|---|---|---|
-| OC1 | `onchain-poc/fetch_cm.ts`, `onchain-poc/run_poc.ts` | On-chain distribution-pressure overlay (BTC+ETH exchange-flow native units + MVRV), honest N=36, via `validateStrategy` | `output/onchain-poc/verdict.{json,txt}` (+ `cm_btc.json`, `cm_eth.json`) |
-
-> The committed gates these scripts call are in `src/lib/training/` —
-> `statistical-validation.ts` (Deflated Sharpe with the true N, CPCV/PBO),
-> `significance/{baselines,haircut,holdout,trial-count,spa,cpcv-paths}.ts` — and the
-> reusable composition is `src/lib/validation/strategy-validator.ts`. **Do not relax the
-> gates; change the target.** The pure reorientation cores are in
-> `src/lib/training/reorientation/`.
+> **Operational honesty:** running seven heavy domain workflows simultaneously saturated the
+> API rate limit — D1 and D7 each lost ~8–9 of 11 dispatches to throttling. Those returned
+> server errors, **not** verdicts, and were re-queued at low concurrency
+> (`scripts/edgehunt-requeue/`), never counted as KILLs. Fan-out width must be matched to the
+> rate budget.
 
 ---
 
-## 5. A note on re-running the fetchers
+## 7. The $0 + US$100-cloud-ceiling constraint
 
-The committed `output/` panels are a frozen snapshot (Binance/Bybit/OKX public REST,
-fetched 2026-05-31). **If you re-run the `fetch-*` scripts, they hit the live public
-APIs**, which return data up to the moment you call them — so the panels will extend by
-the elapsed time, recent funding/price/volume values will differ, and any newly-listed or
-newly-delisted symbols will change the universes. As a result the **exact quantitative
-numbers can drift slightly** between a fresh fetch and the committed snapshot. The
-**verdicts are robust** to this drift (they were already confirmed out-of-sample and
-against surrogate nulls), but if you want to reproduce a published number to the decimal,
-analyze the committed `output/` files rather than re-fetching. Endpoint availability,
-rate limits, and per-symbol history depth are also subject to the venues' own policies and
-may change over time.
+This whole program is **bounded by design**:
+
+- **$0 data cost.** Every source in §1 is free, public, and key-less. No paid feeds, no
+  authenticated APIs, no subscription gates. Where a useful series sits behind a paid vendor
+  (point-in-time L2 order books, multi-asset exchange flow beyond BTC+ETH, paid NVT, longer
+  implied-vol history), the hypothesis is marked **DEFERRED**, not silently approximated.
+- **US$100 cloud ceiling.** A hard cap on any cloud spend for this lab; in practice the
+  edge-search campaign's cloud bill is **$0** — all compute is local, all data is fetched
+  over free public endpoints, and the on-disk caches make re-analysis offline.
+
+The combination is the point: a stranger with a laptop, Node, and an internet connection can
+reproduce the **entire** falsification program — the data, the gauntlet, every verdict — for
+**nothing**.
 
 ---
 
 ### See also
 
-- `docs/EDGE_SEARCH_SYNTHESIS.md` — the durable tally of all 35 hypotheses + full academic bibliography.
-- `docs/VALIDATION_HARNESS.md` — the `validateStrategy()` harness, gate-by-gate.
-- `docs/EVOLUTION_TRAINING_LOG.md` — the chronological lab record (raw provenance; in Portuguese).
+- `docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md` — the cross-domain roll-up of the 2026-06 campaign
+  (the audited final tally, the two PROMISINGs, the KILL ledger by domain, methodology
+  notes, and the bibliography).
+- `docs/BACKLOG.md` — the research backlog (155 testable hypotheses across 8 domains).
+- `output/edgehunt-*/SUMMARY.md` — per-domain syntheses;
+  `output/edgehunt-audit/SUMMARY.md` + `output/edgehunt-audit-nb/SUMMARY.md` — the
+  independent audits.
+
+> **Bottom line.** Of ~111 hypotheses spanning the full retail/quant arsenal, **none cleared
+> the full gauntlet on data it had never seen.** Two weak, caveated leads survive at
+> PROMISING; everything else is a documented KILL. No capital is deployed. The asset is the
+> **methodology + the negative evidence** — and you can reproduce all of it at $0.
+
+---
+
+*License: MIT — see [`../LICENSE`](../LICENSE).*

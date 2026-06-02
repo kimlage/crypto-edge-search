@@ -1,0 +1,45 @@
+{
+  "hypothesis": "O2-REALCAP — Realized-cap / thermocap valuation timer",
+  "date": "2026-06-01",
+  "freeDataVerification": {
+    "endpoint": "community-api.coinmetrics.io/v4/catalog/asset-metrics (NO key)",
+    "freeCatalogMetricCount": 32,
+    "freeCatalogList": [
+      "AdrActCnt","AdrBalCnt","AssetCompletionTime","AssetEODCompletionTime","BlkCnt",
+      "CapMVRVCur","CapMrktCurUSD","CapMrktEstUSD","FeeTotNtv","FlowInExNtv","FlowInExUSD",
+      "FlowOutExNtv","FlowOutExUSD","HashRate","IssTotNtv","IssTotUSD","PriceBTC","PriceUSD",
+      "ROI1yr","ROI30d","ReferenceRate","ReferenceRateBTC","ReferenceRateETH","ReferenceRateEUR",
+      "ReferenceRateUSD","SplyCur","SplyExNtv","SplyExUSD","SplyExpFut10yr","TxCnt","TxTfrCnt",
+      "volume_reported_spot_usd_1d"
+    ],
+    "CapRealUSD_free": false,
+    "CapRealUSD_probe": "HTTP forbidden: 'Requested metric CapRealUSD ... is not available with supplied credentials' => PAID",
+    "thermocap_RevAllTimeUSD_free": false,
+    "thermocap_probe": "HTTP forbidden for RevAllTimeUSD => PAID",
+    "CapMVRVCur_free": true,
+    "CapMrktCurUSD_free": true,
+    "realizedCap_proxy": "EXACT (not a degraded proxy): realizedCap = CapMrktCurUSD / CapMVRVCur; realizedPrice = realizedCap / SplyCur",
+    "thermocap_decision": "DEFERRED — no honest free reconstruction (IssTotUSD is fee-less and not cumulative-from-genesis in the free window)",
+    "realizedCap_decision": "BUILT — tested the honest (algebraically exact) free realized-cap valuation timer"
+  },
+  "dataCoverage": { "asset": "BTC", "validFrom": "2015-01-01", "validTo": "2026-05-31", "validDays": 4168, "tradedNDays": 3276, "lag": ">=1 day on-chain, causal rolling z" },
+  "priceMechanicalTrap": {
+    "corr_MVRVratio_vs_Mayer200": 0.82,
+    "corr_realizedPrice_vs_SMA365price": 0.99,
+    "interpretation": "Realized-cap valuation is overwhelmingly a price moving-average oscillator."
+  },
+  "honestN": { "baseOnchainFamilies": 66, "betaNeutralStrengthen": 22, "total": 88, "priceOnlyControlNote": "Mayer price/SMA control (N=36) is a baseline, not counted toward the on-chain trial." },
+  "results": {
+    "F1_rawMVRVband": { "bestNetSharpe": 0.833, "bindingGate": "baselines", "surrogateP": 1.000, "holdout": 0.160, "longShare": 1.00, "verdict": "KILL" },
+    "F2_emaSmoothBand": { "bestNetSharpe": 0.873, "bindingGate": "baselines", "surrogateP": 0.003, "holdout": 0.160, "longShare": 1.00, "verdict": "KILL" },
+    "F3_causalMVRVZband": { "bestNetSharpe": 0.898, "bindingGate": "baselines", "surrogateP": 0.010, "holdout": 0.228, "longShare": 0.99, "verdict": "KILL" },
+    "priceOnlyControl_Mayer": { "bestNetSharpe": 0.911, "note": "price-only control MATCHES/BEATS best on-chain (0.898) -> on-chain adds nothing" },
+    "S1_betaNeutralResidualBand": { "bestNetSharpe": 0.795, "bindingGate": "baselines", "surrogateP": 0.226, "holdout": -0.421, "verdict": "KILL" },
+    "S2_marketNeutralResidualMeanRevert": { "bestNetSharpe": -0.026, "bindingGate": "net_of_cost", "surrogateP": 0.478, "holdout": -0.462, "verdict": "KILL" }
+  },
+  "buyAndHoldNetSharpe": 0.853,
+  "diagnosis": "Every long-flat on-chain family is ~always-long (longShare~1.0, turnover~0.002): a buy&hold clone. Best on-chain net Sharpe (0.898) does NOT out-Sharpe its own buy&hold (0.853 vs random-lottery95 ~0.93) and is matched/beaten by the price-only Mayer control (0.911). When beta is removed by causal orthogonalization vs price MA, the residual has zero/negative timing content (S2 net Sharpe -0.026) and FAILS the consume-once holdout (S1 -0.421, S2 -0.462). Surrogate 'passes' in F2/F3 only because phase-scrambling slightly degrades the always-long bias on a rising asset — the binding kill is that it loses to plain buy&hold after honest-N deflation (DSR p<=0.74, Harvey-Liu adjP 0.10-0.14).",
+  "verdict": "KILL",
+  "confidence": "high",
+  "confidenceReason": "11.4y BTC, exact free realized-cap derivation, full committed gauntlet, RIGHT phase-rand surrogate, dedicated price-only control AND beta-neutral residual all agree: long-beta in disguise with no residual content; holdout negative once beta removed."
+}

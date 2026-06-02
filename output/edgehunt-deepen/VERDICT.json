@@ -1,0 +1,64 @@
+{
+  "lead": "D5-08 BTC exchange reserve-depletion / netflow (pre-registered single config smooth=14,zwin=365,thr=1.0,long/flat)",
+  "honest_N": 1,
+  "cross_asset_status": "$0 free flow data EXHAUSTED — Coin Metrics community = btc+eth only; ETH inverts. Deepened on BTC robustness+honesty, not new assets.",
+  "a_rolling_stability": {
+    "calendar_years_positive": "10/15",
+    "calendar_years_individually_DSR_pass": 3,
+    "rolling365_positive": "36/53",
+    "rolling365_DSR_pass": 10,
+    "read": "Sign-persistent (10/15 yrs +, 36/53 rolling windows +), but only 3/15 yrs individually clear DSR@N=1; early 2015-16 negative. Not a single-window fluke in sign; significance is regime-concentrated (strong 2017-19, 2023-25)."
+  },
+  "b_perturbation_robustness": {
+    "n_variants": 11,
+    "fwd_positive_frac": 1,
+    "fwd_surrogate_pass_frac": 0.2727272727272727,
+    "fwd_dsr_pass_frac": 0.36363636363636365,
+    "fwdNet_min_med_max": [
+      0.6379922418202291,
+      0.837687314130059,
+      1.2646147589762406
+    ],
+    "read": "100% of definitional perturbations (EMA10/14/21, z270/365/540, gross-outflow-only, thr0.75-1.25) stay forward-POSITIVE (median fwd 0.84) — mechanism robust in SIGN. But only 27% keep surrogate p<0.05 and 36% keep DSR@N=1: the pre-registered point sits on the STRONG edge of its own neighborhood (favorably positioned), not the center. Honest deflation: the binding-gate pass is partly point-specific."
+  },
+  "c_paper_forward": {
+    "window": "2023-06-01..2026-05-17",
+    "nDays": 1082,
+    "net_sharpe": 1.186826419431906,
+    "dsrAtN1": 0.9845724525398952,
+    "dsr_pass": true,
+    "surrogateP": 0.043912175648702596,
+    "surrogate_pass": true,
+    "bb_pass": true,
+    "monthlyAt100k": 1701.395305586588,
+    "execution_drag_sharpe": 0.040902107571328505,
+    "read": "STRONGEST result. Realistic next-open fills + 4bps + 8h funding: net Sharpe 1.187, DSR@N=1 0.985 PASS, surrogate p 0.044 PASS, BB CI strictly positive, $1,701/mo@$100k. Execution drag only 0.04 Sharpe (funding 0.07, next-open fill ~0). NOT a close-to-close idealization artifact."
+  },
+  "d_btc_vs_eth": {
+    "btc_IC": 0.021356877982052495,
+    "btc_IC_tstat": 1.3738113448592497,
+    "btc_sign_stable_years": "10/12",
+    "eth_IC": 0.010515167599767304,
+    "eth_IC_tstat": 0.5992131762052738,
+    "eth_sign_stable_years": "5/10",
+    "ic_ratio_eth_btc": 0.4923550908800364,
+    "btc_tailband_ON_mean_pctday": 0.314354912447114,
+    "btc_tailband_ON_CI_excl0": true,
+    "btc_tailband_early_vs_recent": [
+      0.30860150488401694,
+      0.3213333801757368
+    ],
+    "eth_tailband_ON_mean_pctday": -0.002437242734440744,
+    "most_likely_cause": "REFLEXIVE-NARRATIVE + DATA-COVERAGE (not sign-flip, not pure fluke). BTC linear IC is weak (t=1.37) BECAUSE the signal is NON-LINEAR (tail-band only). The actual bet — long on z<=-1 — has BTC ON-day mean 0.314%/d (CI95 excludes 0) that is STABLE early-0.309% vs recent-0.321% (so not regime luck), and sign-stable 10/12 yrs. ETH ON-day mean is -0.002%/d (dead, negative in recent regime), IC half-strength and sign-stable only 5/10 (coin-flip). Outflow->accumulation is a BTC market-structure narrative (cold-storage/self-custody supply-shock); ETH flows route through staking/L2/DeFi the exchange-wallet metric maps differently, plus thinner ETH attribution. Caveat: BTC ON-day mean does NOT exceed the unconditional drift CI — incremental alpha over always-long is positive but not independently CI-significant => this is a TIMING/RISK overlay, not standalone alpha."
+  },
+  "forward_overlay_quality": {
+    "strat_fwd_sharpe": 1.265,
+    "bh_fwd_sharpe": 0.705,
+    "strat_exposure": 0.157,
+    "strat_maxDD": -0.113,
+    "bh_maxDD": -0.676,
+    "read": "On the held-out tail the overlay BEATS B&H Sharpe at 16% exposure with 6x smaller drawdown — attractive as a risk-managed BTC overlay OOS."
+  },
+  "binding_gate": "cross-asset generalization (unchanged) + partial point-specificity of the binding-gate strength within the perturbation cloud",
+  "honest_outcome": "PROMISING, BTC-only — CONFIRMED. The single pre-registered config clears DSR@N=1 and surrogate on a proper paper-forward sim it never saw (net 1.19 after realistic execution+funding), the tail-band effect is regime-stable and price-orthogonal, but it does NOT generalize beyond BTC on the only other free-data asset, and its binding-gate STRENGTH is somewhat favorably positioned within its own definitional neighborhood. Gated on PAID multi-asset flow + LIVE paper-forward."
+}

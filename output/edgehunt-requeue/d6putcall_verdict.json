@@ -1,0 +1,50 @@
+{
+  "item": "D6-PUTCALL — Options put/call (DVOL skew) extreme defensive contrarian",
+  "backlogRef": "D6-S6 / D3-B2",
+  "date": "2026-06-01",
+  "claim": "high put/call = extreme defensive options positioning = fear -> contrarian LONG, lagged",
+  "dataHonesty": "Per-delta put/call OI and 25-delta risk-reversal SKEW history is PAID on Deribit (forward-record only). Strongest $0 PROXY = free Deribit BTC DVOL index (2021-03-24..2026-05-31, 1895 aligned days): extreme-high DVOL = traders paying up for downside protection = defensive positioning. Also tested DVOL-RV defensive-premium and DVOL momentum proxies.",
+  "rightNull": "AR(1)-matched DVOL placebo (BACKLOG-mandated). DVOL is a lagged transform of realized vol (a price transform); phi=0.983 (highly persistent), clusters at drawdown bottoms. Placebo preserves persistence, destroys price-alignment -> isolates options-positioning content from the vol-cluster + BTC-drift trap.",
+  "alignedDays": 1895,
+  "fullGrid": {
+    "honestN": 1026,
+    "bestConfig": "level|contrarian|buyZ2|sellZ2|gA-1|base0|z60|lag2",
+    "bestIsNetSharpe": 1.573,
+    "bestExposure": 0.104,
+    "bestLongShare": 0.05,
+    "note": "winner is a hyper-selected short-on-calm needle (longShare 0.05), NOT the contrarian-LONG belief",
+    "gates": {
+      "net_of_cost": "PASS",
+      "baselines": "PASS (1.573 > B&H 0.334, randomLottery95 0.727)",
+      "deflated_sharpe": "KILL p=0.466 @N=1026 (expMaxSh daily 0.0845 ~ 1.61 ann; 1.57 is AT the selection ceiling)",
+      "block_bootstrap": "PASS",
+      "cpcv_pbo": "PASS 0.400",
+      "haircut": "KILL Bonferroni adjP=0.765",
+      "surrogate_AR_placebo": "PASS p=0.032 (only the hyper-selected needle; canonical fails)",
+      "holdout": "PASS 0.502"
+    },
+    "bindingGate": "deflated_sharpe"
+  },
+  "decomposition": {
+    "longFear_only_IS": 0.058,
+    "longFear_only_OOS": 0.853,
+    "shortCalm_only_IS": 0.482,
+    "shortCalm_only_OOS": 0.094,
+    "canonical_longonly_IS": 0.532,
+    "canonical_longonly_OOS": -0.957,
+    "canonical_AR_placebo_p": 0.094,
+    "interpretation": "The contrarian-LONG-on-fear leg (the actual belief) is flat in-sample (0.058). The full grid's apparent edge came from a short-on-calm leg that is a different (and OOS-fragile, 0.094) hypothesis. Canonical belief inverts OOS (-0.957)."
+  },
+  "smallFairGrid_contrarianLongOnly": {
+    "honestN": 36,
+    "best": "longFear|w60|thr1|lag2",
+    "isNetSharpe": 0.893,
+    "deflatedSharpeP": 0.356,
+    "AR_placebo_p": 0.293,
+    "oosSharpe": -1.234,
+    "interpretation": "Even a small pre-specifiable contrarian-LONG grid fails DSR (p=0.36) AND the AR(1)-matched placebo (p=0.29) AND inverts OOS (-1.23). A persistent random series with DVOL's autocorrelation reproduces the edge 29% of the time -> the signal is persistence x BTC drift, not options-positioning information."
+  },
+  "verdict": "KILL",
+  "bindingGate": "surrogate (AR(1)-matched placebo, p=0.29 on the honest contrarian-long claim) + deflated_sharpe",
+  "confidence": "high"
+}

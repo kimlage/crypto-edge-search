@@ -1,0 +1,60 @@
+{
+  "id": "O3-NVTS",
+  "title": "NVT-signal refinement (strongest causal version), free fee-throughput proxy",
+  "free_data": {
+    "canonical_NVT": "DEFERRED — TxTfrValAdjUSD / NVTAdj / NVTAdj90 are PAID (not in 32-metric CM Community catalog; verified live)",
+    "tested_free_proxy": "fee-revenue NVTS = MarketCap / SMA(FeeTotNtv*Price)",
+    "why_fee": "count denominators (TxCnt/TxTfrCnt) are momentum-in-disguise (price-clock trap); fee proxy is the ONLY one with forward-return buckets inverted vs price-clock that survive orthogonalization vs price momentum"
+  },
+  "btc": {
+    "verdict": "SURVIVE",
+    "netSharpe": 1.3315692540896664,
+    "honestN": 54,
+    "binding": "none",
+    "surrP": 0.013289036544850499,
+    "holdout": 0.5924921733106527,
+    "monthlyAt100k": 6303.767732337106,
+    "decomp": {
+      "longOnly_avoidHigh": 0.8193580101285498,
+      "shortOnly_high": 0.37450558199783085,
+      "band_full": 1.2078585447539885,
+      "buyHold": 0.5757448742821778
+    },
+    "gates": {
+      "net_of_cost": true,
+      "baselines": true,
+      "deflated_sharpe": true,
+      "block_bootstrap": true,
+      "cpcv_pbo": true,
+      "haircut": true,
+      "surrogate": true,
+      "holdout": true
+    }
+  },
+  "eth": {
+    "verdict": "KILL",
+    "netSharpe": 1.053394419226896,
+    "honestN": 54,
+    "binding": "deflated_sharpe",
+    "surrP": 0.0033222591362126247,
+    "holdout": -0.5853094496241069,
+    "gates": {
+      "net_of_cost": true,
+      "baselines": true,
+      "deflated_sharpe": false,
+      "block_bootstrap": true,
+      "cpcv_pbo": true,
+      "haircut": false,
+      "surrogate": true,
+      "holdout": false
+    }
+  },
+  "robustness_btc": {
+    "years_positive": "10/10 in-sample (0.22..2.81)",
+    "surrogate_1000": "p=0.005",
+    "neighborhood": "plateau 0.97..1.33 (no spike)",
+    "holdout_by_year": "2024=+0.67 2025=+0.25 2026=+1.19, beats B&H 0.45 OOS"
+  },
+  "final_verdict": "SURVIVE (BTC, free fee-proxy); canonical-NVT DEFERRED (paid); ETH KILL",
+  "confidence": "medium — BTC passes full gauntlet incl right surrogate + consume-once holdout + 10/10 yrs + plateau, but (a) DSR clears only under a-priori N-restriction, (b) weak pre-registered canonical, (c) no ETH confirmation"
+}

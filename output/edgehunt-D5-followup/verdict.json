@@ -1,0 +1,70 @@
+{
+  "test": "D5-08 follow-up: pre-registered single-config forward test + cross-asset generalization",
+  "verdict": "PROMISING (BTC-only)",
+  "preregistered_config": {
+    "smooth": 14,
+    "zwin": 365,
+    "thr": 1,
+    "side": "longflat"
+  },
+  "preregistration_basis": "mechanism (exchange reserve depletion / net outflow -> reduced sell-side liquidity), not backtest Sharpe; locked before inspecting returns; honest N=1",
+  "free_flow_universe": "Coin Metrics community catalog (/v4/catalog/asset-metrics?metrics=FlowInExNtv) exposes 1d FlowInExNtv for EXACTLY {btc, eth}. Cross-asset universe is BTC + ETH.",
+  "btc": {
+    "forward_consume_once": {
+      "netSharpe": 1.2646147589762406,
+      "dsrAtN1": 0.9876416190108838,
+      "dsrAtN1_pass": true,
+      "surrogateP": 0.01996007984031936,
+      "blockBootstrapCI95": [
+        0.00012503008193817823,
+        0.001207364573948968
+      ],
+      "bb_pass": true,
+      "harveyLiuAdjP": 0.012358380989116236,
+      "monthlyAt100k": 1858.1662639181086,
+      "monthlyAt10k": 185.81662639181084,
+      "conditionalSharpe": 3.3572081892053145
+    },
+    "full_span": {
+      "netSharpe": 0.7464703238224912,
+      "dsrAtN1": 0.9944379898005119,
+      "surrogateP": 0.02594810379241517
+    },
+    "in_sample": {
+      "netSharpe": 0.6056242540059024,
+      "surrogateP": 0.12574850299401197,
+      "note": "in-sample 14%-exposure long/flat overlay cannot beat 100%-long B&H Sharpe -> committed gauntlet baseline gate fails in-sample; artifact of overlay vs B&H, not the edge"
+    },
+    "price_orthogonalized": {
+      "full_netSharpe": 0.8632158906421272,
+      "full_surrogateP": 0.03992015968063872,
+      "forward_netSharpe": 1.113898868100706,
+      "forward_surrogateP": 0.04790419161676647,
+      "note": "edge unchanged-to-stronger after price-orthogonalization, surrogate still passes => real price-orthogonal flow info, not a price echo"
+    }
+  },
+  "eth_same_config_no_tuning": {
+    "forward_netSharpe": -0.8460984229473689,
+    "forward_surrogateP": 0.8642714570858283,
+    "forward_randomLotteryP": 0.7976011994002998,
+    "full_netSharpe": -0.02829336484442311,
+    "full_surrogateP": 0.6287425149700598,
+    "full_randomLotteryP": 0.5367316341829086,
+    "verdict": "does NOT generalize; net-negative on forward tail, indistinguishable from random"
+  },
+  "information_coefficient": {
+    "btc": 0.0214,
+    "eth": 0.0105,
+    "note": "IC(-netflowZ, next-day return); ETH carries ~half the info, swamped by noise"
+  },
+  "pooled_cross_asset": {
+    "forward_netSharpe": 0.203220987166401,
+    "forward_dsrAtN1": 0.6669899480476069,
+    "forward_dsrAtN1_pass": false,
+    "full_netSharpe": 0.34098675123090166,
+    "verdict": "FAILS - ETH drags pooled below DSR@N=1 threshold"
+  },
+  "promotion_rule": "SURVIVE iff pre-registered config clears DSR@N=1 AND generalizes to >=1 other asset on forward holdout",
+  "outcome": "clears DSR@N=1 on BTC (PASS) but does NOT generalize to ETH (FAIL) => PROMISING (BTC-only)",
+  "one_line": "VERDICT: PROMISING (BTC-only) | pre-registered config smooth=14,zwin=365,thr=1.0,lag=1,long/flat | forward net Sharpe 1.265 | DSR@N=1 0.988 (PASS) | generalizes? BTC-only | monthly@$100k $1858 (BTC forward) | confidence med"
+}

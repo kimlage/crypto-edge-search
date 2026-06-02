@@ -1,0 +1,70 @@
+{
+  "id": "O8-RENKO",
+  "name": "Renko brick trend transform (price-move-based, time-independent), BTC long-flat",
+  "date": "2026-06-01",
+  "data": {
+    "source": "free Binance BTCUSDT 15m OHLCV (output/bigquery/btc_ohlcv_15m.ndjson), available_at honored",
+    "span": "2017-08-17 .. 2026-05-18",
+    "bars15m": 306297,
+    "dailyRows": 3197,
+    "startIdx": 60,
+    "splitIdx": 2568,
+    "holdoutRows": 628,
+    "metricFree": true,
+    "metricNote": "pure price transform on free OHLCV; no paid Glassnode/CM-pro needed"
+  },
+  "construction": {
+    "bricks": "causal Renko on 15m closes (closes only, no high/low peek); brick confirmed exactly when observed close crosses threshold; long-flat: long when last confirmed brick up, flat when down",
+    "dailyBridge": "position[day t] = direction of last brick confirmed at close of day t, held over next-day close-to-close return; strictly causal, no look-ahead",
+    "cost": "4 bps taker per side"
+  },
+  "surrogateNull": {
+    "type": "vol/spectrum-preserving surrogate-RECOMPUTE (re-Renko-ize)",
+    "method": "phase-randomize 15m log-returns (FFT), rescale to exact real mean+std, rebuild intraday path, RE-FORM Renko bricks on surrogate path, rebuild daily long-flat position; return attributed on surrogate's OWN path",
+    "fidelity": { "realStd": 0.0039930, "surrStd": 0.0039930, "realMean": 9.41e-6, "surrMean": 9.41e-6, "realLag1Autocorr": -0.01720, "surrLag1Autocorr": -0.01561 }
+  },
+  "committedGrid": {
+    "honestN": 5,
+    "best": "pct1_rev1",
+    "netSharpeAnn": 0.586,
+    "ownBuyHoldSharpeAnn": 0.469,
+    "bindingGate": "baselines",
+    "surrogateP": 0.030,
+    "holdoutSharpeAnn": -0.253,
+    "holdoutBuyHoldSharpeAnn": 0.326,
+    "verdict": "KILL"
+  },
+  "strengthenedGrid": {
+    "honestN": 44,
+    "best": "pct3_rev2",
+    "netSharpeAnn": 0.646,
+    "ownBuyHoldSharpeAnn": 0.469,
+    "gates": {
+      "net_of_cost": "PASS",
+      "baselines": "PASS (beats own B&H 0.469 and random-lottery95 0.586 in-sample)",
+      "deflated_sharpe": "KILL (DSR p=0.297 @N=44, need >0.95)",
+      "block_bootstrap": "KILL (meanDailyNet CI95 lower=-1.1e-4 <0)",
+      "cpcv_pbo": "PASS (0.450)",
+      "haircut": "KILL (Bonferroni adjP=1.0; psrP=0.045*44)",
+      "surrogate": "PASS but marginal (vol-preserving p=0.0498)",
+      "holdout": "KILL (OOS net Sharpe 0.171 < OOS B&H 0.326)"
+    },
+    "bindingGate": "deflated_sharpe",
+    "surrogateP": 0.0498,
+    "holdoutSharpeAnn": 0.171,
+    "holdoutBuyHoldSharpeAnn": 0.326,
+    "verdict": "KILL"
+  },
+  "decisiveControl_equivalentlyLaggedMA": {
+    "note": "backlog key separator for HA/Renko: does the brick transform beat a plain equivalently-lagged moving average? It does NOT — a trivial SMA50 daily long-flat dominates Renko in EVERY window.",
+    "renko_pct3_rev2": { "full": 0.573, "inSample": 0.646, "holdout": 0.171 },
+    "sma50d": { "full": 1.016, "inSample": 1.057, "holdout": 0.867 },
+    "sma100d": { "full": 0.829, "inSample": 0.846, "holdout": 0.839 },
+    "buyHold": { "full": 0.444, "inSample": 0.469, "holdout": 0.326 },
+    "conclusion": "Renko is strictly inferior to a vanilla moving-average trend filter and underperforms its OWN buy&hold out-of-sample. No Renko-specific edge."
+  },
+  "verdict": "KILL",
+  "bindingGate": "holdout (and deflated_sharpe at honest N); fails to beat own B&H OOS and dies under multiple-testing",
+  "confidence": "high",
+  "reason": "Textbook documented long-flat price-transform trap: Renko posts ~0.6 Sharpe on a rising asset, marginally beats its vol/spectrum-preserving surrogate (p~0.05) only because of weak path-autocorrelation that ANY trend filter exploits better, but (1) cannot beat its own buy&hold out-of-sample (0.17 vs 0.33), (2) is strictly dominated by a plain equivalently-lagged SMA50 (1.06 vs 0.65 IS; 0.87 vs 0.17 OOS), and (3) the marginal surrogate-pass evaporates under honest N=44 multiple-testing (DSR p=0.30, Harvey-Liu adjP=1.0). Pure path/beta, no Renko-specific signal."
+}

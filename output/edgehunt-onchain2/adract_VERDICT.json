@@ -1,0 +1,26 @@
+{
+  "hypothesis": "O1-ADRACT — Active-address / tx-count network-activity momentum (lagged network-growth momentum timer)",
+  "backlog_ref": "D5-16 sibling (active-address); tested here as a TIMER, not a Metcalfe valuation ratio",
+  "data": {
+    "metrics": ["AdrActCnt", "TxCnt", "PriceUSD"],
+    "free": true,
+    "catalog_check": "community-api.coinmetrics.io/v4/catalog-v2/asset-metrics — AdrActCnt & TxCnt both community:true, 1d, BTC 2009+, ETH 2015+",
+    "files": ["output/edgehunt-onchain2/cm_txcnt_btc.json", "output/edgehunt-onchain2/cm_txcnt_eth.json"],
+    "causality": "feature LAGGED >=1 day; NEXT-day forward return; expanding (no-lookahead) orthogonalization"
+  },
+  "honest_N": 594,
+  "honest_N_note": "297 raw-momentum configs + 297 price-momentum-orthogonalized configs, searched per asset",
+  "cost": "4 bps taker per side (net-of-cost)",
+  "nulls": ["phase-randomization (Theiler 1992, spectrum/AR-preserving)", "AR(5)-matched placebo", "buy&hold baseline", "random-lottery baseline"],
+  "key_diagnostic": "Raw network-activity momentum is 0.55-0.73 correlated with PRICE momentum (BTC) and 0.26-0.70 (ETH). Orthogonalizing to price momentum collapses the forward-return IC from ~0.04-0.06 to ~0.01-0.02. This is the documented reverse-causality echo: on-chain activity lags price, so 'network momentum' is largely repackaged price momentum.",
+  "results": {
+    "raw_btc": {"is_best_netSharpe": 1.043, "binding_gate": "deflated_sharpe", "DSR_p": 0.80, "PBO": 0.50, "surrogate_p": 0.030, "ar_placebo_p": 0.017, "holdout": 0.245, "canonical_surrP": 0.425, "canonical_holdout": 0.030, "verdict": "selection illusion (PBO=coinflip; pre-registered canonical null)"},
+    "raw_eth": {"is_best_netSharpe": 1.199, "binding_gate": "deflated_sharpe", "PBO": 0.65, "surrogate_p": 0.017, "holdout": -0.119, "canonical_holdout": -0.102, "verdict": "KILL — fails holdout"},
+    "orth_btc": {"is_best_netSharpe": 0.963, "binding_gate": "baselines", "vs_BH": "0.963 vs 0.953 (does NOT beat B&H or random-lottery 0.996)", "surrogate_p": 0.243, "ar_placebo_p": 0.206, "canonical_holdout": -0.213, "verdict": "KILL — adoption-only signal cannot beat buy&hold"},
+    "orth_eth": {"is_best_netSharpe": 1.052, "binding_gate": "deflated_sharpe", "PBO": 0.60, "surrogate_p": 0.020, "ar_placebo_p": 0.036, "holdout": -0.194, "verdict": "KILL — fails holdout/DSR/PBO/haircut"}
+  },
+  "verdict": "KILL",
+  "binding_gate": "baselines (BTC adoption-only cannot beat buy&hold) / holdout (ETH negative OOS)",
+  "rationale": "No honest pre-registered (N=1) configuration survives: all four canonical variants have null surrogate p and/or negative consume-once holdout. The only PROMISING flag (raw BTC IS-best) is a multiple-testing selection artifact (PBO=0.50, DSR p=0.80). The clean adoption-leads-price test (orthogonalized to price momentum) KILLs on both assets — BTC can't beat B&H, ETH's OOS Sharpe is -0.19. The edge is the price-momentum echo (reverse causality), not network adoption.",
+  "confidence": "high"
+}

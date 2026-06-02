@@ -1,0 +1,31 @@
+{
+  "hypothesis": "funding-rate-as-sentiment contrarian FADE (T7 refinement)",
+  "carryStripped": true,
+  "driftStripped_in_followup": true,
+  "honestN": 24,
+  "requestedFade": {
+    "verdict": "KILL",
+    "primary": "fade|z2|h5",
+    "netSharpeAnn": -0.639411805852273,
+    "coinsPositive": "0/8",
+    "surrogateP": 0.8821178821178821,
+    "deflatedProb": 0.001092338450712993,
+    "pbo": 0.8571428571428571,
+    "reason": "fade negative everywhere; placebo beats it; extreme funding PERSISTS not reverts"
+  },
+  "discoveredMomentum_driftStripped": {
+    "verdict": "PROMISING-but-fails-DSR-gate",
+    "primary": "mom|z2|h3",
+    "netSharpeAnn": 1.0783803005927004,
+    "monthlyPct": 1.8594783792738827,
+    "monthly100k": 1859.4783792738826,
+    "coinsPositive": "8/8",
+    "surrogateP": 0.022977022977022976,
+    "bootstrapSharpeCI": [
+      0.0008076596725463223,
+      0.10813053877172693
+    ],
+    "deflatedProb": 0.4416675165224215,
+    "bindingGate": "Deflated Sharpe @ honest N=24 (deflatedProb 0.44 << 0.95)"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "test": "D5-08 Exchange reserve-depletion / netflow trend (native FlowIn-FlowOut, BTC)",
+  "verdict": "PROMISING",
+  "strongest_honest_version": "raw-native netflow-Z (EMA-smoothed FlowIn-FlowOut, rolling-Z), LAG>=1d, next-day return",
+  "best": {
+    "config": "smooth=7,zwin=365,thr=0.5,side=longflat",
+    "netSharpeAnn": 0.9937792483615915,
+    "vsBuyHold": 0.912,
+    "conditionalSharpeOnDays": 2.04,
+    "signalOnShare": 0.27
+  },
+  "bindingGate": "deflated_sharpe (multiple-testing) @ honest N=54; haircut also fails (adjP=0.096)",
+  "honestN": 54,
+  "surrogateP": 0.013289036544850499,
+  "holdoutSharpeAnn": 0.526339094731999,
+  "atN1_passes": {
+    "DSR": 0.998,
+    "haircutAdjP": 0.0018,
+    "note": "would SURVIVE as a single pre-registered bet, but grid-best != registered canonical (canonical net Sharpe only 0.478)"
+  },
+  "strengthening_attempts": {
+    "v1_netflow_ratio": "KILL — scale-free ratio weaker, fails baselines (net 0.83 < B&H), surrogate borderline 0.053",
+    "v2_reserve_level_trend_slope": "KILL — more price-coupled, fails baselines AND surrogate p=0.186",
+    "v3_price_orthogonalized": "PROMISING but weaker — net 0.927, surrogate still passes 0.050 (edge not pure price-beta), holdout drops to 0.31"
+  },
+  "eth_generalization": "does NOT generalize — ETH net 0.39, random-lottery p=0.17 => hard cap at PROMISING",
+  "conclusion": "Edge is REAL per the time-series phase-randomization null (flow timing carries info; survives price-orthogonalization), passes net-of-cost/baselines/surrogate/holdout/blockBootstrap/CPCV-PBO, but cannot clear the multiple-testing gate at HONEST N=54 and fails to generalize to ETH. Strongest honest version is the ORIGINAL raw-native netflow-Z; my 3 motivated strengthenings did not beat it."
+}

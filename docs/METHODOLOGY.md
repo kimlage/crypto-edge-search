@@ -1,441 +1,424 @@
-# Methodology — A Rigorous Anti-Overfitting Gate Stack for Trading-Strategy Validation
+# Methodology — The Gauntlet: A Binding-Order Anti-Overfitting Gate Chain
 
-> **This is the durable asset of the project.** Over six rounds (plus a follow-up on-chain
-> POC) we tested **35 distinct crypto trading hypotheses** on real public data at full rigor
-> (cloud spend $0). **33 were killed.** The two "survivors" are structural carry — real edges that have
-> decayed **below the risk-free rate** in the current (2025–2026) regime, i.e. a regime
-> trade, not a business. The result that generalizes — and the thing worth sharing — is
-> **the validation methodology**: an ordered stack of committed statistical and economic
-> gates, the surrogate/placebo controls, an honest trial count `N`, and a consume-once
-> holdout. This page documents that methodology so a stranger can evaluate it, reuse it,
-> or attack it.
+> **This is the durable asset of the project.** Across **~111 distinct crypto trading
+> hypotheses** — ~35 in prior rounds plus **58** in the 2026-06 parallelized domain campaign
+> plus an **18-hypothesis $0 backlog** — tested on real public data at full rigor (cloud
+> spend **$0**), the gauntlet returned **0 clean SURVIVE**. The two best leads sit at the
+> **PROMISING** boundary, weak and caveated; everything else is a **KILL**. The thing that
+> generalizes — and the thing worth sharing — is **the methodology**: an *ordered* chain of
+> committed statistical and economic gates, the **right surrogate null per claim**, an
+> **honest trial count `N`**, financing charged on the **full levered/short notional**, and a
+> **consume-once holdout**. This page documents that methodology so a stranger can evaluate
+> it, reuse it, or attack it.
 >
-> **A KILL is a valid, valuable outcome.** Negative results plus a methodology that does
-> not lie are a rare and useful contribution in quantitative finance. We do not oversell.
+> **A KILL is a valid, valuable outcome.** Negative results plus a methodology that does not
+> lie are a rare and useful contribution in quantitative finance. We do not oversell, and we
+> deploy no capital.
 >
 > **License:** MIT (see [`../LICENSE`](../LICENSE)).
-> **Companion docs:** [`VALIDATION_HARNESS.md`](./VALIDATION_HARNESS.md) (the one-call API),
-> [`EDGE_SEARCH_SYNTHESIS.md`](./EDGE_SEARCH_SYNTHESIS.md) (the tally + full bibliography).
-> Reference implementation: [`src/lib/validation/strategy-validator.ts`](../src/lib/validation/strategy-validator.ts).
+> **Companion docs:** [`EDGE_SEARCH_DOMAIN_CAMPAIGN.md`](./EDGE_SEARCH_DOMAIN_CAMPAIGN.md)
+> (the 2026-06 campaign roll-up + KILL ledger + the two surviving audits),
+> [`BACKLOG.md`](./BACKLOG.md) (the testable-hypothesis backlog).
+> Committed gate primitives:
+> [`src/lib/training/statistical-validation.ts`](../src/lib/training/statistical-validation.ts),
+> chained by per-domain `runGauntlet` wrappers (e.g.
+> [`scripts/edgehunt-D5/harness.ts`](../scripts/edgehunt-D5/harness.ts)). The lean public
+> repo additionally exposes a single `validateStrategy()` wrapper.
 
 ---
 
 ## 1. The problem: why an honest-looking backtest is usually a lie
 
-A backtest is a measurement taken **after** you have already searched a space of
-strategies and selected the best one. That selection step is the trap. Three named
-pathologies make a "good" backtest almost worthless on its own:
+A backtest is a measurement taken **after** you have already searched a space of strategies
+and selected the best one. That selection step is the trap. Three named pathologies make a
+"good" backtest almost worthless on its own:
 
-- **Backtest overfitting.** If you try enough variations of a strategy on a fixed
-  history, one of them will look excellent **by chance**. The more configurations you
-  try, the higher the best in-sample Sharpe you will find on data with *no real edge at
-  all*. This is selection bias, not skill.
-
-- **The multiple-testing problem.** A single `t > 2` (or `p < 0.05`) is only meaningful
-  for **one** pre-registered test. If you ran hundreds of tests, that bar is far too low:
-  Harvey, Liu & Zhu (2016) argue that with the number of factors the literature has
-  actually tried, the honest bar is closer to `|t| > 3`. Reporting the unadjusted p-value
-  of the *winner* is the central sin of strategy backtesting.
-
+- **Backtest overfitting.** If you try enough variations on a fixed history, one of them
+  will look excellent **by chance**. The more configurations you try, the higher the best
+  in-sample Sharpe you will find on data with *no real edge at all*. This is selection bias,
+  not skill.
+- **The multiple-testing problem.** A single `t > 2` (or `p < 0.05`) is only meaningful for
+  **one** pre-registered test. If you ran hundreds, that bar is far too low: Harvey, Liu &
+  Zhu (2016) argue the honest bar, given how many factors the literature has actually tried,
+  is closer to `|t| > 3`. Reporting the unadjusted p-value of the *winner* is the central
+  sin of strategy backtesting.
 - **The False Strategy Theorem** (Bailey & López de Prado). Given `N` strategies with a
   **true** Sharpe of exactly zero, the *expected maximum* of their in-sample Sharpe ratios
   grows with `N`. So "my best of 200 configs has Sharpe 1.3" is not evidence of edge until
-  you have deflated it by how hard you looked. The associated **Minimum Backtest Length
-  (MinBTL)** bound says: for a given `N`, a backtest shorter than some length cannot
-  distinguish a real Sharpe from the luck-of-selection maximum — the result is
-  uninterpretable regardless of how pretty it is.
+  you deflate it by how hard you looked. The associated **Minimum Backtest Length** bound
+  says a backtest shorter than some length cannot distinguish real Sharpe from the
+  luck-of-selection maximum — uninterpretable regardless of how pretty it is.
 
-The consequence: **statistical significance of the selected champion is necessary but not
-sufficient, and it must be computed against the true search effort.** On top of that,
-even a genuinely-significant Sharpe can still be (a) un-tradeable after costs, (b) just
-re-labeled market beta, or (c) an artifact of autocorrelation a dumb null reproduces. A
-single gate cannot catch all of these. Hence a **stack**.
+The consequence: **significance of the selected champion is necessary but not sufficient,
+and it must be computed against the true search effort.** On top of that, even a genuinely
+significant Sharpe can still be (a) un-tradeable after realistic cost *and financing*, (b)
+just re-labeled market beta, or (c) an artifact of autocorrelation a dumb null reproduces. A
+single gate cannot catch all of these. Hence a **chain** — run in a **fixed binding order**.
 
 ---
 
 ## 2. Design principles
 
-1. **Gates, not knobs.** Each gate is a hard pass/fail. The first failing gate is the
-   **binding gate** — the reason the strategy died. You do not tune the gate to let a
-   favorite through; you change the *target*. *Change the target, never the gates.*
+1. **Gates, not knobs.** Each gate is a hard pass/fail. The first failing gate in the fixed
+   order is the **binding gate** — the reason the target died. You never tune a gate to let
+   a favorite through; you change the *target*. **Change the target, never the gates.**
 2. **Cheap economic gates before expensive statistical ones.** A signal that is only
-   positive *gross* of cost, or that loses to buy-and-hold, should die immediately and
-   cheaply — before we spend compute on Deflated Sharpe or surrogates.
-3. **Net of realistic cost, always.** Edge is measured after charging taker fees on
-   every position change. A gross-only signal is an automatic KILL.
-4. **Honest `N` is mandatory, not optional.** The harness makes the trial count a
-   **required** argument so it can never silently default to 1.
-5. **Reuse committed, individually-tested gate code.** The validation harness *composes*
-   the gates that live in [`src/lib/training/`](../src/lib/training/); it does not
-   reimplement them. The only new code is orchestration and the surrogate null generators.
-6. **Deterministic and auditable.** Pure functions, seeded randomness, no network, no I/O
-   in the gate path. The same inputs always produce the same verdict.
+   positive *gross* of cost, or that loses to buy-and-hold / matched-exposure, should die
+   immediately and cheaply — before we spend compute on Deflated Sharpe or surrogates.
+3. **Net of realistic cost *and* financing, always.** Edge is measured after charging taker
+   fees on every position change **and** charging borrow/financing on the **full levered or
+   short notional** — not on one unit. A gross-only or finance-leaked signal is an automatic
+   downgrade (see §5.4 — this leak silently inflated three leads in 2026-06).
+4. **Honest `N` is mandatory, not optional.** The trial count must be the **true number of
+   distinct configs you searched**, counted *before* the search, and it must never default
+   to 1 or to the argmax.
+5. **The right null per claim.** A surrogate is only a control if it destroys the *specific*
+   structure the strategy claims to exploit while preserving everything else. The wrong null
+   either over-kills or under-kills (§4, §5.2). For a *searched* family the null must be the
+   **family-wise MAX-statistic**, not the single-best-config p (§5.3 — the decisive 2026-06
+   lesson).
+6. **Reuse committed, individually-tested gate code.** The per-domain `runGauntlet` wrappers
+   *compose* the primitives in [`src/lib/training/`](../src/lib/training/); they do not
+   reimplement them. The only new code is orchestration and the surrogate-null generators.
+7. **Deterministic and auditable.** Pure functions, seeded randomness, no network or I/O in
+   the gate path. The same inputs always produce the same verdict, and every number traces
+   to a committed machine-readable artifact under `output/`.
 
 ---
 
-## 3. The gate stack (in order)
+## 3. The gauntlet (binding order)
 
-The gates run in a fixed order. Each one targets a *different* failure mode. The table
-below lists what each certifies and its academic anchor; the subsections add detail and
-worked numbers. (Full bibliography in
-[`EDGE_SEARCH_SYNTHESIS.md` → References](./EDGE_SEARCH_SYNTHESIS.md#references--bibliography).)
+The gates run in **one fixed order**. Each targets a *different* failure mode. The
+**binding gate is whichever fails first**; a target can be doomed by several at once, but
+the binding gate is the first wall it hit. The full per-gate record is always retained.
 
-| # | Gate (`id`) | What it certifies | Academic source | Committed code reused |
+```
+net_of_cost → baselines → deflated_sharpe → block_bootstrap → cpcv_pbo → haircut → surrogate → holdout
+```
+
+(Exact order in [`scripts/edgehunt-D5/harness.ts`](../scripts/edgehunt-D5/harness.ts) →
+`runGauntlet`.)
+
+| # | Gate (`id`) | What it certifies | Academic anchor | Primitive reused |
 |---|---|---|---|---|
-| 1 | `net_of_cost` | Positive **net of realistic cost**; turnover reported. Gross-only ⇒ KILL. | cost realism (Allen & Karjalainen; Sullivan-Timmermann-White) | `summarizeReturnSeries` |
-| 2 | `baselines` | Beats **buy-and-hold + equal-weight + random-lottery + one-layer linear**, net of cost. | Chen & Navet 2007 (random lottery); Zeng et al. 2023 (DLinear) | `significance/baselines.ts` |
-| 3 | `deflated_sharpe` | Deflated Sharpe probability ≥ bar **at an explicit honest `N`**. | Bailey & López de Prado 2014 (DSR); MinBTL 2014 | `computeDeflatedSharpeRatio` |
-| 4 | `cpcv_pbo` | Probability of Backtest Overfitting `< 0.5` over combinatorial splits; flags `<8` folds as degenerate. | Bailey, Borwein, López de Prado & Zhu 2017 (PBO/CSCV) | `estimateCscvPbo` |
-| 5 | `haircut` | Sharpe survives the **multiple-testing haircut** (Bonferroni / Holm / BHY). | Harvey & Liu 2015 | `significance/haircut.ts` |
-| 6 | `surrogate` | Real edge beats a **phase-randomized + block-bootstrap (+ optional cross-sectional)** null. *The hero.* | Theiler et al. 1992; Politis & Romano 1994; Lo-MacKinlay 1990 | new null generators |
-| 7 | `holdout` | Out-of-sample slice scored **exactly once**. | López de Prado 2018 (consume-once holdout) | `significance/holdout.ts` |
+| 1 | `net_of_cost` | Positive **net of taker cost** (every position change) **and of financing on the full levered/short notional**; turnover reported. Gross-only / finance-leaked ⇒ downgrade. | cost realism; limits-to-arbitrage | `summarizeReturnSeries` |
+| 2 | `baselines` | Beats **buy-and-hold** AND a **matched-exposure** benchmark (for timing) / is **beta-neutral** with alpha-t on the residual (for cross-sectional), plus equal-weight + random-lottery + one-layer-linear, all net. | Chen & Navet 2007; Zeng et al. 2023 | baseline builders |
+| 3 | `deflated_sharpe` | Deflated Sharpe probability ≥ bar **at an explicit honest `N`** (= every config searched). | Bailey & López de Prado 2014; MinBTL | `computeDeflatedSharpeRatio` |
+| 4 | `block_bootstrap` | Block-bootstrap confidence interval on the mean **excludes zero** (dependence-aware). | Politis & Romano 1994 | `blockBootstrapConfidenceInterval` |
+| 5 | `cpcv_pbo` | Probability of Backtest Overfitting `< 0.5` over combinatorial splits; `<8` folds flagged degenerate. | Bailey, Borwein, López de Prado & Zhu 2017 | `estimateCscvPbo` |
+| 6 | `haircut` | Sharpe survives the **multiple-testing haircut** (Bonferroni / Holm / BHY). Often the *true* binding gate. | Harvey & Liu 2015 | haircut routine |
+| 7 | `surrogate` | Real edge beats the **right null per claim** — including the **family-wise MAX-statistic** for a searched grid. *The hero.* | Theiler 1992; Lo-MacKinlay 1990; et al. | null generators |
+| 8 | `holdout` | A most-recent block the search **never touched**, scored **exactly once**. | López de Prado 2018 | holdout guard |
 
-### Gate 1 — Net of cost (turnover-aware)
+**Verdict scheme** (from `runGauntlet`):
 
-Cost is charged on **every position change**: `|Δposition| × roundTrip`, with
-`roundTrip = 2 × takerPerSide`. The default is 4 bps/side on a perp (8 bps round-trip).
-Pass a `position` path in `[-1, 1]` for turnover-aware charging; otherwise supply an
-explicit `turnover` or accept a round-trip per active period. Turnover is reported in
-`netStats.turnover`. **A signal that is only positive gross dies here.**
+- **SURVIVE** — *every* gate passes (`bindingGate = none`).
+- **PROMISING** — passes the **core** economic gates (`net_of_cost`, `baselines`,
+  `surrogate`, `holdout`) but trips a **multiple-testing / DSR** gate (3, 4, 5, or 6). The
+  *structure/sign* is real; the *realized mean is not significant at honest `N` on unseen
+  data*. This is exactly the PROMISING/SURVIVE boundary (§5.3).
+- **KILL** — fails a core economic gate (most cost, baseline, surrogate, or holdout
+  failures).
+- **DEFERRED** — not run because the only honest test needs data we do not have at $0
+  (e.g. point-in-time L2 order books, paid PIT options chains). Not a verdict on edge — a
+  verdict on *coverage*.
 
-This is the cheapest possible filter and it kills a surprising amount. Examples from the
-edge search: every 15-minute / 30-minute microstructure variant in TA3 died on cost; the
-classic-indicator universe in TA4 collapsed once round-trips were charged.
+### Gate 1 — Net of cost *and financing*
+
+Taker cost is charged on **every position change**: `|Δposition| × roundTrip`,
+`roundTrip = 2 × takerPerSide` (default 4 bps/side, 8 bps round-trip). **Financing/borrow is
+charged on the full levered or short notional, not on one unit.** This is the cheapest
+filter and it kills a surprising amount — and the financing leg is the one most often
+forgotten. The systemic 2026-06 financing leak (§5.4) lived here.
 
 ### Gate 2 — Baselines (the first *economic* test)
 
-Statistical significance does not mean *economic edge*. A strategy must beat the dumb
-things you could have done instead, **net of cost**:
+Significance is not *economic edge*. A target must beat the dumb thing you could have done:
 
-- **Buy-and-hold** (one round-trip at entry). Most "trend" or "TA" edges in a bull market
-  are just filtered long beta. The canonical case is **TA4**: the best Bollinger-breakout
-  config passed DSR (p ≈ 0.00025), PBO (0.00) and the haircut, then **lost to
-  buy-and-hold** (margin −0.00057), to random-lottery, and to linear — it was long-beta,
-  not timing skill. Across 94 classic indicators, **0/94 beat buy-and-hold**.
-- **Equal-weight** panel return (for cross-sectional strategies).
-- **Random-lottery trader** (Chen & Navet 2007). Without a zero-intelligence pre-test, a
-  genetic/heuristic search's "success" is probably luck. We simulate a trader that fires
-  the same number of trades at random and check the champion beats its distribution.
-- **One-layer linear** baseline (Zeng et al. 2023, "DLinear"). A single linear layer
-  matches or beats sophisticated forecasters in most time-series settings — so any
-  complex model must beat a trivial linear one. In **C3** (joint market-state overlay)
-  the binding gate was exactly this: the overlay **lost to a trivial linear predictor**.
+- **Buy-and-hold** — most "trend"/"TA" edges in a bull market are just filtered long beta.
+- **Matched-exposure benchmark (for any timing/overlay).** A low-exposure long/flat overlay
+  *structurally cannot* out-Sharpe 100%-long buy-and-hold, so scoring it only against B&H is
+  an **artifact**. The honest bar is the incremental lift over a benchmark holding the *same
+  average exposure*.
+- **Beta-neutrality (for any cross-sectional book).** Require book β ≈ 0 and report the
+  **alpha-t on the residual**, using an **honest out-of-sample hedge beta** — never an
+  in-sample over-hedge (which manufactures fake alpha).
+- **Equal-weight** panel return, **random-lottery trader** (Chen & Navet 2007), and a
+  **one-layer linear** baseline (Zeng et al. 2023): any complex model must beat the trivial
+  linear one.
 
-### Gate 3 — Deflated Sharpe at honest `N`
+### Gates 3–6 — The multiple-testing / overfitting block
 
-The Deflated Sharpe Ratio (Bailey & López de Prado 2014) deflates an observed Sharpe by
-(a) the **true number of trials `N`**, (b) the non-normality (skew/kurtosis) of the return
-series, and (c) the sample length. It returns a probability that the *true* Sharpe exceeds
-zero given how hard you searched. The harness requires `trialCount` and passes it straight
-in. The default bar is `deflatedProbability ≥ 0.95`. See §5.1 for why honest `N` is the
-single most load-bearing input here.
+Deflated Sharpe at honest `N` (§5.1); a dependence-aware block-bootstrap CI on the mean;
+CPCV/PBO over combinatorial splits (PBO ≥ 0.5 ⇒ selection is a coin-flip OOS); and the
+Harvey-Liu haircut, which adjusts the champion's p-value for multiple testing and backs out
+the Sharpe consistent with the adjusted p. **The haircut is frequently the real binding
+gate** — e.g. a 52-week-high breakout that binds on the haircut going to 0 even at a lenient
+`N = 6`, not on the DSR it was cited against.
 
-### Gate 4 — CPCV / PBO
+### Gate 7 — Surrogate / placebo (the hero)
 
-The Probability of Backtest Overfitting (Bailey, Borwein, López de Prado & Zhu 2017) uses
-**combinatorially-symmetric cross-validation (CSCV)**: split the history into many folds,
-form all train/test combinations, and estimate how often the in-sample best strategy
-**underperforms out-of-sample**. PBO `≥ 0.5` means the selection process is no better than
-a coin flip OOS — pure overfitting. The harness flags `foldCount < 8` as degenerate
-(too few folds to trust the estimate). In **C1 (rotation)** the PBO was **0.964** — severe
-overfitting, a clear flag even before the surrogate killed it.
+See §4 and §5.2–§5.3. This is the project's sharpest tool and the one that did the decisive
+killing — twice over: it must be the **right null per claim**, and for a searched grid it
+must be the **family-wise MAX-statistic**.
 
-### Gate 5 — Harvey-Liu haircut
+### Gate 8 — Consume-once holdout
 
-Harvey & Liu (2015) "haircut" the Sharpe ratio by adjusting the champion's p-value for
-multiple testing (Bonferroni / Holm / BHY), then back out the Sharpe consistent with the
-*adjusted* p-value. A strategy passes only if the haircut Sharpe stays positive. This is a
-second, complementary multiple-testing control to the DSR: DSR deflates the *level*; the
-haircut adjusts the *p-value* and supports family-wise (Holm) or false-discovery-rate
-(BHY) corrections for panels of strategies.
-
-### Gate 6 — Surrogate / placebo (the methodological hero)
-
-See §5.2 — this gets its own section because it is the project's sharpest tool and the
-hardest to grasp.
-
-### Gate 7 — Consume-once holdout
-
-A final, most-recent block of history the search **never touches**, scored **exactly
-once**. See §5.3.
-
-> **Note on order and "binding gate".** Because gate 1 is cheapest and gate 6/7 are most
-> expensive, the *reported* binding gate is whichever fails first in this order. A
-> strategy can be doomed by several gates at once (e.g. C1 fails PBO, surrogate, and
-> holdout); the binding gate is just the first wall it hit. The full per-gate record is
-> always retained.
+A final, most-recent block of history the search **never touches**, scored **exactly once**.
+A second scoring attempt is barred — re-tuning against the vault would void the verdict.
+See §5.5.
 
 ---
 
-## 4. Surrogate / placebo, explained for a newcomer
+## 4. The right null per claim (non-negotiable)
 
-This is the idea most people have never seen, and it is the one that did the decisive
-killing. Read this section even if you skip the rest.
+A surrogate answers one question: *"Is the machine tracking something real, or is it just
+good at manufacturing a pretty backtest out of any series with the same superficial shape?"*
+You answer it by building **placebo datasets** that keep the boring real properties
+(volatility, autocorrelation) but **destroy the specific structure the strategy claims to
+exploit**, then run the *exact same* search and scoring on them. If the placebos do as well
+as the real data — where, by construction, no real edge exists — the "edge" is an
+optimization artifact. It is the placebo arm of a drug trial.
 
-**The question a surrogate answers.** "My adaptive machine / GA / overlay found an edge.
-Is it tracking something *real* in the market, or is it just **good at manufacturing a
-pretty backtest out of any series with the same superficial shape**?"
+**The null must match the claim.** Using the wrong null either over-kills (a directional
+carry "fails" a cross-sectional shuffle that has no power over it) or under-kills (a
+per-cell calendar placebo passes a data-mined grid). The mapping the campaign committed:
 
-**How you answer it.** Build **placebo datasets** — *surrogates* — that keep the boring,
-real statistical properties of the data (its volatility, its autocorrelation) but
-**destroy the specific structure your strategy claims to exploit**. Then run the *exact
-same* search and scoring on the surrogates. If your machinery finds an **equal-or-better
-"edge" on the placebos** — where, by construction, no real edge exists — then the "edge"
-on the real data is an **optimization artifact**, not a signal.
+| Claim type | Right null | Destroys | Preserves |
+|---|---|---|---|
+| **Time-series timing** | **phase-randomization** / **block bootstrap** | nonlinear/regime/long-range structure | variance, linear autocorrelation |
+| **Rotation / relative-value / lead-lag** | **cross-sectional shuffle** | genuine cross-asset rotation | each asset's marginal distribution exactly |
+| **Path-dependent exits** (stops/brackets) | **bracket-on-surrogate** | claimed path-timing edge | the bracket logic + marginal dynamics |
+| **Volatility-clustering** strategies | **GARCH-simulated** zero-edge | any edge beyond vol clustering | the conditional-vol process |
+| **Variance risk premium** | **shuffled-VRP placebo** | the sizing/timing *skill* | the realized premium itself |
+| **Calendar / event** | **calendar-reanchor + family-wise MAX-stat** | the chosen anchor's special status | event count, seasonality shape |
+| **Macro / sentiment** | **AR-matched placebo** (same persistence) | the predictor's information | the autocorrelation/persistence |
 
-It is the trading equivalent of a placebo arm in a drug trial: if the sugar pill does as
-well as the drug, the drug does nothing.
+> **Searched grid ⇒ family-wise.** Whenever the config was *selected* from a grid, the
+> surrogate must take the **MAX statistic over the whole grid per surrogate draw** (one
+> shared, coherent permutation realization applied to every config, then grid-MAX). The
+> single-best-config p is **not** a valid null for a searched family — it is the exact
+> data-mining trap the surrogate is supposed to catch (§5.3).
 
-We use three surrogate generators, each destroying a different kind of structure:
-
-- **Phase randomization** (Theiler et al. 1992). Take the Fourier transform of the
-  series, **randomize the phases** while keeping the amplitude spectrum, invert. The
-  surrogate has the *same* variance and the *same* linear autocorrelation as the original,
-  but its nonlinear / regime structure is destroyed. This catches strategies that are
-  secretly just feeding on autocorrelation.
-- **Block bootstrap** (Politis & Romano 1994). Resample contiguous **blocks** of returns.
-  Short-range dependence survives; long-range regime structure does not. Catches
-  regime-timing claims.
-- **Cross-sectional shuffle** (the rotation null; Lo-MacKinlay 1990, Hou 2007). For a
-  *panel* of assets, **permute which asset receives which return path**. Every asset's
-  marginal distribution is preserved exactly, but genuine cross-asset **lead-lag /
-  rotation** is destroyed. This is mandatory for any rotation / relative-value / lead-lag
-  hypothesis.
-
-The gate reports the real-vs-surrogate distribution and a **placebo p-value** (`placeboP`
-= fraction of surrogates scoring **≥** the real strategy). It passes only when
-`placeboP ≤ maxPlaceboP` (default 0.05). A high `placeboP` means the placebos do as well
-as the real thing — KILL.
-
-> **Why this is sharper than DSR/PBO/haircut.** Those three certify *"this Sharpe is not
-> luck-of-selection."* They say nothing about whether the *structure* is real. The
-> surrogate gate directly tests the economic claim by reproducing the search on data
-> where the claimed structure is provably absent. It is the only gate that can catch an
-> **adaptive** machine fooling itself — and the GA / walk-forward results below show it
-> doing exactly that.
+> **Caveat — the too-powerful vol/spectrum-preserving surrogate.** For a long/flat
+> price-transform overlay on a secularly rising asset (Supertrend, CCI, etc.), a
+> vol/spectrum-preserving surrogate can *inflate* the shared long-beta and score **above**
+> the live strategy (CCI surrogate mean ≈ 2.3–2.4 > 1.768 live, p ≈ 1.0; Supertrend/CCI
+> surrogates scored +0.75–1.09 of inflated long-beta above their own passive long). Do not
+> read that as "the strategy is worse than noise." Judge such overlays on the **long-beta-
+> *differenced* lift** — the incremental Sharpe over their own buy-and-hold — not on the raw
+> surrogate comparison.
 
 ---
 
-## 5. The three load-bearing parts (with the concrete kills)
+## 5. The load-bearing parts (with the concrete kills)
 
-The other gates (DSR, PBO, haircut) only certify that a Sharpe is not luck-of-selection;
-they do not test economic edge. **Three controls did the actual killing.** Each subsection
-gives the example where that control was the decisive killer.
-
-### 5.1 Honest trial count `N` (gates 3 & 5)
+### 5.1 Honest trial count `N`
 
 The Deflated Sharpe and the haircut **only deflate if you feed them the true number of
-distinct configs you searched**. Feeding `N = 1` (or a per-family bucket length) silently
-skips the deflation and lets a data-mined champion sail through. The harness makes
-`trialCount` a **required** option for exactly this reason.
+distinct configs you searched** — counted **before** the search, never the argmax. Feeding
+`N = 1`, or a per-family bucket, silently skips the deflation and lets a data-mined champion
+sail through. **The only honest way to collapse `N → 1` is genuine pre-registration:** a
+single, mechanism-justified config **frozen before any neighborhood search**. If the
+"pre-registered" config is actually the rank-1 point of a searched neighborhood, then honest
+`N` = the neighborhood size, not 1 — and both the DSR economics *and* the surrogate gate
+(§5.3) must be recomputed at that `N`. This single substitution flipped the strongest 2026-06
+lead from PROMISING to KILL.
 
-Concrete kills:
+### 5.2 The surrogate, applied correctly — examples
 
-- **TA3** (microstructure, 224 variants): the survivor config had a pretty in-sample
-  Sharpe (search net Sharpe ≈ 1.30 annualized), but deflated at the honest **`N = 224`**
-  the DSR probability fell to **0.79 (p = 0.21)** — i.e. noise. It also failed the
-  consume-once holdout. (`output/ta-research/ta3-results.json`.)
-- **T10** (cointegration pairs): gross +52.8% looked great, but at honest **`N = 420`**
-  the DSR probability was **0.029** and the MinBTL bound failed — the backtest was too
-  short to interpret a champion chosen from 420 trials.
-- **GA over rules (R3):** the genetic program searched **5,613 unique genomes**; deflated
-  at that honest `N`, the holdout DSR probability was **≈ 9 × 10⁻¹²**.
-  (`output/front-r3/ga-rules-result.json`.)
+- **GA over trading rules: placebo p ≈ 1.000.** A genetic program run on *pure
+  phase-randomized / block-bootstrap noise* found champions *better* out-of-sample than the
+  real champion — every noise run did at least as well. The GA is the ultimate overfitter;
+  without the surrogate this would have read as an in-sample win.
+- **Rotation: the cross-sectional shuffle was decisive.** A "ride the relay" rotation
+  strategy's entire lead-lag statistic was reproduced by permuting which asset gets which
+  path — the "capital rotation across tiers" was really single-asset momentum plus an
+  aggregate vol state. Only the cross-sectional shuffle told the two apart.
+- **The whole free-tier order-flow domain dies at h ≥ 1** via the **h=0 leakage gate**
+  (§5.6): the apparent Sharpe lives entirely in the contemporaneous bar.
 
-The discipline: **you must pass the real `N` from your trial ledger.** If you searched
-5,613 genomes, `N = 5613` — not 1, not 40.
+### 5.3 The family-wise MAX-statistic — the decisive 2026-06 lesson (flipped 3 leads)
 
-### 5.2 Surrogate / placebo (gate 6) — the hero
+The sharpest single result of the campaign. **A surrogate run on only the single
+in-sample-selected grid-best config — with no family-wise correction — is itself a
+multiple-testing artifact.** It answers "is *this one* config better than noise?" when the
+honest question is "is the **best of the grid I searched** better than the **best a search of
+the same grid finds on noise**?" The correct null is the **family-wise MAX-statistic**: per
+surrogate draw, rebuild *every* config and take the grid-MAX; compare the real grid-best to
+that distribution.
 
-The decisive control in the project, three times over:
+Three earlier PROMISING leads were flipped to **KILL** on exactly this defect (two-layer
+independent audit — `output/edgehunt-audit/SUMMARY.md`,
+`output/edgehunt-audit-nb/SUMMARY.md`):
 
-- **GA over trading rules (R3): placebo p = 1.000.** A genuine genetic program (population
-  160, 40 generations, AND/OR rules over indicators) found a champion with **train net
-  Sharpe +0.088**. Run on **pure phase-randomized and block-bootstrap noise**, the *same*
-  GA found champions that were **better out-of-sample** (surrogate holdout Sharpe mean
-  **+0.032**, max **+0.110**) than the real champion (**−0.097**). Placebo
-  **p = 1.000** — *every* noise run did at least as well. The GA is the ultimate
-  overfitter; **without the surrogate control this would have looked like an in-sample
-  win.** (`output/front-r3/ga-rules-result.json`.)
+| Lead | Single-config harness p | Family-wise MAX-stat p (searched grid) | Honest-N DSR at full grid | Verdict |
+|---|---:|---:|---:|---|
+| **BTC exchange reserve-depletion** (netflow) | 0.013 | **≈ 0.24** (real best 0.994 < surr95 ≈ 1.19) | fails (config is argmax of a ~12-config neighborhood ⇒ `N ≠ 1`) | **KILL** |
+| **Q9 cross-sectional low-vol anomaly** | 0.002 | **≈ 0.06** (borderline, seed-sensitive) | **0.476** @ N=96 (Harvey-Liu adjP 0.673) | **KILL** |
+| **O3 fee-revenue NVT** (BTC) | 0.005 | **0.093** @ N=312 (real 1.332 < surr95-max 1.384) | **0.894** @ N=312 (the N=54 pass was a post-hoc carve-out) | **KILL** |
 
-- **Rotation (C1): the cross-sectional shuffle was decisive.** The rotation "ride the
-  relay" strategy had an in-sample net Sharpe of **1.076**. The lead-lag statistic it
-  relied on was **fully reproduced by the cross-sectional shuffle** (`p_LeadLag = 1.000`)
-  — i.e. permuting which asset gets which path reproduces the entire "lead-lag" signal.
-  The shuffle's placebo p-value on the portfolio score was **0.005** in the sense that the
-  shuffled panels scored as well as the real one. Combined with **PBO = 0.964** and a
-  **−39.9% holdout**, the verdict is unambiguous: the "capital rotation across tiers" was
-  really just single-asset momentum plus an aggregate volatility state — **not**
-  circulation of capital between tiers. The cross-sectional shuffle is what told the two
-  apart. (`output/c1-rotation/rotation-report.json`.) The same shuffle clarified **C3**:
-  the leftover timing edge was aggregate vol-state, **not** cross-asset breadth/rotation.
+> **The meta-lesson.** A right-null surrogate **PASS proves the structure/sign is
+> non-random — it does NOT prove the realized mean is positive-with-significance at honest
+> `N` on unseen data.** That gap *is* the PROMISING/SURVIVE boundary, and in 2026-06 **no
+> lead crossed it.** (For Q9 the family-wise surrogate is only a borderline secondary
+> contributor — the robust kill is honest-N DSR 0.476 and the haircut 0.673; the audit even
+> self-corrected an inflated independent-per-config null of 0.397 down to the coherent ≈0.06.
+> The two-layer audit re-derived every disputed number from the committed primitives and
+> found **no false-KILL anywhere**.)
 
-- **Walk-forward adaptation (WF-B / WF-C):** the adaptive machine **manufactured backtest
-  dispersion in noise as well as in real data**. In WF-C the real adaptive run scored
-  **−0.063** while phase-surrogate and block-surrogate means were **+0.129 / +0.132** and
-  **80 surrogates beat the real run** (`placeboP ≈ 0.63`). Without the surrogate, the
-  in-sample dispersion would have looked like a regime-tracking win; with it, the run was
-  exposed as noise-fitting. (`output/walkforward/wf-c-result.json`.)
+### 5.4 Financing on the full levered/short notional (a systemic leak)
 
-The carry demo (`scripts/validation/demo-validate.ts`) shows the gate behaving honestly on
-*real* data too: the equal-weight perp-funding carry series in the current regime yields
-`placeboP ≈ 0.671` — the surrogates do as well as the real series, independently flagging
-that carry has decayed (consistent with the cost gate killing it first). A seeded-Gaussian
-noise series gets `placeboP ≈ 0.70` and an AR(1) artifact `≈ 0.77`.
+The 2026-06 audit found a **systemic** accounting leak: every short or levered book charged
+the risk-free rate on **one unit** while charging borrow on **none of the levered/short
+notional**. On a KILL this only deepens the kill; on the carries it **inflated the
+headline**:
 
-### 5.3 Consume-once holdout (gate 7)
+- **Dated-futures basis carry** — at the correct levered RF charge (average leverage
+  ≈ 2.95×), Sharpe collapses **1.64 → 0.69**, ≈ **$1,062 → $447/mo @ $100k**, DSR
+  **0.58 → 0.13** (and it fails the 0.95 gate at *any* RF ≥ 0.75%/yr). The "levered headline"
+  was a financing-leak artifact. Only a **thin UNLEVERED** market-neutral excess survives —
+  ≈ 4.9%/yr, t = 2.41 — which is **sub-every-multiple-testing-bar** and regime-fragile
+  (sub-RF in 2023, −37% in the 2021 cohort).
+- **XS Donchian L/S** — its 2×-gross dollar-neutral book holds ≈ 1.0× short notional daily
+  with zero borrow charged; charging it erodes the consume-once holdout from **0.53 toward
+  0 / negative**. Report the OOS Sharpe as a **range ≈ 0.3–0.5**, not a point 0.53.
+
+### 5.5 Consume-once holdout
 
 The search may see train and selection data, and may even audit a posterior `test` slice,
 but a truly out-of-sample verdict needs a final, most-recent block the search **never
-touches** and that is **scored exactly once**. The harness carves it with `planHoldoutSplit`
-and consumes it through `FinalHoldoutGuard` — a second attempt **throws**, because
-re-tuning against the vault would void the verdict.
+touches** and that is **scored exactly once**. A second attempt is barred. This is where the
+prediction edges died, one after another — and where the surviving leads revealed their
+weakness: the XS Donchian lead's structure is real (cross-sectional-shuffle p = 0.009,
+positive at every `N ∈ [20, 200]` and every holdout quarter), but on the **388-row
+consume-once holdout the magnitude is indistinguishable from zero** (DSR@N=1 = 0.79,
+Newey-West t(mean) = 0.96, block-bootstrap CI-lower < 0).
 
-This is where the prediction edges died, one after another:
+> **Survivorship caveat.** The 30-coin panels are survivorship-biased (LUNA / FTT / UST
+> absent), so **even the holdout is an upper bound** — a −90% delisting shock flips the XS
+> Donchian holdout negative in ~17% of draws. A survivorship-clean point-in-time universe is
+> a precondition for any promotion.
 
-- **TA1** (indicators to time the carry ON/OFF): passed **every gate in-sample**
-  (`p = 5.8 × 10⁻⁷`, DSR ≈ 1.0, PBO ≈ 0.075, beat baselines, survived the haircut), then
-  in the consume-once holdout the gate went **100% OFF and merely tied the risk-free rate**
-  (gated Sharpe = 0, margin vs RF = 0). The decisive number is the **perfect-foresight
-  oracle bound of only +0.52%/yr** over RF in that holdout — meaning *no* causal timing
-  gate, however good, can extract a meaningful edge in this regime.
-  (`output/ta-research/carry-gating-report.json`.)
-- Across the prediction/TA hypotheses the holdout was the recurring executioner:
-  E1 **−9.59% net**, T1 **−32%**, T9 **−48%**, TA4 holdout net Sharpe **−1.01**, the GA
-  structural rule collapsing from **+3.15%/yr in-sample to −0.015%/yr** (flat RF) in the
-  holdout, the C4 listing-short going to **−100% compound** when the held-out cohort
-  pumped instead of dumping.
+### 5.6 Two metric pitfalls to avoid
 
-> **Change the target, never the gates.** An empty parent pool under this stack means the
-> *target* lacks edge net of cost — not that the stack is too strict.
+- **The tautological `sharpe(OLS residuals)` pitfall.** `residual_alpha_sharpe =
+  sharpe(OLS residuals)` is `≈ 0` **by construction** (OLS residuals have mean exactly 0), so
+  "residual-alpha ≈ 0 ⇒ it's timed beta" is an *unsupported* narrative — the beta-hedged
+  alpha is actually large in-sample. Use `sharpe(y − β·x)` (a true beta-hedged excess) for
+  the alpha claim; let the KILLs stand on the *holdout collapse*, not on the broken metric.
+- **The h=0 leakage gate.** For any order-flow / microstructure "signal," **report the
+  contemporaneous (h=0) ceiling, then require the strictly-lagged (h ≥ 1) leg to clear the
+  gates ALONE.** The entire free-tier order-flow belief set is dead at h ≥ 1 — the Sharpe
+  lives in the bar where the trades *are* the move (the Hasbrouck/Easley tautology).
+
+> **Change the target, never the gates.** An empty survivor pool under this chain means the
+> *targets* lack edge net of cost and financing — not that the chain is too strict.
 
 ---
 
-## 6. What the stack found (the honest verdict)
+## 6. What the gauntlet found (the honest verdict)
 
 | Bucket | Count | Notes |
-|---|---|---|
-| Hypotheses tested at full rigor | **35** | six rounds + an on-chain POC, all on real public data, cloud spend $0 |
-| Killed | **33** | every prediction / TA / relative-value / rotation / on-chain-flow idea, **fixed and adaptive** |
-| Structural-carry "survivors" | **2** | perp funding carry (E2) and dated-futures basis (T8) |
+|---|---:|---|
+| Hypotheses tested at full rigor | **~111** | ~35 prior rounds + 58 (2026-06 domain campaign) + 18 ($0 backlog), 8 domains, all on real public data, cloud spend $0 |
+| Clean **SURVIVE** | **0** | nothing cleared the full gauntlet on data it had never seen |
+| **PROMISING** (weak, caveated) | **2** | XS Donchian L/S; dated-futures basis carry (UNLEVERED-thin only) |
+| **KILL** | the rest | every prediction / TA / microstructure / relative-value / rotation / on-chain-flow / sentiment / calendar idea — fixed *and* adaptive |
+| **DEFERRED** | a few | only because the honest test needs paid PIT data (L2 order books, PIT options chains) — not a verdict on edge |
 
-The two survivors passed the full-sample gates but are **structural carry, not
-prediction** — a limits-to-arbitrage premium (BIS WP 1087). Both have **decayed below the
-risk-free rate** in the current regime: the oracle-bound timing edge on carry today is only
-**≈ +0.52–0.53%/yr**, and after capital-efficiency and roll costs the incremental edge over
-T-bills is **negative** at every capital tier modeled. **Carry is a regime trade — arm it
-only when funding is rich (≳ 8–9%) and rising — not an always-on business.** It is *real*;
-it is *not profitable now*. Full per-hypothesis detail and the carry economics are in
-[`EDGE_SEARCH_SYNTHESIS.md`](./EDGE_SEARCH_SYNTHESIS.md).
+The two PROMISING leads, precisely:
 
-The takeaway is not "crypto has no edge." It is: **the edge is not in direction
-prediction, classic/microstructure TA, cross-section/relative-value at retail cost,
-timing the carry, capital rotation across tiers, or adaptively re-fitting any of these** —
-and the gate stack correctly refused to manufacture a survivor where there was none.
+1. **XS Donchian channel-position long-short** — beta-neutral (book β ≈ 0, honest-OOS hedge
+   beta 0.78, *not* the in-sample over-hedge 0.318), right-null **cross-sectional-shuffle
+   p = 0.009**, structure positive at every `N` and every quarter — but the 388-row
+   consume-once holdout **magnitude is ≈ 0** (DSR@N=1 0.79, Newey-West t 0.96), and financing
+   on the short notional erodes OOS to a **range ≈ 0.3–0.5**. Held back by honest-N
+   magnitude-significance and a survivorship-biased panel.
+2. **Dated-futures basis carry** — a real market-neutral term-structure premium, but
+   **UNLEVERED-thin only** (≈ 4.9%/yr, t = 2.41, sub-every-multiple-testing-bar). The levered
+   headline was a financing-leak artifact (§5.4). A sub-risk-free regime trade, not a
+   business.
+
+The two prior carry "survivors" of earlier rounds (perp-funding carry; dated-futures basis)
+**remain sub-risk-free regime trades** under honest accounting. **Nothing is deployable.**
+
+The takeaway is not "crypto has no edge." It is: **the edge is not in direction prediction,
+classic/microstructure TA, cross-section/relative-value at retail cost, timing the carry,
+capital rotation across tiers, variance-premium sizing, calendar effects, or adaptively
+re-fitting any of these** — and the gauntlet correctly refused to manufacture a survivor
+where there was none. The durable deliverable is the **methodology plus this body of
+negative evidence**.
 
 ---
 
-## 7. Using the methodology — the `validateStrategy()` API
+## 7. Using the methodology
 
-The whole stack is packaged as one deterministic call. (Full usage notes:
-[`VALIDATION_HARNESS.md`](./VALIDATION_HARNESS.md).)
+On this branch the gauntlet is run through per-domain `runGauntlet` wrappers that import the
+committed primitives directly — e.g.
+[`scripts/edgehunt-D5/harness.ts`](../scripts/edgehunt-D5/harness.ts) imports
+`computeDeflatedSharpeRatio`, `estimateCscvPbo`, `blockBootstrapConfidenceInterval`, and
+`summarizeReturnSeries` from
+[`src/lib/training/statistical-validation.ts`](../src/lib/training/statistical-validation.ts)
+and chains them in binding order with the **claim-appropriate null**. The lean public repo
+additionally packages the whole chain as one deterministic `validateStrategy()` call.
 
-```ts
-import { validateStrategy } from "@/lib/validation/strategy-validator";
+The discipline when you wire your own target:
 
-const verdict = validateStrategy(grossPerPeriodReturns, {
-  // HONEST N — the TRUE number of distinct configs you searched. REQUIRED.
-  trialCount: 224,
-
-  // Statistic for baselines / DSR. "compoundReturn" is the cost-realism default.
-  statistic: "compoundReturn",
-
-  // Cost is charged on every position change: |Δposition| × (2 × takerPerSide).
-  cost: { takerPerSide: 0.0004, position },        // 4 bps/side perp; pass a [-1,1] path
-
-  // Economic baselines the strategy must beat, net of cost.
-  baselines: { marketReturns, equalWeightReturns, linearReturns },
-
-  // Surrogate / placebo null. crossSectional + panel are required for rotation tests.
-  surrogate: { iterations: 200, crossSectional: true, panel: { assetReturns } },
-
-  // Consume-once holdout: carved here, scored exactly once.
-  holdout: { holdoutFraction: 0.15, testFraction: 0.15 },
-});
-
-verdict.verdict;       // "PASS" | "KILL"
-verdict.bindingGate;   // the FIRST gate that failed (the binding constraint) | null
-verdict.perGate;       // every gate's { id, passed, reason, detail }, in order
-verdict.netStats;      // net-of-cost summary incl. turnover + grossSharpe
-verdict.trialCount;    // the honest N actually used for DSR / haircut
-```
-
-- **Input.** The strategy's **gross** per-period return series (or a `() => number[]` that
-  produces one). The harness charges cost itself and runs the gates in order.
-- **Output.** A structured `{ verdict, bindingGate, perGate, netStats, trialCount }`. The
-  binding gate tells you *why* it died; `perGate` is the full audit trail.
-- **`trialCount` is required and must be the honest `N`.** This is the one input you must
-  not get wrong (see §5.1). Pass it from your trial ledger.
-- **For rotation / lead-lag / relative-value hypotheses**, pass `surrogate.panel` and set
-  `surrogate.crossSectional: true` so the cross-sectional shuffle runs — it is the only
-  null that distinguishes genuine rotation from single-asset momentum (§5.2, C1).
-- **A KILL is the expected, valuable outcome.** The gates do not manufacture survivors.
-
-A smoke run (`scripts/validation/demo-validate.ts`) validates a real carry series, a
-seeded-Gaussian noise series, and an AR(1) artifact, asserting the harness runs all seven
-gates and KILLs the noise. The harness is pure, deterministic (seeded), with no network or
-I/O in the gate path; `npx tsc --noEmit` reports 0 errors.
+- **Charge taker cost on every position change AND financing on the full levered/short
+  notional.** A gross-only or finance-leaked series is not a result.
+- **Pass the honest `N` from your trial ledger** — every config you searched, fixed *before*
+  the search. Pre-register a single mechanism-justified config if you want `N = 1`, and do
+  not let it be the grid argmax.
+- **Pick the right null for your claim** (§4 table), and use the **family-wise MAX-statistic**
+  for any searched grid.
+- **For timing**, score against a **matched-exposure** benchmark; **for cross-sectional
+  books**, enforce **beta-neutrality** with an honest-OOS hedge beta.
+- **Spend the consume-once holdout once**, and remember a survivorship-biased panel makes
+  even that an upper bound.
+- **A KILL is the expected, valuable outcome.** The gauntlet does not manufacture survivors.
 
 ---
 
 ## 8. Reproducibility and provenance
 
-Every quantitative claim on this page traces to a committed machine-readable output:
+All work ran at **$0** on free public data (exchange public REST, Coin Metrics Community
+no-key, Deribit public DVOL, FRED no-key CSV, Fear & Greed, Google Trends, GDELT), reusing
+on-disk caches under `output/`. Every quantitative claim traces to a committed
+machine-readable artifact:
 
 | Claim | Source of truth |
 |---|---|
-| GA-over-rules placebo p = 1.000; N = 5,613; DSR ≈ 9e-12 | `output/front-r3/ga-rules-result.json` |
-| Rotation: PBO 0.964; lead-lag reproduced by shuffle (`p_LL` = 1.000); holdout −39.9% | `output/c1-rotation/rotation-report.json` |
-| WF-C: real −0.063 vs phase +0.129 / block +0.132; `placeboP` ≈ 0.63 | `output/walkforward/wf-c-result.json` |
-| TA1: in-sample p = 5.8e-7; holdout ties RF; oracle bound +0.52%/yr | `output/ta-research/carry-gating-report.json` |
-| TA3: N = 224; DSR p = 0.21 | `output/ta-research/ta3-results.json` |
-| TA4: 0/94 beat buy-and-hold; holdout Sharpe −1.01 | `output/ta-research/ta4-classic-indicators-result.json` |
-| Small-caps (R2): placebo p = 0.90; holdout −58.5% | `output/r2-illiquid/smallcap-audit-report.json` |
-| GA structural carry (R4): +3.15%/yr → −0.015%/yr holdout; placebo p = 0.721 | `output/front-r4/ga-structural-carry-result.json` |
-| C3 overlay loses to linear; cross-sectional shuffle non-significant | `output/front-c3/c3-report.json` |
-| C4 listing short: −100% holdout compound | `output/front-c4/listing-event-result.json` |
-| Carry economics / decay (regime trade, sub-RF) | `output/carry/*.json`, `EDGE_SEARCH_SYNTHESIS.md` §3 |
-| Carry demo placeboP ≈ 0.671; noise / AR(1) KILLed | `output/validation/demo-validate-report.json` |
+| 2026-06 campaign roll-up: 0 SURVIVE, 2 PROMISING, ~51 KILL; full KILL ledger | [`docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md`](./EDGE_SEARCH_DOMAIN_CAMPAIGN.md), `output/edgehunt-*/SUMMARY.md` |
+| Reserve / Q9 / O3 PROMISING → KILL on the family-wise MAX-stat; systemic financing leak | `output/edgehunt-audit/SUMMARY.md`, `output/edgehunt-audit-nb/SUMMARY.md` |
+| Pre-registered consume-once deepening (donchian / dated / reserve / vrp) | `output/edgehunt-deepen/SUMMARY.md`, `output/edgehunt-D5-followup/VERDICT.md` |
+| Per-domain syntheses (consensus, D1–D7, D348, quant, on-chain, requeue) | `output/edgehunt/SUMMARY.md` and the matching `output/edgehunt-*/SUMMARY.md` |
+| Testable-hypothesis backlog (8 domains) | [`docs/BACKLOG.md`](./BACKLOG.md) |
+| The committed gauntlet primitives + a per-domain wrapper | [`src/lib/training/statistical-validation.ts`](../src/lib/training/statistical-validation.ts), [`scripts/edgehunt-D5/harness.ts`](../scripts/edgehunt-D5/harness.ts) |
 
-The chronological lab record (rounds 1–6, with every number) is
-`EVOLUTION_TRAINING_LOG.md` (internal lab log — not included in this public release) (internal, Portuguese; not included in this public release — all numbers trace to the machine-readable output/*.json provenance). The
-English synthesis and full academic bibliography are in
-[`EDGE_SEARCH_SYNTHESIS.md`](./EDGE_SEARCH_SYNTHESIS.md). The committed gate
-implementations live in [`src/lib/training/`](../src/lib/training/)
-(`statistical-validation.ts`, `significance/{baselines,haircut,holdout,trial-count,spa,cpcv-paths}.ts`);
-the harness that composes them is
-[`src/lib/validation/strategy-validator.ts`](../src/lib/validation/strategy-validator.ts).
+The chronological internal lab log is kept in the project's working notes (Portuguese,
+provenance only — not part of this public release); every number above traces to the
+machine-readable `output/*` artifacts.
 
 ---
 
 ### Key references
 
-Anchors for the methodology (full bibliography in
-[`EDGE_SEARCH_SYNTHESIS.md`](./EDGE_SEARCH_SYNTHESIS.md#references--bibliography)):
-
 - **Bailey & López de Prado (2014)** — The Deflated Sharpe Ratio. *(gate 3)*
-- **Bailey, Borwein, López de Prado & Zhu (2014)** — Pseudo-Mathematics… Minimum Backtest Length; the False Strategy Theorem. *(honest N / MinBTL)*
-- **Bailey, Borwein, López de Prado & Zhu (2017)** — The Probability of Backtest Overfitting (PBO/CSCV). *(gate 4)*
-- **López de Prado (2018)**, *Advances in Financial Machine Learning* — purged/embargoed CPCV, the False Strategy Theorem, the consume-once holdout. *(gates 4 & 7)*
-- **Harvey & Liu (2015)** — Backtesting: the multiple-testing haircut Sharpe. *(gate 5)*
+- **Bailey, Borwein, López de Prado & Zhu (2014)** — Minimum Backtest Length; the False Strategy Theorem. *(honest N / MinBTL)*
+- **Bailey, Borwein, López de Prado & Zhu (2017)** — The Probability of Backtest Overfitting (PBO / CSCV). *(gate 5)*
+- **López de Prado (2018)**, *Advances in Financial Machine Learning* — CPCV, the False Strategy Theorem, the consume-once holdout. *(gates 5 & 8)*
+- **Harvey & Liu (2015)** — Backtesting: the multiple-testing haircut Sharpe. *(gate 6)*
 - **Harvey, Liu & Zhu (2016)** — …and the Cross-Section of Expected Returns; the `|t| > 3` bar. *(honest-N rationale)*
-- **Theiler et al. (1992)** — surrogate data / phase randomization. *(gate 6)*
-- **Politis & Romano (1994)** — the stationary / block bootstrap. *(gate 6)*
-- **Lo & MacKinlay (1990); Hou (2007)** — cross-autocorrelation / lead-lag; motivate the cross-sectional-shuffle null. *(gate 6, rotation)*
+- **Theiler et al. (1992)** — surrogate data / phase randomization. *(gate 7)*
+- **Politis & Romano (1994)** — the stationary / block bootstrap. *(gates 4 & 7)*
+- **Lo & MacKinlay (1990); Hou (2007)** — cross-autocorrelation / lead-lag; motivate the cross-sectional-shuffle null. *(gate 7, rotation)*
 - **Chen & Navet (2007)** — random / zero-intelligence pre-test for evolved strategies. *(gate 2)*
 - **Zeng et al. (2023)** — DLinear: a single linear layer as a strong baseline. *(gate 2)*
+- **Moreira & Muir (2017)**; Cederburg et al. critique — volatility management and its OOS fragility. *(GARCH-null vol strategies)*
+- **BIS Working Paper 1087** — crypto basis and limits to arbitrage. *(carry as a regime trade)*
 
 ---
 
 *License: MIT (see [`../LICENSE`](../LICENSE)). This document is intended to be shared as an
-open-source description of the validation methodology.*
+open-source description of the falsification-lab methodology.*

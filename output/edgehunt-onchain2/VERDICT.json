@@ -1,0 +1,39 @@
+{
+  "hypothesis": "O4-STABLEFLOW — Stablecoin supply growth as a lagged dry-powder flow",
+  "backlog_refs": ["D5-13 SSR (prior KILL)", "D5-14 net mint/burn impulse", "D7.18 mint-as-event"],
+  "metric_free": true,
+  "metric_source": "DefiLlama total stablecoin circulating supply (free, no key) — output/edgehunt-D5/stablecoins_total.json",
+  "data_window": "tradable 2019-01-01 .. 2026-05-30 (2018 backfill artifacts excluded; supply forward-filled, winsorized 5 MAD)",
+  "construction": "smoothed log-growth of total stablecoin supply over gw days, LAGGED >=1d; dry-powder = high growth -> long. orth=1 family removes coincident-demand by expanding-causal regression on trailing 30d BTC return (reverse-causality control).",
+  "verdict": "KILL",
+  "honest_N": 270,
+  "binding_gate_at_honest_N": "deflated_sharpe (DSR p=0.559 @N=270; also PBO=0.60, Harvey-Liu adjP=0.35)",
+  "raw_winner": {
+    "cfg": {"gw": 60, "zwin": 90, "th": 0.5, "dir": "dryPowder", "orth": 0},
+    "netSharpeAnn": 1.224,
+    "vs_buyHold": 0.826,
+    "vs_randomLottery95": 0.973,
+    "holdoutSharpeAnn": 0.529,
+    "phaseRand_surrogateP": 0.0274,
+    "reverseCausality_placeboP": 0.0150
+  },
+  "reverse_causality_clean_version_familyB": {
+    "cfg": {"gw": 90, "zwin": 90, "th": 0.5, "dir": "dryPowder", "orth": 1},
+    "netSharpeAnn": 1.139,
+    "holdoutSharpeAnn": -0.276,
+    "reverseCausality_placeboP": 0.0599,
+    "note": "the economically honest (price-echo-removed) version DIES out-of-sample and fails the reverse-causality null"
+  },
+  "lead_lag_causality": {
+    "corr_growthZ_nextDayRet_LEAD": 0.022,
+    "corr_growthZ_fwd30dRet_LEAD": 0.1345,
+    "corr_growthZ_trailing30dRet_ECHO": 0.3509,
+    "interpretation": "supply-growth-Z is ~16x more correlated with PAST 30d price than with next-day price -> reverse causality / price echo dominates; the apparent edge is a slow long-beta tilt on a rising asset."
+  },
+  "why_not_survive": [
+    "The N=3 'SURVIVE' for the raw family is a post-hoc carve-out of the N=270 search winner -> dishonest N. At the honest N=270 the effect fails Deflated Sharpe (p=0.559), PBO (0.60) and the Harvey-Liu haircut (adjP=0.35).",
+    "Orthogonalizing against coincident demand (the BACKLOG's KEY reverse-causality control) makes the holdout NEGATIVE (-0.276) and the reverse-causality placebo fail (p=0.060). The clean signal has no forward edge.",
+    "Lead/lag shows the signal is a price echo (trailing-30d corr 0.351 vs next-day 0.022)."
+  ],
+  "monthly_at_100k": "n/a"
+}
