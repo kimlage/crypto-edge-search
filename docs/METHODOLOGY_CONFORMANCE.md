@@ -12,10 +12,15 @@ All paths are repo-relative. The committed gauntlet order is:
 
 The orchestrator that wires these in order (and assigns the **first failing gate** as
 the binding one) is
-[`validateStrategy`](../src/lib/validation/strategy-validator.ts) — the single API.
-Verdict scheme: **SURVIVE / PROMISING / KILL / DEFERRED** (the validator emits the
-binary `PASS`/`KILL` gate decision; `PROMISING` and `DEFERRED` are human verdicts
-applied on top of the gate evidence — see [`RESULTS.md`](RESULTS.md)).
+[`validateStrategy`](../src/lib/validation/strategy-validator.ts) — the single-series API;
+the searched-grid analogue is
+[`validateStrategyFamily`](../src/lib/validation/strategy-family-validator.ts) (the
+family-wise MAX-statistic, row 7a).
+Verdict scheme: the validator emits the legacy binary `verdict: PASS|KILL` **and** a richer
+`scientificVerdict: SURVIVE | PROMISING | KILL | DEFERRED | INDETERMINATE`, plus a per-gate
+`status: PASS | FAIL | SKIP | ADVISORY` (`SKIP`/`ADVISORY` are non-binding). `INDETERMINATE`
+fires when no baselines were supplied; `DEFERRED` remains a human verdict applied on top of
+the gate evidence — see [`RESULTS.md`](RESULTS.md).
 
 ## Quick legend
 
@@ -32,11 +37,11 @@ applied on top of the gate evidence — see [`RESULTS.md`](RESULTS.md)).
 | 1 | **net_of_cost** — turnover-aware net return; gross-only or non-positive-after-cost ⇒ KILL. Costs are charged inside the score, not bolted on. | `src/lib/validation/strategy-validator.ts::applyCost` + the `net_of_cost` gate in `::validateStrategy`; per-trade view `src/lib/reorientation/turnover.ts::computeNetEdge` | `src/lib/validation/strategy-validator.test.ts::"the in-sample net stat is scored on the search slice, not the full series"` and `::"KILLs a pure-noise series"`; `src/lib/reorientation/turnover.test.ts::"charges cost per trade and exposes the per-trade edge"` |
 | 2 | **baselines** — beat buy-and-hold + equal-weight + random-lottery + one-layer linear, net of cost, before any edge is credited. | `src/lib/significance/baselines.ts::evaluateBaselineGate` (+ `buildRandomLotteryBaseline`, `buildBuyAndHoldBaseline`, `baselineScoreFromReturns`); wired via `src/lib/validation/strategy-validator.ts::runBaselines` | `src/lib/significance/baselines.test.ts::"blocks a pure-noise candidate that loses to buy-and-hold"` and `::"blocks a noise candidate that does not beat the random-lottery bar"` |
 | 3 | **deflated_sharpe** — DSR at an EXPLICIT honest `trialCount` (true N), deflating the observed Sharpe by the expected max of N true-zero trials (Bailey & López de Prado, False Strategy Theorem). | `src/lib/statistical-validation.ts::computeDeflatedSharpeRatio` (+ `expectedMaxStandardNormal`, `computeProbabilisticSharpeRatio`); wired via the `deflated_sharpe` gate in `src/lib/validation/strategy-validator.ts::validateStrategy` | `src/lib/statistical-validation.test.ts::"refuses to certify the best of many true-zero strategies once N is injected (A2)"` and `::"still certifies a genuine edge after deflating by the same N (A2)"`; `src/lib/validation/strategy-validator.test.ts::"flips a borderline DSR PASS→KILL when the honest trialCount rises"` |
-| 4 | **block_bootstrap** — block/stationary bootstrap confidence intervals on the headline statistic, preserving short-range autocorrelation (Politis & Romano). *Planned as a standalone wrapper gate in the next phase;* the primitive is committed and is already consumed inside the surrogate null. | Primitive: `src/lib/statistical-validation.ts::blockBootstrapConfidenceInterval`; surrogate-side resampler: `src/lib/validation/strategy-validator.ts::blockBootstrap` (consumed in `::runSurrogate`) | `src/lib/statistical-validation.test.ts::"builds deterministic block bootstrap confidence intervals"` |
+| 4 | **block_bootstrap** — a standalone, separately-binding gate between `deflated_sharpe` and `cpcv_pbo`: block/stationary bootstrap CI on the scoring statistic (preserving short-range autocorrelation, Politis & Romano); PASS iff the lower CI bound `> 0`. The same primitive is also consumed inside the surrogate null. | Gate wiring `src/lib/validation/strategy-validator.ts::runBlockBootstrap` (the `block_bootstrap` gate in `::validateStrategy`); primitive `src/lib/statistical-validation.ts::blockBootstrapConfidenceInterval`; surrogate-side resampler `::blockBootstrap` (consumed in `::runSurrogate`) | `src/lib/statistical-validation.test.ts::"builds deterministic block bootstrap confidence intervals"`; `src/lib/validation/strategy-validator.test.ts::"PASSes a robust positive edge (CI lower bound > 0) and exposes ci.lower/ci.upper"` and `::"FAILs a mean-zero series whose CI straddles zero"` |
 | 5 | **cpcv_pbo** — Probability of Backtest Overfitting via CSCV over a genuine strategies×folds (or strategies×paths) matrix; PBO < bar. Self-derived candidate-vs-zero PBO is structurally unfailable, so it is SKIPPED (non-binding) unless a real matrix is supplied. | `src/lib/statistical-validation.ts::estimateCscvPbo`; multi-path substrate `src/lib/significance/cpcv-paths.ts::cpcvPbo` / `summarizeCpcvPaths`; gate wiring `src/lib/validation/strategy-validator.ts::runPbo` | `src/lib/statistical-validation.test.ts::"estimates simple CSCV/PBO from strategy fold returns"`; `src/lib/significance/cpcv-paths.test.ts::"estimates PBO over the strategies x paths matrix"`; `src/lib/validation/strategy-validator.test.ts::"skips the PBO gate (passed+skipped) instead of a confident self-vs-zero PASS"` |
 | 6 | **haircut** — Harvey & Liu multiple-testing haircut; the Sharpe must survive the trial-count-adjusted p-value (Bonferroni / Holm / BHY). | `src/lib/significance/haircut.ts::haircutSharpe` (single best) + `::haircutSharpePanel` (whole panel); wired via the `haircut` gate in `src/lib/validation/strategy-validator.ts::validateStrategy` | `src/lib/significance/haircut.test.ts::"haircuts hard once there are many trials"`, `::"BHY is more lenient than Bonferroni"`, `::"ranks by significance and flags only genuine survivors (Holm)"` |
 | 7 | **surrogate** — the methodological hero. Real edge must beat a phase-randomized + block-bootstrap (+ optional cross-sectional) null on the discriminating statistic; surrogates ≥ real ⇒ EDGE IS AN ARTIFACT ⇒ KILL. | `src/lib/validation/strategy-validator.ts::runSurrogate` (+ `phaseRandomize`, `blockBootstrap`, `crossSectionalShuffle`) | `src/lib/validation/strategy-validator.test.ts::"certifies a genuine cross-sectional rotation edge (planted edge → PASS)"`, `::"phase randomization preserves variance and lag-1 autocorrelation"`, `::"the block bootstrap preserves the marginal mean"` |
-| 7a | **family-wise MAX-statistic** — for a SEARCHED grid the surrogate / multiple-testing null must be the grid-MAX statistic: rebuild every config on each null draw, take the grid-max, compare the real best to the surr95 of those maxima (NOT a single-best-config p). | `src/lib/significance/spa.ts::superiorPredictiveAbility` (Hansen SPA — studentized **max** statistic, `testStatistic = max_k √n·d̄_k/ω_k`) + `::romanoWolfStepwise` (FWER step-down over the max) | `src/lib/significance/spa.test.ts::"does not flag a panel of pure-noise strategies"`, `::"flags a genuine outperformer hidden among noise"`; `::"rejects nothing in pure noise"`, `::"rejects a clear outperformer"` |
+| 7a | **family-wise MAX-statistic** — for a SEARCHED grid the surrogate / multiple-testing null must be the grid-MAX statistic: rebuild every config on each null draw, take the grid-max, compare the real best to the surr95 of those maxima (NOT a single-best-config p). | Searched-grid entry point: `src/lib/validation/strategy-family-validator.ts::validateStrategyFamily` (rebuilds every config on each surrogate panel, takes the grid-MAX, compares real grid-best vs surr95). Panel-statistic substrate: `src/lib/significance/spa.ts::superiorPredictiveAbility` (Hansen SPA — studentized **max** statistic, `testStatistic = max_k √n·d̄_k/ω_k`) + `::romanoWolfStepwise` (FWER step-down over the max) | `src/lib/validation/strategy-family-validator.test.ts::"PASSES a planted family whose grid-best reads a real cross-sectional signal"`, `::"KILLs a pure-noise family — the real best is just the luckiest of N"`; `src/lib/significance/spa.test.ts::"does not flag a panel of pure-noise strategies"`, `::"flags a genuine outperformer hidden among noise"` |
 | 8 | **holdout** — consume-once final vault, carved off BEFORE gates 1–7 run, scored exactly once; a second read voids the verdict. | `src/lib/significance/holdout.ts::planHoldoutSplit` + `FinalHoldoutGuard` (+ `assertSearchDoesNotTouchHoldout`); wired via `src/lib/validation/strategy-validator.ts::runHoldout` (carve in `::validateStrategy`) | `src/lib/significance/holdout.test.ts::"carves disjoint contiguous search/test/holdout blocks with the vault most recent"`, `::"refuses a second consumption"`; `src/lib/validation/strategy-validator.test.ts::"mutating the vault rows does not change any in-sample gate detail"` |
 | 9 | **cost model** — per-side taker charged on every position change (`\|Δposition\| × roundTrip`); financing/borrow charged on the FULL levered/short notional (the dated-futures leak fix); carry fees on BOTH legs in + out. | `src/lib/validation/strategy-validator.ts::applyCost` (turnover × round-trip); financing-on-full-notional carry: `src/lib/reorientation/funding-carry.ts::simulateFundingCarry` (entry/exit/rebalance fees on both legs) | `src/lib/reorientation/funding-carry.test.ts::"charges entry + exit fees on a single round trip"`, `::"triggers a rebalance fee when the basis drifts past the threshold"`; `src/lib/reorientation/turnover.test.ts::"charges cost per trade and exposes the per-trade edge"` |
 | 10 | **trial count / MinBTL ledger** — the true N injected into DSR/haircut comes from a distinct-config ledger, never `1`; plus the Minimum Backtest Length bar (sample must be long enough that the winner beats selection luck). | `src/lib/significance/trial-count.ts::effectiveTrialCount` / `countDistinctTrials` / `evaluateMinBtl` / `summarizeTrialSelection` | `src/lib/significance/trial-count.test.ts::"counts unique DNA ids and falls back to trial id"`, `::"takes the largest of rows, explicit and floor"`, `::"flags a short sample as insufficient for many trials"` |
@@ -57,18 +62,22 @@ These are the two mistakes the audit caught and the methodology now hard-codes a
 > A single-config p-value silently ignores the N-1 other configs you tried and
 > manufactures false survivors.
 
-- **Implemented by:** `src/lib/significance/spa.ts::superiorPredictiveAbility`
-  computes the studentized **maximum** across the panel
+- **Implemented by:** `src/lib/validation/strategy-family-validator.ts::validateStrategyFamily`
+  is the searched-grid entry point: for each surrogate panel it rebuilds **every** config,
+  takes the **grid-max** statistic, and compares the real grid-best against the **surr95** of
+  those surrogate maxima (`surrogateMaxP` = fraction of surrogate grid-maxima ≥ the real
+  grid-best). The panel-statistic substrate is `src/lib/significance/spa.ts::superiorPredictiveAbility`,
+  which computes the studentized **maximum** across the panel
   (`testStatistic = max_k √n·d̄_k/ω_k`) and the SPA p-value as the fraction of
-  **bootstrap maxima** ≥ observed — i.e. the grid-max compared against the null
-  distribution of grid-maxima. `::romanoWolfStepwise` extends this to a step-down
+  **bootstrap maxima** ≥ observed; `::romanoWolfStepwise` extends this to a step-down
   family-wise-error-controlled set ("which configs are genuinely superior").
 - **Why the single-config surrogate gate isn't enough on its own:** the
   `surrogate` gate in `src/lib/validation/strategy-validator.ts::runSurrogate`
   scores ONE series against its own null. That is correct for a *single* pre-registered
-  config, but for a grid the binding test is the MAX-stat in `spa.ts`; the conformance
-  contract is that a searched result is reported against the family-wise max, and the
-  honest N is injected into DSR/haircut (rows 3, 6, 10) on top of it.
+  config, but for a grid the binding test is the family-wise MAX-stat — run
+  `validateStrategyFamily` (built on `spa.ts`); the conformance contract is that a searched
+  result is reported against the family-wise max, and the honest N is injected into
+  DSR/haircut (rows 3, 6, 10) on top of it.
 - **Covered by:** `src/lib/significance/spa.test.ts` — the panel of pure-noise
   strategies is NOT flagged (max-stat null absorbs the luckiest config), while a
   genuine outperformer hidden among noise IS flagged.
@@ -95,22 +104,24 @@ These are the two mistakes the audit caught and the methodology now hard-codes a
 
 ## 3. Notes, caveats and known gaps
 
-- **`block_bootstrap` as a standalone gate is planned, not yet a separate gauntlet
-  step.** The committed gauntlet runs the block bootstrap *inside* the `surrogate`
-  null (`strategy-validator.ts::blockBootstrap`), and the standalone CI primitive
-  (`statistical-validation.ts::blockBootstrapConfidenceInterval`) is committed and
-  tested. Promoting it to an explicit, separately-binding wrapper gate between
-  `deflated_sharpe` and `cpcv_pbo` is scheduled for the next phase; until then this
-  row is "primitive committed + consumed in surrogate", not "standalone binding gate".
+- **`block_bootstrap` is now a standalone, separately-binding gate.** It sits between
+  `deflated_sharpe` and `cpcv_pbo` (`strategy-validator.ts::runBlockBootstrap`) and PASSES
+  iff the lower CI bound on the scoring statistic is strictly `> 0`, using the committed
+  primitive `statistical-validation.ts::blockBootstrapConfidenceInterval`. The same
+  resampler is *also* used inside the `surrogate` null (`strategy-validator.ts::blockBootstrap`),
+  so the gauntlet both gates on the CI directly and uses block surrogates in gate 7.
 - **`cpcv_pbo` is intentionally non-binding without a genuine matrix.** A self-derived
   candidate-vs-zero PBO is structurally unfailable (PBO = 0 always), so
   `runPbo` SKIPS the gate unless ≥2 distinct strategies × ≥2 folds are supplied. A
   confident PASS only comes from a real strategies×folds / strategies×paths matrix.
-- **`PROMISING` / `DEFERRED` are human verdicts.** The code emits a per-gate
-  `PASS`/`KILL` and a binding gate; the four-way verdict (`SURVIVE` / `PROMISING` /
-  `KILL` / `DEFERRED`) is applied by a human reading the gate evidence and recorded in
-  [`RESULTS.md`](RESULTS.md). The gates do not manufacture survivors; a KILL is a valid
-  and valuable outcome.
+- **`scientificVerdict` is auto-derived; `DEFERRED` stays a human verdict.** The code emits
+  the per-gate `PASS`/`KILL`, the binding gate, **and** a derived
+  `scientificVerdict: SURVIVE | PROMISING | KILL | INDETERMINATE`
+  (`strategy-validator.ts::deriveScientificVerdict` — `PROMISING` when only a DSR-family gate
+  fails, `INDETERMINATE` when no baselines were supplied). `DEFERRED` is the one verdict still
+  applied by a human reading the evidence (it is about data *coverage*, not the gates) and is
+  recorded in [`RESULTS.md`](RESULTS.md). The gates do not manufacture survivors; a KILL is a
+  valid and valuable outcome.
 - **Determinism is a conformance requirement, not a convenience.** Any gate that draws
   a null must be seeded and reproducible; see row 12.
 

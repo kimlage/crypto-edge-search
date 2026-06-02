@@ -68,7 +68,9 @@ that killed ~109 in-sample Sharpes that would otherwise have looked like wins.
 | [`EDGE_SEARCH_DOMAIN_CAMPAIGN.md`](EDGE_SEARCH_DOMAIN_CAMPAIGN.md) | **The 2026-06 domain campaign** — the parallelized fan-out of 58 hypotheses across eight domains, the deepening + two-layer audit that flipped 3 leads to KILL, and the per-domain KILL ledger as teaching cases. |
 | [`REFERENCES.md`](REFERENCES.md) | **The bibliography** — every gate and every tested hypothesis mapped to its peer-reviewed (or working-paper) academic source. |
 | [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md) | **Re-run it yourself** — how to reproduce every number from a clean clone (scripts, free inputs, expected outputs; cloud spend $0). |
-| [`VALIDATION_HARNESS.md`](VALIDATION_HARNESS.md) | **The reusable harness** — the gate primitives (`computeDeflatedSharpeRatio`, `estimateCscvPbo`, `blockBootstrapConfidenceInterval`, `summarizeReturnSeries`) chained by per-domain `runGauntlet` wrappers, plus the single `validateStrategy(...)` entry point so any future hypothesis is validated exactly the way these ~111 were. |
+| [`VALIDATION_HARNESS.md`](VALIDATION_HARNESS.md) | **The reusable harness** — the gate primitives (`computeDeflatedSharpeRatio`, `estimateCscvPbo`, `blockBootstrapConfidenceInterval`, `summarizeReturnSeries`) chained by per-domain `runGauntlet` wrappers, plus the single-series `validateStrategy(...)` and searched-grid `validateStrategyFamily(...)` entry points so any future hypothesis is validated exactly the way these ~111 were. |
+| [`METHODOLOGY_CONFORMANCE.md`](METHODOLOGY_CONFORMANCE.md) | **The audit bridge** — every methodological claim / gate mapped to the exact `file::function` that implements it and the test that covers it (no code ⇒ not implemented; no test ⇒ not trusted). |
+| [`DISCLAIMER.md`](DISCLAIMER.md) | **Not investment advice** — research and software only; nothing in this repository is deployable. |
 | [`ONCHAIN_FEASIBILITY.md`](ONCHAIN_FEASIBILITY.md) | **On-chain $0 feasibility report** — the verdict that a rigorous on-chain edge test is fully fundable at $0 (Coin Metrics Community + DefiLlama, no paid keys), with an honest null prior — and the recurring wall (free flow data covers only BTC+ETH, so the closest lead never generalized). |
 | [`BACKLOG.md`](BACKLOG.md) | **The research backlog** — 155 testable trading-technique hypotheses across 8 domains (D1–D8), each carrying its right surrogate null, honest-`N` concern, the control that separates real edge from long-beta, an honest prior (KILL is a valid outcome), and references. |
 
@@ -96,7 +98,9 @@ that killed ~109 in-sample Sharpes that would otherwise have looked like wins.
 7. **[`REPRODUCIBILITY.md`](REPRODUCIBILITY.md)** — re-run the numbers yourself from a clean
    clone to verify they are real, not asserted (cloud spend $0).
 8. **[`VALIDATION_HARNESS.md`](VALIDATION_HARNESS.md)** — if you want to *reuse* the gauntlet
-   on your own hypothesis: the gate primitives and the one-call `validateStrategy(...)` API.
+   on your own hypothesis: the gate primitives, the one-call `validateStrategy(...)` API, and
+   the searched-grid `validateStrategyFamily(...)` entry point. (Conformance mapping in
+   [`METHODOLOGY_CONFORMANCE.md`](METHODOLOGY_CONFORMANCE.md).)
 9. **[`ONCHAIN_FEASIBILITY.md`](ONCHAIN_FEASIBILITY.md)** — the $0 on-chain feasibility
    verdict and the data-coverage wall that capped the closest lead.
 10. **[`BACKLOG.md`](BACKLOG.md)** — the 155-hypothesis pipeline, if you want to challenge,

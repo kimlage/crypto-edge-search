@@ -11,11 +11,17 @@
 The harness has three layers, lowest to highest:
 
 1. **Primitives** — pure, deterministic statistical functions in
-   `src/lib/training/statistical-validation.ts`.
+   [`src/lib/statistical-validation.ts`](../src/lib/statistical-validation.ts). (A thin
+   re-export shim at `src/lib/training/statistical-validation.ts` exposes the *same*
+   single source of truth for the campaign scripts that import from that path.)
 2. **Per-domain `runGauntlet` wrappers** — chain the primitives with cost, baselines,
    and the right surrogate null for one domain (e.g. `scripts/edgehunt-D5/harness.ts`).
-3. **`validateStrategy()`** — the published lean-repo single-entry wrapper that composes
-   the same gates around an arbitrary return series.
+3. **`validateStrategy()`** (single series) and **`validateStrategyFamily()`** (searched
+   grid) — the single-entry wrappers that compose the same gates around an arbitrary
+   return series / searched config grid.
+
+> **Conformance.** Every claim on this page is mapped to the exact implementing function
+> and its test in [`METHODOLOGY_CONFORMANCE.md`](./METHODOLOGY_CONFORMANCE.md).
 
 Everything is `$0`, reproducible, seeded, and runs on free public data. Run TypeScript
 with the repo's pinned runtime:
@@ -29,7 +35,7 @@ runtime's `bin` directory, e.g. `PATH=/path/to/node/bin:$PATH node_modules/.bin/
 
 ---
 
-## Layer 1 — the primitives (`src/lib/training/statistical-validation.ts`)
+## Layer 1 — the primitives (`src/lib/statistical-validation.ts`)
 
 Four pure functions. No I/O, no network, no global state; all randomness is seeded.
 These are the load-bearing math; every wrapper imports them rather than reimplementing.
@@ -47,7 +53,7 @@ import {
   computeDeflatedSharpeRatio,
   blockBootstrapConfidenceInterval,
   estimateCscvPbo,
-} from "@/lib/training/statistical-validation";
+} from "@/lib/statistical-validation"; // (or "@/lib/training/statistical-validation" — same shim)
 
 const stats = summarizeReturnSeries(netReturns);                 // sharpe, moments
 const dsr   = computeDeflatedSharpeRatio(netReturns, { trialCount: 96 });
@@ -80,7 +86,7 @@ import {
   estimateCscvPbo,
   blockBootstrapConfidenceInterval,
   summarizeReturnSeries,
-} from "../../src/lib/training/statistical-validation.ts";
+} from "../../src/lib/training/statistical-validation.ts"; // re-export shim → src/lib/statistical-validation.ts
 
 export function runGauntlet(input: GauntletInput): GauntletOutput { /* … */ }
 ```
@@ -113,25 +119,69 @@ const verdict = validateStrategy(grossPerPeriodReturns, {
   statistic: "compoundReturn",     // net P&L (cost-realism default)
   cost: { takerPerSide: 0.0004, position },        // 4 bps/side; |Δposition| charged on every change
   baselines: { marketReturns, equalWeightReturns, linearReturns },
+  strictBaselines: true,           // missing baselines ⇒ hard FAIL/INDETERMINATE, not a vacuous pass
   surrogate: { iterations: 200, crossSectional: true, panel: { assetReturns } },
   holdout: { holdoutFraction: 0.15, testFraction: 0.15 },
 });
 
-verdict.verdict;       // "PASS" | "KILL"
-verdict.bindingGate;   // the FIRST gate that failed (the binding constraint) | null
-verdict.perGate;       // every gate's { passed, reason, detail }, in order
-verdict.netStats;      // net-of-cost summary incl. turnover + grossSharpe
+verdict.verdict;            // legacy binary "PASS" | "KILL"
+verdict.scientificVerdict;  // "SURVIVE" | "PROMISING" | "KILL" | "DEFERRED" | "INDETERMINATE"
+verdict.bindingGate;        // the FIRST gate that failed (the binding constraint) | null
+verdict.perGate;            // every gate's { id, passed, status, reason, detail }, in order
+verdict.netStats;           // net-of-cost summary incl. turnover + grossSharpe
+verdict.trialCount;         // the honest N actually used for DSR / haircut
 ```
 
 The input is the strategy's **gross** per-period return series (or a `() => number[]`
 that produces one). The wrapper charges cost itself, carves the holdout vault **first**
-(so gates 1–6 only ever see the in-sample slice), runs the gates in order, and returns a
-structured `{ verdict, bindingGate, perGate, netStats, trialCount }`.
+(so gates 1–6 only ever see the in-sample slice), runs all eight gates in order, and
+returns a structured
+`{ verdict, scientificVerdict, bindingGate, perGate, netStats, trialCount }`.
 
-> **Repository note (honest provenance).** `validateStrategy()` and its smoke-run live in
-> the published lean repo at `src/lib/validation/strategy-validator.ts` and
-> `scripts/validation/demo-validate.ts`. On the active development branch the gate
-> primitives in `src/lib/training/statistical-validation.ts` are the committed source of
+### Reading the output: two verdicts, four per-gate statuses
+
+On top of the legacy binary `verdict: PASS|KILL` (driven by the first gate whose `passed`
+flag is `false`), the result carries a richer **`scientificVerdict`**:
+
+- **SURVIVE** — every gate passes *and* baselines were supplied and passed.
+- **PROMISING** — the core gates (`net_of_cost`, `baselines`, `surrogate`, `holdout`) all
+  pass but a multiple-testing / DSR-family gate (`deflated_sharpe`, `block_bootstrap`,
+  `cpcv_pbo`, `haircut`) fails: the structure/sign is real, the honest-N magnitude
+  significance is not.
+- **KILL** — a core gate fails (or a supplied baseline is lost to).
+- **INDETERMINATE** — no baselines were supplied, so an edge cannot be certified (and
+  nothing else already KILLed it). `strictBaselines: true` turns the missing-baselines
+  case into a hard FAIL; the default leaves it ADVISORY but caps the verdict below SURVIVE.
+- **DEFERRED** — reserved for "the only honest test needs data we do not have at $0";
+  applied by a human reading the evidence, not auto-emitted by the gates.
+
+Each entry of `perGate` carries a **`status`** alongside the legacy `passed` boolean:
+
+- **PASS** — the gate ran and passed.
+- **FAIL** — the gate ran and failed (a `FAIL` on a `passed:false` gate is what binds).
+- **SKIP** — the gate could not run on genuine inputs (e.g. `cpcv_pbo` with no real
+  strategies×folds matrix, or an empty `holdout` vault); non-binding, carries `passed:true`.
+- **ADVISORY** — informational, does not certify (e.g. the `baselines` gate with no
+  baselines supplied in non-strict mode); non-binding, carries `passed:true`.
+
+### Options that change the verdict
+
+- **`strictBaselines`** — when `true`, a missing baselines set is a hard failure
+  (`baselines` reports `status: FAIL` ⇒ `scientificVerdict: INDETERMINATE`) instead of the
+  default ADVISORY (`passed:true`, non-binding, verdict capped below SURVIVE). Default `false`
+  for back-compat.
+- **`costModel`** — an optional leverage-aware [`ExecutionCostModel`](../src/lib/cost/execution-cost-model.ts).
+  When supplied, the `net_of_cost` gate charges cost via `chargeExecutionCosts`, which sizes
+  every carry leg (borrow, perp funding, futures financing, risk-free) to the **full
+  levered/short notional** rather than to one unit — the dated-futures-leak fix. Pair it with
+  `costModelPositions`, `costModelLeverage`, and `costModelPeriodsPerYear`. When absent, the
+  default turnover-based `cost`/`position` behavior is unchanged.
+
+> **Repository note (honest provenance).** `validateStrategy()` and its smoke-run live at
+> [`src/lib/validation/strategy-validator.ts`](../src/lib/validation/strategy-validator.ts)
+> and `scripts/validation/demo-validate.ts`. The gate primitives in
+> [`src/lib/statistical-validation.ts`](../src/lib/statistical-validation.ts) (re-exported
+> by the `src/lib/training/statistical-validation.ts` shim) are the committed source of
 > truth and are chained directly by the per-domain `runGauntlet` wrappers (e.g.
 > `scripts/edgehunt-D5/harness.ts` imports them at the top of the file). The two paths run
 > the **same gates in the same order**; the wrapper is convenience and verdict aggregation
@@ -155,20 +205,21 @@ net_of_cost → baselines → deflated_sharpe → block_bootstrap → cpcv_pbo
 | 1 | `net_of_cost` | Positive **net of realistic cost**; turnover reported. **A gross-only signal is an automatic KILL.** | `summarizeReturnSeries` |
 | 2 | `baselines` | Beats **buy-and-hold + a matched-exposure benchmark + random-lottery + a one-layer linear** rule, net of cost. | `summarizeReturnSeries` |
 | 3 | `deflated_sharpe` | Deflated Sharpe probability ≥ bar **at an explicit honest `trialCount`** — not 1, not per-family length. | `computeDeflatedSharpeRatio` |
-| 4 | `block_bootstrap` | Block-bootstrap CI lower bound on the mean **> 0** (autocorrelation-honest). | `blockBootstrapConfidenceInterval` |
+| 4 | `block_bootstrap` | Block-bootstrap CI lower bound on the **scoring statistic** (same as gate 1: default `compoundReturn`) **> 0** (autocorrelation-honest). | `blockBootstrapConfidenceInterval` |
 | 5 | `cpcv_pbo` | Probability of Backtest Overfitting **< 0.5** over combinatorial splits. | `estimateCscvPbo` |
 | 6 | `haircut` | Sharpe **survives the Harvey-Liu multiple-testing haircut** (Bonferroni / Holm / BHY). | derived `p × N` haircut on the PSR |
 | 7 | `surrogate` | Real edge **beats the right null** — phase-randomization / block bootstrap / cross-sectional shuffle, **and the family-wise MAX-statistic for searched grids** (see below). *The methodological hero.* | seeded null generators in the wrapper |
 | 8 | `holdout` | Out-of-sample slice scored **exactly once** (consume-once vault). | tail split, never read by gates 1–7 |
 
-The published `validateStrategy()` exposes the same gates with seven canonical `id`s
-(`net_of_cost, baselines, deflated_sharpe, cpcv_pbo, haircut, surrogate, holdout`); it
-folds the block-bootstrap CI into the Deflated-Sharpe / CI evidence and treats a
-self-derived candidate-vs-zero PBO as **non-binding** (a candidate-against-zero PBO is
-structurally unfailable, so it is never counted as a confident PASS). The per-domain
-`runGauntlet` enumerates `block_bootstrap` as its own gate #4 against a genuine
-strategies×folds matrix. The **binding order and the standard each gate enforces are
-identical**.
+`validateStrategy()` exposes all **eight** canonical `id`s in this exact order
+(`net_of_cost, baselines, deflated_sharpe, block_bootstrap, cpcv_pbo, haircut, surrogate,
+holdout`). `block_bootstrap` is a real, separately-binding gate: it resamples contiguous
+blocks of the in-sample net returns (Politis & Romano) and PASSES iff the lower CI bound
+on the scoring statistic stays strictly above zero. `cpcv_pbo` is treated as **non-binding**
+(`status: SKIP`) unless a genuine strategies×folds matrix is supplied — a self-derived
+candidate-vs-zero PBO is structurally unfailable, so it is never counted as a confident
+PASS. The per-domain `runGauntlet` wrappers enumerate the same gates in the same order. The
+**binding order and the standard each gate enforces are identical**.
 
 ### Cost realism (mandatory)
 
@@ -220,6 +271,43 @@ family-wise MAX-stat null. And beware the **too-powerful** vol/spectrum-preservi
 surrogate: it can inflate shared long-beta for a long-flat price-transform overlay — judge
 such overlays on the long-beta-**differenced** lift, not the raw surrogate Sharpe.
 
+### `validateStrategyFamily()` — the searched-grid entry point
+
+`validateStrategy()`'s `surrogate` gate scores **one** series against its own null — correct
+for a single *pre-registered* config. When the config you kept was the **argmax of a searched
+grid**, that single-config p is a multiple-testing artifact, and the right test is
+[`validateStrategyFamily()`](../src/lib/validation/strategy-family-validator.ts) — the
+family-wise **MAX-statistic** surrogate. On every surrogate panel it rebuilds **every** config
+in the grid, takes the **grid-max** statistic, and compares the real grid-best against the
+`surr95` of those surrogate maxima (so the null already "paid" for the search):
+
+```ts
+import { validateStrategyFamily } from "@/lib/validation/strategy-family-validator";
+
+const verdict = validateStrategyFamily(realPanel, {
+  id: "my-grid",
+  configs,                                   // the FULL searched grid — honest N = configs.length
+  buildReturns: (panel, config) => /* net per-period returns for ONE config */,
+  makeSurrogatePanel: (panel, seed) => /* a null that DESTROYS the edge, keeps the marginals */,
+}, {
+  iterations: 200,
+  statistic: "sharpe",                       // most panel-nulls preserve the mean ⇒ score on Sharpe
+  quantile: 0.95,                            // one-sided 5% family-wise error rate
+  seed: "my-grid",
+});
+
+verdict.passed;        // realBestStat > surr95 (strictly)
+verdict.surrogateMaxP; // family-wise p: fraction of surrogate grid-maxima ≥ the real grid-best
+verdict.surr95;        // the 95th percentile of the surrogate grid-maxima
+verdict.honestN;       // = configs.length (what the search actually cost)
+```
+
+A KILL here means *"the best of your N configs is no better than the best of N
+structure-less configs"* — you found the luckiest of N, not an edge. Use this whenever a
+config was selected by searching a grid; use `validateStrategy()` only for a genuinely
+pre-registered single config (see [`METHODOLOGY.md`](./METHODOLOGY.md) §5.3 for the three
+2026-06 leads this flipped to KILL).
+
 ---
 
 ## How to run it on your own strategy
@@ -247,8 +335,9 @@ const verdict = validateStrategy(gross, {
 if (verdict.verdict === "KILL") {
   console.log("binding gate:", verdict.bindingGate);   // where it died — that's the lesson
 }
+console.log("scientific verdict:", verdict.scientificVerdict); // SURVIVE/PROMISING/KILL/INDETERMINATE
 for (const g of verdict.perGate) {
-  console.log(`[${g.passed ? "PASS" : "KILL"}] ${g.label}: ${g.reason}`);
+  console.log(`[${g.status}] ${g.label}: ${g.reason}`); // PASS | FAIL | SKIP | ADVISORY
 }
 ```
 
@@ -263,7 +352,7 @@ import {
   computeDeflatedSharpeRatio,
   blockBootstrapConfidenceInterval,
   estimateCscvPbo,
-} from "@/lib/training/statistical-validation.ts";
+} from "@/lib/statistical-validation.ts"; // (or the "@/lib/training/…" re-export shim)
 
 const HONEST_N = 128;            // count EVERY config you searched
 const net = grossReturns.map((r, t) => r - turnover[t] * 2 * 0.0004); // charge cost first
