@@ -1,0 +1,15 @@
+{
+  "dataset_id": "coinmetrics-community-btc-eth-daily",
+  "source": {
+    "provider": "Coin Metrics Community",
+    "endpoint": "https://community-api.coinmetrics.io/v4/timeseries"
+  },
+  "period_start": "2017-01-01",
+  "period_end": "2024-12-31",
+  "symbols": ["btc", "eth"],
+  "hash": "sha256:1a2b3c4d5e6f70819293a4b5c6d7e8f9001122334455667788990aabbccddeeff",
+  "known_biases": ["regime_specific", "selection"],
+  "rate_limits": {
+    "concurrency": 2
+  }
+}

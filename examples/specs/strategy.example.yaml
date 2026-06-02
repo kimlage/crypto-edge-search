@@ -1,0 +1,38 @@
+# Example StrategySpec (YAML). A searched cross-sectional momentum family on the
+# top-30 perps, daily cadence, with an HONEST grid N derived from the configs.
+strategy_id: xs-momentum-top30
+family: cross_sectional_momentum
+cadence: daily
+universe:
+  type: top_by_volume
+  max_assets: 30
+  include_delisted: true # survivorship-free: keep delisted names (LUNA/FTT caveat)
+configs:
+  lookback_days: [20, 40, 60, 90]
+  hold_days: [1, 5, 10]
+  long_short: [true, false]
+trial_count_policy:
+  mode: grid # honest N = 4 * 3 * 2 = 24 distinct configs
+cost_model:
+  taker_bps_per_side: 5
+  maker_bps_per_side: 1
+  maker_fraction: 0
+  slippage_bps: 2
+  short_borrow_apr_by_venue:
+    binance: 0.20
+  perp_funding_per_period: 0.0001
+  risk_free_apr: 0.04
+  margin_haircut: 0.00001
+baselines:
+  - buy_and_hold
+  - equal_weight
+  - random_lottery
+  - linear_one_layer
+surrogate:
+  mode: family_max # family-wise MAX-statistic null for a searched grid
+  "null": structure # quote the key: bare `null` is the YAML null literal, not a string
+  iterations: 200
+holdout:
+  mode: tail
+  fraction: 0.20 # reserve the most-recent 20% as a consume-once vault
+statistic: sharpe

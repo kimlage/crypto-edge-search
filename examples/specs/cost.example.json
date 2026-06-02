@@ -1,0 +1,5 @@
+{
+  "taker_bps_per_side": 4,
+  "maker_bps_per_side": 1,
+  "slippage_bps": 1
+}

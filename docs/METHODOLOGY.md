@@ -104,6 +104,43 @@ net_of_cost → baselines → deflated_sharpe → block_bootstrap → cpcv_pbo �
 (Exact order in [`scripts/edgehunt-D5/harness.ts`](../scripts/edgehunt-D5/harness.ts) →
 `runGauntlet`.)
 
+The same chain as a flow — each gate is a hard pass/fail; the **first FAIL is the binding
+gate** and the target dies there, while a PASS flows to the next gate. Clearing all eight (with
+baselines supplied) is the only path to **SURVIVE**; tripping *only* a multiple-testing /
+DSR-family gate (3–6) after the core economic gates pass is **PROMISING**:
+
+```mermaid
+flowchart TD
+    start([Gross per-period returns + honest N]) --> g1
+    g1{"1 · net_of_cost<br/>positive net of cost & financing<br/>on full levered/short notional"}
+    g2{"2 · baselines<br/>beats B&H, matched-exposure,<br/>equal-weight, random-lottery, linear"}
+    g3{"3 · deflated_sharpe<br/>DSR ≥ bar at honest N"}
+    g4{"4 · block_bootstrap<br/>CI lower bound > 0"}
+    g5{"5 · cpcv_pbo<br/>PBO < 0.5"}
+    g6{"6 · haircut<br/>Sharpe survives Harvey-Liu haircut"}
+    g7{"7 · surrogate<br/>beats the right null per claim<br/>(family-wise MAX-stat for a grid)"}
+    g8{"8 · holdout<br/>consume-once vault, scored once"}
+
+    g1 -->|PASS| g2
+    g2 -->|PASS| g3
+    g3 -->|PASS| g4
+    g4 -->|PASS| g5
+    g5 -->|PASS| g6
+    g6 -->|PASS| g7
+    g7 -->|PASS| g8
+    g8 -->|PASS| survive([SURVIVE])
+
+    g1 -->|FAIL| kill([KILL — binding gate])
+    g2 -->|FAIL| kill
+    g7 -->|FAIL| kill
+    g8 -->|FAIL| kill
+
+    g3 -->|FAIL| promising([PROMISING — DSR-family only])
+    g4 -->|FAIL| promising
+    g5 -->|FAIL| promising
+    g6 -->|FAIL| promising
+```
+
 | # | Gate (`id`) | What it certifies | Academic anchor | Primitive reused |
 |---|---|---|---|---|
 | 1 | `net_of_cost` | Positive **net of taker cost** (every position change) **and of financing on the full levered/short notional**; turnover reported. Gross-only / finance-leaked ⇒ downgrade. | cost realism; limits-to-arbitrage | `summarizeReturnSeries` |

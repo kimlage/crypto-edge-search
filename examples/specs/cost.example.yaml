@@ -1,0 +1,15 @@
+# Example CostSpec (YAML). A ~2.95x-levered dated-futures basis book — every carry
+# component is declared explicitly so financing/borrow is charged on the FULL
+# levered/short notional, never on 1 unit (the dated-futures-leak fix).
+taker_bps_per_side: 5
+maker_bps_per_side: 1
+maker_fraction: 0.25
+slippage_bps: 2
+short_borrow_apr_by_venue:
+  binance: 0.20
+  okx: 0.18
+borrow_venue: binance
+perp_funding_per_period: 0.0001
+futures_financing_apr: 0.06
+risk_free_apr: 0.04
+margin_haircut: 0.00002

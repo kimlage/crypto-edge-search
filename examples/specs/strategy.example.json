@@ -1,0 +1,34 @@
+{
+  "strategy_id": "donchian-breakout-btc",
+  "family": "donchian_breakout",
+  "cadence": "funding8h",
+  "universe": {
+    "type": "fixed_list",
+    "max_assets": 1,
+    "include_delisted": false
+  },
+  "configs": {
+    "channel_periods": [20, 40, 55],
+    "exit_fraction": [0.5, 1.0]
+  },
+  "trial_count_policy": {
+    "mode": "explicit",
+    "count": 6
+  },
+  "cost_model": {
+    "taker_bps_per_side": 4,
+    "maker_bps_per_side": 1,
+    "slippage_bps": 1,
+    "perp_funding_per_period": 0.0001
+  },
+  "baselines": ["buy_and_hold", "random_lottery"],
+  "surrogate": {
+    "mode": "block",
+    "null": "temporal",
+    "iterations": 200
+  },
+  "holdout": {
+    "mode": "tail",
+    "fraction": 0.15
+  }
+}

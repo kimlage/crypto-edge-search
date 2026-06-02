@@ -1,0 +1,20 @@
+# Example DatasetSpec (YAML). A free, public, key-less daily klines pull, with its
+# coverage window, content hash, KNOWN BIASES and the endpoint's rate limits pinned
+# so the result is reproducible and its caveats are never silent.
+dataset_id: binance-spot-top30-daily-2019-2024
+source:
+  provider: Binance
+  endpoint: https://api.binance.com/api/v3/klines
+period_start: "2019-01-01"
+period_end: "2024-12-31"
+symbols:
+  - BTCUSDT
+  - ETHUSDT
+  - BNBUSDT
+  - SOLUSDT
+hash: sha256:6b1f0c2e9a4d8f3c5b7e1a90d2c4f6e8b0a2c4d6e8f0a1b3c5d7e9f1a3b5c7d9e
+known_biases:
+  - survivorship
+  - exchange_specific
+rate_limits:
+  concurrency: 4
