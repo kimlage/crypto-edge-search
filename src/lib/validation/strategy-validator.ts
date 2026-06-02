@@ -18,16 +18,24 @@
  *   1. net-of-cost summary      — turnover-aware net return; gross-only ⇒ KILL.
  *   2. baselines                — beat buy-and-hold + equal-weight + random-lottery + linear.
  *   3. deflated Sharpe (DSR)    — at an EXPLICIT honest trialCount (true N).
- *   4. CPCV / PBO               — probability of backtest overfitting < 0.5. SKIPPED
- *                                 (non-binding) unless a genuine strategies×folds matrix
- *                                 is supplied; a self-derived candidate-vs-zero PBO is
- *                                 structurally unfailable and is never a confident PASS.
- *   5. Harvey-Liu haircut       — Sharpe survives the multiple-testing haircut.
- *   6. surrogate / placebo      — real edge must beat a phase-randomized + block-bootstrap
+ *   4. block-bootstrap CI       — resample contiguous blocks of the in-sample net
+ *                                 returns; PASS iff the lower CI bound on the scoring
+ *                                 statistic stays strictly above zero (Politis & Romano).
+ *   5. CPCV / PBO               — probability of backtest overfitting < 0.5. SKIPPED
+ *                                 (status SKIP, non-binding) unless a genuine
+ *                                 strategies×folds matrix is supplied; a self-derived
+ *                                 candidate-vs-zero PBO is structurally unfailable and is
+ *                                 never a confident PASS.
+ *   6. Harvey-Liu haircut       — Sharpe survives the multiple-testing haircut.
+ *   7. surrogate / placebo      — real edge must beat a phase-randomized + block-bootstrap
  *                                 (and optional cross-sectional) null. Tests TEMPORAL /
  *                                 STRUCTURE edges (scored on Sharpe by default, since the
  *                                 surrogates preserve the marginal mean). THE methodological hero.
- *   7. consume-once holdout     — out-of-sample vault, scored exactly once.
+ *   8. consume-once holdout     — out-of-sample vault, scored exactly once.
+ *
+ * On top of the binary `verdict: PASS|KILL`, the result also carries a richer
+ * `scientificVerdict: SURVIVE|PROMISING|KILL|DEFERRED|INDETERMINATE` and every gate
+ * carries a `status: PASS|FAIL|SKIP|ADVISORY` alongside the legacy `passed` boolean.
  *
  * Academic anchors (full bibliography in docs/EDGE_SEARCH_SYNTHESIS.md §References):
  *   Bailey & López de Prado (Deflated Sharpe / PBO / CSCV / False Strategy Theorem),
@@ -39,6 +47,7 @@
  */
 
 import {
+  blockBootstrapConfidenceInterval,
   computeDeflatedSharpeRatio,
   estimateCscvPbo,
   summarizeReturnSeries,
@@ -47,6 +56,10 @@ import {
   type ReturnSeriesStatistic,
   type ReturnSeriesStats,
 } from "../statistical-validation";
+import {
+  chargeExecutionCosts,
+  type ExecutionCostModel,
+} from "../cost/execution-cost-model";
 import {
   baselineScoreFromReturns,
   buildRandomLotteryBaseline,
@@ -69,18 +82,54 @@ const EPSILON = 1e-12;
 
 export type Verdict = "PASS" | "KILL";
 
+/**
+ * Richer scientific outcome layered ON TOP of the binary `verdict` (which is kept
+ * for back-compat). It distinguishes "survived everything" from "fails only a
+ * multiple-testing / DSR-family gate but otherwise has a real, baseline-beating,
+ * out-of-sample edge" (PROMISING), from "can't even be assessed because no
+ * baselines were supplied" (INDETERMINATE), from a hard KILL.
+ */
+export type ScientificVerdict =
+  | "SURVIVE"
+  | "PROMISING"
+  | "KILL"
+  | "DEFERRED"
+  | "INDETERMINATE";
+
+/**
+ * Per-gate status, layered on top of the legacy `passed: boolean`:
+ *   PASS     — gate ran and passed.
+ *   FAIL     — gate ran and failed.
+ *   SKIP     — gate could not run on genuine inputs (e.g. PBO without a real
+ *              strategies×folds matrix); NOT a confident PASS.
+ *   ADVISORY — gate is informational and does not certify (e.g. baselines gate
+ *              with no baselines supplied, non-strict mode).
+ */
+export type GateStatus = "PASS" | "FAIL" | "SKIP" | "ADVISORY";
+
 export interface GateOutcome {
   /** Canonical gate id, in evaluation order. */
   id:
     | "net_of_cost"
     | "baselines"
     | "deflated_sharpe"
+    | "block_bootstrap"
     | "cpcv_pbo"
     | "haircut"
     | "surrogate"
     | "holdout";
   label: string;
+  /**
+   * Legacy boolean outcome, kept for back-compat. A SKIP/ADVISORY status still
+   * carries `passed: true` (non-binding) so the existing binding-gate semantics
+   * and current assertions are unchanged.
+   */
   passed: boolean;
+  /**
+   * Richer status. `passed` remains the binding-gate driver; `status` adds the
+   * SKIP / ADVISORY nuance that a single boolean cannot express.
+   */
+  status: GateStatus;
   /** One-line human reason (why it passed / what killed it). */
   reason: string;
   /** Gate-specific numeric detail for the evidence record. */
@@ -89,6 +138,8 @@ export interface GateOutcome {
 
 export interface StrategyValidatorVerdict {
   verdict: Verdict;
+  /** Richer scientific verdict (SURVIVE / PROMISING / KILL / DEFERRED / INDETERMINATE). */
+  scientificVerdict: ScientificVerdict;
   /** The first gate that failed (the binding constraint), or null if all passed. */
   bindingGate: GateOutcome["id"] | null;
   /** Every gate's outcome, in order. */
@@ -154,7 +205,28 @@ export interface StrategyValidatorOptions {
   /** Statistic for baselines / DSR. Default "compoundReturn" for cost realism. */
   statistic?: ReturnSeriesStatistic;
   cost?: CostModel;
+  /**
+   * Optional leverage-aware execution cost model. When supplied, the net-of-cost
+   * gate charges costs via `chargeExecutionCosts` (which sizes every carry leg to
+   * the FULL levered/short notional) instead of the simple turnover wrapper. When
+   * absent, the default `cost`/turnover behavior is unchanged.
+   */
+  costModel?: ExecutionCostModel;
+  /** Periods/year for the cost model's APR→per-period conversion. Default 365. */
+  costModelPeriodsPerYear?: number;
+  /** Signed per-period positions for the cost model (multiple of capital). */
+  costModelPositions?: readonly number[];
+  /** Target gross leverage for the cost model. Default 1. */
+  costModelLeverage?: number;
   baselines?: BaselineSeries;
+  /**
+   * When true, a missing baselines set is a HARD failure (the baselines gate
+   * reports status FAIL and the scientific verdict becomes INDETERMINATE) rather
+   * than a vacuous certify. Default false for back-compat: with no baselines the
+   * gate is ADVISORY (passed:true, non-binding) and the scientific verdict is
+   * capped below SURVIVE.
+   */
+  strictBaselines?: boolean;
   /** Strategies×folds matrix for the canonical PBO (≥2 strategies, ≥2 folds). */
   cpcv?: { strategies: readonly CscvStrategyFoldReturns[]; trainFraction?: number };
   haircut?: { method?: HaircutMethod };
@@ -197,7 +269,7 @@ export function validateStrategy(
   // Gates 1–6 only ever see the in-sample (search/test) slice and Gate 7 scores
   // the untouched vault. Costing first keeps the position/turnover accounting
   // intact across the split boundary.
-  const { netReturns: netReturnsFull, turnover } = applyCost(grossReturns, options.cost);
+  const { netReturns: netReturnsFull, turnover } = applyCost(grossReturns, options);
 
   // Carve the holdout FIRST so the in-sample gates can never read the vault.
   const holdoutPlan: HoldoutPlan = planHoldoutSplit({
@@ -224,10 +296,12 @@ export function validateStrategy(
   const netStatsBase = summarizeSafe(netReturns);
   const netStats = { ...netStatsBase, turnover, grossSharpe: grossStats.sharpe };
   const netScore = pick(netStatsBase, statistic);
+  const netPassed = netScore > EPSILON && netStatsBase.sharpe > 0;
   const netGate: GateOutcome = {
     id: "net_of_cost",
     label: "Net-of-cost summary",
-    passed: netScore > EPSILON && netStatsBase.sharpe > 0,
+    passed: netPassed,
+    status: netPassed ? "PASS" : "FAIL",
     reason:
       netScore > EPSILON && netStatsBase.sharpe > 0
         ? `net ${statistic}=${netScore.toFixed(5)} (gross ${pick(grossStats, statistic).toFixed(5)}), turnover=${turnover.toFixed(1)}`
@@ -243,30 +317,59 @@ export function validateStrategy(
   };
 
   // ---- Gate 2: baselines (B&H + equal-weight + random-lottery + linear) -------
+  const strictBaselines = options.strictBaselines === true;
   const baselineGate = runBaselines(netReturns, turnover, statistic, options, seed);
+  // A baselines gate with NO baselines supplied must NOT vacuously certify. In
+  // strict mode it is a hard FAIL (→ INDETERMINATE scientific verdict); in
+  // non-strict (default) mode it is ADVISORY: passed:true keeps the legacy binding
+  // semantics and current assertions green, but `status` records that it did not
+  // certify, and the scientific verdict is capped below SURVIVE.
+  const noBaselines = baselineGate.comparisons.length === 0;
+  let baselinesStatus: GateStatus;
+  let baselinesPassed: boolean;
+  let baselinesReason: string;
+  if (noBaselines) {
+    if (strictBaselines) {
+      baselinesStatus = "FAIL";
+      baselinesPassed = false;
+      baselinesReason = "no_baselines_supplied — not certified (strictBaselines)";
+    } else {
+      baselinesStatus = "ADVISORY";
+      baselinesPassed = true; // back-compat: non-binding, keeps legacy verdict
+      baselinesReason = "no_baselines_supplied — not certified";
+    }
+  } else {
+    baselinesStatus = baselineGate.passed ? "PASS" : "FAIL";
+    baselinesPassed = baselineGate.passed;
+    baselinesReason = baselineGate.passed
+      ? `beats all ${baselineGate.comparisons.length} baselines (worst margin ${baselineGate.worstMargin.toFixed(5)} vs ${baselineGate.worstBaselineId})`
+      : `loses to baseline(s): ${baselineGate.reasons.join(", ")}`;
+  }
   const baselinesOut: GateOutcome = {
     id: "baselines",
     label: "Baselines (B&H / equal-weight / random-lottery / linear)",
-    passed: baselineGate.passed,
-    reason: baselineGate.passed
-      ? `beats all ${baselineGate.comparisons.length} baselines (worst margin ${baselineGate.worstMargin.toFixed(5)} vs ${baselineGate.worstBaselineId})`
-      : `loses to baseline(s): ${baselineGate.reasons.join(", ")}`,
+    passed: baselinesPassed,
+    status: baselinesStatus,
+    reason: baselinesReason,
     detail: {
       candidateScore: baselineGate.candidateScore,
       worstMargin: baselineGate.worstMargin,
       worstBaselineId: baselineGate.worstBaselineId,
       baselineCount: baselineGate.comparisons.length,
+      suppliedBaselines: !noBaselines,
     },
   };
 
   // ---- Gate 3: Deflated Sharpe at honest N -----------------------------------
   const dsr = computeDeflatedSharpeRatio(blocksForSummary(netReturns), { trialCount });
   const minDsrProb = options.minDeflatedProbability ?? 0.95;
+  const dsrPassed = dsr.deflatedProbability >= minDsrProb;
   const dsrGate: GateOutcome = {
     id: "deflated_sharpe",
     label: `Deflated Sharpe (N=${trialCount})`,
-    passed: dsr.deflatedProbability >= minDsrProb,
-    reason: `DSR p=${dsr.deflatedProbability.toFixed(4)} ${dsr.deflatedProbability >= minDsrProb ? "≥" : "<"} ${minDsrProb} at honest N=${trialCount} (expMaxSharpe=${dsr.expectedMaxSharpe.toFixed(4)})`,
+    passed: dsrPassed,
+    status: dsrPassed ? "PASS" : "FAIL",
+    reason: `DSR p=${dsr.deflatedProbability.toFixed(4)} ${dsrPassed ? "≥" : "<"} ${minDsrProb} at honest N=${trialCount} (expMaxSharpe=${dsr.expectedMaxSharpe.toFixed(4)})`,
     detail: {
       deflatedProbability: dsr.deflatedProbability,
       sharpe: dsr.sharpe,
@@ -276,10 +379,18 @@ export function validateStrategy(
     },
   };
 
-  // ---- Gate 4: CPCV / PBO ----------------------------------------------------
+  // ---- Gate 4: block-bootstrap confidence interval ----------------------------
+  // A nonparametric robustness check on the in-sample net edge: resample contiguous
+  // blocks (Politis & Romano) and require the lower CI bound on the scoring statistic
+  // to stay strictly above zero. A real edge survives block resampling; a fragile one
+  // straddles zero. Scored on the same statistic as the outer gauntlet so it is
+  // apples-to-apples with net_of_cost / DSR.
+  const blockBootGate = runBlockBootstrap(netReturns, statistic, options, seed);
+
+  // ---- Gate 5: CPCV / PBO ----------------------------------------------------
   const pboGate = runPbo(statistic, options);
 
-  // ---- Gate 5: Harvey-Liu haircut --------------------------------------------
+  // ---- Gate 6: Harvey-Liu haircut --------------------------------------------
   const haircut = haircutSharpe({
     observedSharpe: netStatsBase.sharpe,
     sampleCount: blocksForSummary(netReturns).length,
@@ -287,10 +398,12 @@ export function validateStrategy(
     method: options.haircut?.method ?? "bonferroni",
   });
   const maxHaircut = options.maxHaircut ?? 0.99;
+  const haircutPassed = haircut.haircutSharpe > 0 && haircut.haircut <= maxHaircut;
   const haircutOut: GateOutcome = {
     id: "haircut",
     label: `Harvey-Liu haircut (${haircut.method})`,
-    passed: haircut.haircutSharpe > 0 && haircut.haircut <= maxHaircut,
+    passed: haircutPassed,
+    status: haircutPassed ? "PASS" : "FAIL",
     reason: `haircut=${(haircut.haircut * 100).toFixed(1)}% ⇒ haircutSharpe=${haircut.haircutSharpe.toFixed(4)} (adjP=${haircut.adjustedPValue.toExponential(2)})`,
     detail: {
       haircut: haircut.haircut,
@@ -301,10 +414,10 @@ export function validateStrategy(
     },
   };
 
-  // ---- Gate 6: surrogate / placebo (the hero) --------------------------------
+  // ---- Gate 7: surrogate / placebo (the hero) --------------------------------
   const surrogateOut = runSurrogate(netReturns, statistic, options, seed);
 
-  // ---- Gate 7: consume-once holdout ------------------------------------------
+  // ---- Gate 8: consume-once holdout ------------------------------------------
   // Scored on the untouched vault carved off BEFORE Gates 1–6 ran. The vault was
   // never visible to any in-sample gate, so this is a genuine out-of-sample test.
   const holdoutOut = runHoldout(vaultReturns, statistic, options);
@@ -313,20 +426,89 @@ export function validateStrategy(
     netGate,
     baselinesOut,
     dsrGate,
+    blockBootGate,
     pboGate,
     haircutOut,
     surrogateOut,
     holdoutOut,
   ];
+  // Binding gate = the FIRST gate whose legacy `passed` flag is false (unchanged
+  // first-failure semantics). SKIP/ADVISORY gates carry passed:true and so are
+  // never binding.
   const binding = perGate.find((gate) => !gate.passed) ?? null;
+
+  const scientificVerdict = deriveScientificVerdict(perGate, {
+    noBaselines,
+    strictBaselines,
+  });
 
   return {
     verdict: binding === null ? "PASS" : "KILL",
+    scientificVerdict,
     bindingGate: binding?.id ?? null,
     perGate,
     netStats,
     trialCount,
   };
+}
+
+/**
+ * Derive the richer scientific verdict from the per-gate statuses.
+ *
+ * Mapping:
+ *   - baselines absent → INDETERMINATE (can't be assessed; strict makes it a hard
+ *     FAIL, non-strict caps the verdict below SURVIVE — either way it is INDETERMINATE
+ *     unless something else already KILLed it).
+ *   - all gates pass (SKIP/ADVISORY allowed) → SURVIVE (only when baselines WERE
+ *     supplied and passed).
+ *   - fails ONLY a multiple-testing / DSR-family gate (deflated_sharpe /
+ *     block_bootstrap / cpcv_pbo / haircut) while net_of_cost + baselines + surrogate
+ *     + holdout all pass → PROMISING.
+ *   - otherwise → KILL.
+ */
+function deriveScientificVerdict(
+  perGate: readonly GateOutcome[],
+  ctx: { noBaselines: boolean; strictBaselines: boolean },
+): ScientificVerdict {
+  const byId = new Map(perGate.map((gate) => [gate.id, gate] as const));
+  const statusOf = (id: GateOutcome["id"]): GateStatus | undefined => byId.get(id)?.status;
+  const isFail = (id: GateOutcome["id"]): boolean => statusOf(id) === "FAIL";
+
+  const DSR_FAMILY: GateOutcome["id"][] = [
+    "deflated_sharpe",
+    "block_bootstrap",
+    "cpcv_pbo",
+    "haircut",
+  ];
+  // The "core" gates whose failure is a hard KILL (cannot be PROMISING / SURVIVE).
+  const CORE: GateOutcome["id"][] = ["net_of_cost", "surrogate", "holdout"];
+
+  const coreFails = CORE.some((id) => isFail(id));
+
+  // Baselines absent: cannot certify an edge as real. INDETERMINATE unless a core
+  // gate already proves the edge is an artifact / fails OOS → that is a clean KILL.
+  if (ctx.noBaselines) {
+    return coreFails ? "KILL" : "INDETERMINATE";
+  }
+
+  // A FAILing baselines gate (with baselines supplied) means it loses to a baseline
+  // — a hard KILL.
+  if (isFail("baselines")) {
+    return "KILL";
+  }
+
+  if (coreFails) {
+    return "KILL";
+  }
+
+  const dsrFamilyFails = DSR_FAMILY.filter((id) => isFail(id));
+  if (dsrFamilyFails.length > 0) {
+    // Core gates all pass; the only failures are in the multiple-testing / DSR family.
+    return "PROMISING";
+  }
+
+  // Everything passed (SKIPs / ADVISORY allowed), baselines were supplied & passed.
+  return "SURVIVE";
 }
 
 // ---------------------------------------------------------------------------
@@ -335,8 +517,32 @@ export function validateStrategy(
 
 function applyCost(
   grossReturns: readonly number[],
-  cost: CostModel | undefined,
+  options: StrategyValidatorOptions,
 ): { netReturns: number[]; turnover: number } {
+  const cost = options.cost;
+
+  // Optional leverage-aware cost model takes precedence when supplied: it charges
+  // every carry leg on the FULL levered/short notional (the dated-futures leak fix).
+  if (options.costModel) {
+    const charged = chargeExecutionCosts({
+      grossReturns,
+      positions: options.costModelPositions,
+      leverage: options.costModelLeverage,
+      periodsPerYear: options.costModelPeriodsPerYear ?? 365,
+      model: options.costModel,
+    });
+    // Turnover for downstream reporting / random-lottery trade count: the summed
+    // per-period traded notional the model actually charged.
+    const turnover = charged.breakdown.reduce(
+      (sum, period) => sum + Math.abs(period.executionCost),
+      0,
+    );
+    const execRatePerSide = chargedExecRatePerSide(options.costModel);
+    const tradedNotional =
+      execRatePerSide > 0 ? turnover / execRatePerSide : grossReturns.length;
+    return { netReturns: charged.netReturns, turnover: tradedNotional };
+  }
+
   const takerPerSide = Math.max(0, cost?.takerPerSide ?? 0.0004);
   const roundTrip = takerPerSide * 2;
   const position = cost?.position;
@@ -371,6 +577,56 @@ function applyCost(
     return ret;
   });
   return { netReturns, turnover };
+}
+
+/** Per-side execution rate (fee blended + slippage) the cost model charges, as a
+ * fraction of traded notional. Mirrors chargeExecutionCosts' internal computation so
+ * we can back out traded notional from the summed execution cost. */
+function chargedExecRatePerSide(model: ExecutionCostModel): number {
+  const BPS = 1e-4;
+  const makerFraction = Math.max(0, Math.min(1, model.makerFraction ?? 0));
+  const feeBpsPerSide =
+    (1 - makerFraction) * Math.max(0, model.takerBpsPerSide) +
+    makerFraction * Math.max(0, model.makerBpsPerSide);
+  return (feeBpsPerSide + Math.max(0, model.slippageBps)) * BPS;
+}
+
+/**
+ * Block-bootstrap CI gate. Resamples contiguous blocks of the in-sample net returns
+ * and PASSES iff the lower confidence bound on the scoring statistic is strictly
+ * above zero. Uses the committed `blockBootstrapConfidenceInterval` primitive.
+ */
+function runBlockBootstrap(
+  netReturns: readonly number[],
+  statistic: ReturnSeriesStatistic,
+  options: StrategyValidatorOptions,
+  seed: number | string,
+): GateOutcome {
+  const blocks = blocksForSummary(netReturns);
+  const ci = blockBootstrapConfidenceInterval(blocks, {
+    statistic,
+    seed: `${String(seed)}:block-bootstrap`,
+  });
+  const passed = blocks.length > 0 && ci.lower > EPSILON;
+  return {
+    id: "block_bootstrap",
+    label: "Block-bootstrap CI",
+    passed,
+    status: passed ? "PASS" : "FAIL",
+    reason:
+      blocks.length === 0
+        ? "block-bootstrap empty (series too short) — KILL"
+        : `${statistic} ${(ci.confidenceLevel * 100).toFixed(0)}% CI [${ci.lower.toFixed(5)}, ${ci.upper.toFixed(5)}] ${ci.lower > EPSILON ? "excludes 0 (robust)" : "straddles 0 — KILL"}`,
+    detail: {
+      statistic,
+      estimate: ci.estimate,
+      lower: ci.lower,
+      upper: ci.upper,
+      confidenceLevel: ci.confidenceLevel,
+      iterations: ci.iterations,
+      blockLength: ci.blockLength,
+    },
+  };
 }
 
 function runBaselines(
@@ -458,6 +714,8 @@ function runPbo(
       id: "cpcv_pbo",
       label: "CPCV / PBO",
       passed: true,
+      // SKIP, not a confident PASS: the gate could not run on a genuine matrix.
+      status: "SKIP",
       reason:
         "PBO skipped: no genuine strategies×folds matrix supplied " +
         "(a self-derived candidate-vs-zero PBO is structurally unfailable) — non-binding",
@@ -480,11 +738,13 @@ function runPbo(
   // but (unlike the old self-derived path) only confident PASSes come from a real
   // matrix now, so a degenerate-but-real matrix still produces an honest verdict.
   const degenerate = pbo.foldCount < 8;
+  const pboPassed = pbo.pbo < maxPbo;
   return {
     id: "cpcv_pbo",
     label: "CPCV / PBO",
-    passed: pbo.pbo < maxPbo,
-    reason: `PBO=${pbo.pbo.toFixed(3)} ${pbo.pbo < maxPbo ? "<" : "≥"} ${maxPbo} over ${pbo.splitCount} splits${degenerate ? ` (DEGENERATE: ${pbo.foldCount}<8 folds)` : ""}`,
+    passed: pboPassed,
+    status: pboPassed ? "PASS" : "FAIL",
+    reason: `PBO=${pbo.pbo.toFixed(3)} ${pboPassed ? "<" : "≥"} ${maxPbo} over ${pbo.splitCount} splits${degenerate ? ` (DEGENERATE: ${pbo.foldCount}<8 folds)` : ""}`,
     detail: {
       pbo: pbo.pbo,
       foldCount: pbo.foldCount,
@@ -511,11 +771,17 @@ function runHoldout(
   });
   const vaultStats = summarizeSafe(vault);
   const vaultScore = pick(vaultStats, statistic);
-  const passed = vault.length > 0 && vaultScore > EPSILON && vaultStats.sharpe > 0;
+  // An empty vault (series too short to carve one) is a SKIP — non-binding — so it
+  // must NOT fail the gate or bind the verdict; SKIP always carries passed: true.
+  const passed =
+    vault.length === 0 ? true : vaultScore > EPSILON && vaultStats.sharpe > 0;
+  const status: GateStatus =
+    vault.length === 0 ? "SKIP" : passed ? "PASS" : "FAIL";
   return {
     id: "holdout",
     label: "Consume-once holdout",
     passed,
+    status,
     reason: vault.length === 0
       ? "holdout empty (series too short) — not binding"
       : `vault ${statistic}=${vaultScore.toFixed(5)}, Sharpe=${vaultStats.sharpe.toFixed(3)} over ${vault.length} rows ${passed ? "(OOS confirms)" : "(OOS FAILS) — KILL"}`,
@@ -611,6 +877,7 @@ function runSurrogate(
     id: "surrogate",
     label: "Surrogate / placebo (phase + block" + (crossScores.length > 0 ? " + cross-sectional" : "") + ")",
     passed,
+    status: passed ? "PASS" : "FAIL",
     reason: passed
       ? `real ${surrogateStatistic}=${realScore.toFixed(5)} beats null (placeboP=${placeboP.toFixed(3)} ≤ ${maxPlaceboP}; phase-mean=${phaseMean.toFixed(5)}, block-mean=${blockMean.toFixed(5)}${crossNote})${carryNote}`
       : `EDGE IS AN ARTIFACT: surrogates score equal-or-better (placeboP=${placeboP.toFixed(3)} > ${maxPlaceboP}; real ${surrogateStatistic}=${realScore.toFixed(5)} vs phase-mean=${phaseMean.toFixed(5)}, block-mean=${blockMean.toFixed(5)}${crossNote}) — KILL${carryNote}`,
@@ -921,4 +1188,4 @@ function hashString(value: string): number {
   return hash >>> 0;
 }
 
-export type { DeflatedSharpeRatio, HaircutResult };
+export type { DeflatedSharpeRatio, HaircutResult, ExecutionCostModel };

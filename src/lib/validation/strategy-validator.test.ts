@@ -16,6 +16,17 @@
  *      autocorrelation; the block bootstrap preserves the marginal mean. (M1)
  *   8. FFT PERF — the surrogate completes on a realistic-length series in well under
  *      a second (the naive O(n²) DFT timed out >5min). (M2)
+ *
+ * Audit-driven additions:
+ *   9.  BLOCK-BOOTSTRAP GATE — a new gate between deflated_sharpe and cpcv_pbo;
+ *       PASSes iff the resampled CI lower bound > 0, exposes ci.lower/ci.upper, and is
+ *       vault-invariant (scored on the in-sample slice).
+ *  10.  SCIENTIFIC VERDICT — planted-edge(+baselines)→SURVIVE, DSR-family-only-fail→
+ *       PROMISING, noise→KILL, no-baselines→INDETERMINATE (capped below SURVIVE).
+ *  11.  GATE STATUS — every gate carries PASS|FAIL|SKIP|ADVISORY alongside `passed`;
+ *       a skipped PBO is SKIP (not a confident PASS).
+ *  12.  STRICT BASELINES — with no baselines, strict mode FAILs (→INDETERMINATE)
+ *       while the default stays ADVISORY/passed:true for back-compat.
  */
 
 import { describe, expect, it } from "vitest";
@@ -27,6 +38,7 @@ import {
   type GateOutcome,
   type StrategyValidatorVerdict,
 } from "./strategy-validator";
+import { DEFAULT_TAKER_MODEL } from "../cost/execution-cost-model";
 
 // --- deterministic helpers ---------------------------------------------------
 
@@ -302,6 +314,8 @@ describe("validateStrategy — PBO gate is non-binding without a genuine matrix 
     });
     const pbo = gate(verdict, "cpcv_pbo");
     expect(pbo.passed).toBe(true);
+    // status is SKIP — a non-confident, non-binding skip, NOT a confident PASS.
+    expect(pbo.status).toBe("SKIP");
     expect(pbo.detail.skipped).toBe(true);
     expect(pbo.detail.derived).toBe(false);
     // No confident numeric PBO is reported — it is explicitly non-binding.
@@ -329,8 +343,237 @@ describe("validateStrategy — PBO gate is non-binding without a genuine matrix 
     const pbo = gate(verdict, "cpcv_pbo");
     expect(pbo.detail.skipped).toBe(false);
     expect(pbo.detail.pbo).not.toBeNull();
+    // A genuine matrix produces a confident PASS/FAIL status, never SKIP.
+    expect(["PASS", "FAIL"]).toContain(pbo.status);
     expect(typeof pbo.detail.foldCount).toBe("number");
     expect(pbo.detail.foldCount as number).toBe(8);
+  });
+});
+
+describe("validateStrategy — block-bootstrap CI gate", () => {
+  it("sits between deflated_sharpe and cpcv_pbo in the documented chain", () => {
+    const series = makeBorderlineSharpe(400, 0.001, 0.01, "bb-order");
+    const verdict = validateStrategy(series, {
+      trialCount: 1,
+      statistic: "sharpe",
+      cost: { takerPerSide: 0 },
+      surrogate: { iterations: 20 },
+    });
+    const ids = verdict.perGate.map((g) => g.id);
+    // Full documented chain order.
+    expect(ids).toEqual([
+      "net_of_cost",
+      "baselines",
+      "deflated_sharpe",
+      "block_bootstrap",
+      "cpcv_pbo",
+      "haircut",
+      "surrogate",
+      "holdout",
+    ]);
+    // ...and specifically AFTER deflated_sharpe, BEFORE cpcv_pbo.
+    expect(ids.indexOf("block_bootstrap")).toBeGreaterThan(ids.indexOf("deflated_sharpe"));
+    expect(ids.indexOf("block_bootstrap")).toBeLessThan(ids.indexOf("cpcv_pbo"));
+  });
+
+  it("PASSes a robust positive edge (CI lower bound > 0) and exposes ci.lower/ci.upper", () => {
+    // A strong, low-noise positive drift: the block-bootstrap CI lower bound must
+    // stay strictly above zero.
+    const rnd = seededRandom("bb-robust");
+    const series = Array.from({ length: 500 }, () => 0.003 + (rnd() - 0.5) * 0.0008);
+    const verdict = validateStrategy(series, {
+      trialCount: 1,
+      statistic: "compoundReturn",
+      cost: { takerPerSide: 0 },
+      surrogate: { iterations: 20 },
+    });
+    const bb = gate(verdict, "block_bootstrap");
+    expect(bb.passed).toBe(true);
+    expect(bb.status).toBe("PASS");
+    // ci.lower / ci.upper are exposed in detail and bracket the estimate.
+    const lower = bb.detail.lower as number;
+    const upper = bb.detail.upper as number;
+    expect(lower).toBeGreaterThan(0);
+    expect(upper).toBeGreaterThanOrEqual(lower);
+    expect(bb.detail.estimate as number).toBeGreaterThanOrEqual(lower);
+    expect(bb.detail.estimate as number).toBeLessThanOrEqual(upper);
+  });
+
+  it("FAILs a mean-zero series whose CI straddles zero", () => {
+    const noise = makeNoise(500, 0.01, "bb-straddle");
+    const verdict = validateStrategy(noise, {
+      trialCount: 1,
+      statistic: "mean",
+      cost: { takerPerSide: 0 },
+      surrogate: { iterations: 20 },
+    });
+    const bb = gate(verdict, "block_bootstrap");
+    expect(bb.passed).toBe(false);
+    expect(bb.status).toBe("FAIL");
+    // The lower bound is at or below zero — the edge is not robust to resampling.
+    expect(bb.detail.lower as number).toBeLessThanOrEqual(0);
+  });
+
+  it("is vault-invariant — mutating the holdout does not move the block-bootstrap CI", () => {
+    const rnd = seededRandom("bb-vault");
+    const base = Array.from({ length: 600 }, () => 0.002 + (rnd() - 0.5) * 0.004);
+    const options = {
+      trialCount: 1,
+      statistic: "sharpe" as const,
+      cost: { takerPerSide: 0 },
+      surrogate: { iterations: 40 },
+    };
+    const before = validateStrategy(base, options);
+    const mutated = [...base];
+    for (let i = 510; i < base.length; i += 1) mutated[i] = -5;
+    const after = validateStrategy(mutated, options);
+    expect(gate(after, "block_bootstrap").detail).toEqual(gate(before, "block_bootstrap").detail);
+    expect(gate(after, "block_bootstrap").passed).toBe(gate(before, "block_bootstrap").passed);
+  });
+});
+
+describe("validateStrategy — scientificVerdict mapping", () => {
+  // Helper: a flat market the rotation sleeve handily beats, so the baselines gate
+  // can be supplied & PASSED (a prerequisite for SURVIVE).
+  function weakMarket(n: number, seed: string): number[] {
+    const rnd = seededRandom(seed);
+    return Array.from({ length: n }, () => -0.0005 + (rnd() - 0.5) * 0.001);
+  }
+
+  it("planted-edge with baselines → SURVIVE (all gates pass, SKIPs allowed)", () => {
+    const { sleeve, panel } = makeRotationEdge(700, 6, 0.01, 0.01, "rotation-55");
+    const verdict = validateStrategy(sleeve, {
+      trialCount: 2,
+      statistic: "mean",
+      cost: { takerPerSide: 0 },
+      baselines: {
+        marketReturns: weakMarket(700, "survive-mkt"),
+        equalWeightReturns: Array.from({ length: 700 }, () => 0),
+      },
+      surrogate: {
+        iterations: 200,
+        crossSectional: true,
+        panel: { assetReturns: panel },
+        seed: "rotation-surrogate",
+      },
+      minDeflatedProbability: 0.95,
+    });
+    expect(verdict.verdict).toBe("PASS");
+    expect(verdict.scientificVerdict).toBe("SURVIVE");
+    // The PBO gate is SKIPped (no matrix) yet SURVIVE is still reached — SKIPs are allowed.
+    expect(gate(verdict, "cpcv_pbo").status).toBe("SKIP");
+    expect(gate(verdict, "baselines").status).toBe("PASS");
+  });
+
+  it("fails ONLY a DSR-family gate while core gates pass → PROMISING (not SURVIVE)", () => {
+    // Same genuine rotation edge, but the Harvey-Liu haircut bar is set so tight the
+    // haircut gate (a multiple-testing / DSR-family gate) fails — while net_of_cost,
+    // baselines, surrogate, and holdout all still pass. That is PROMISING, not KILL.
+    const { sleeve, panel } = makeRotationEdge(700, 6, 0.01, 0.01, "rotation-55");
+    const verdict = validateStrategy(sleeve, {
+      trialCount: 2,
+      statistic: "mean",
+      cost: { takerPerSide: 0 },
+      baselines: {
+        marketReturns: weakMarket(700, "promising-mkt"),
+        equalWeightReturns: Array.from({ length: 700 }, () => 0),
+      },
+      maxHaircut: 0.01, // tighter than the ~0.94 haircut → haircut gate FAILS
+      surrogate: {
+        iterations: 200,
+        crossSectional: true,
+        panel: { assetReturns: panel },
+        seed: "rotation-surrogate",
+      },
+      minDeflatedProbability: 0.95,
+    });
+    // Binary verdict is KILL (haircut is the binding gate)...
+    expect(verdict.verdict).toBe("KILL");
+    expect(verdict.bindingGate).toBe("haircut");
+    // ...but the richer scientific verdict recognizes it is only a DSR-family failure.
+    expect(verdict.scientificVerdict).toBe("PROMISING");
+    expect(gate(verdict, "haircut").status).toBe("FAIL");
+    expect(gate(verdict, "net_of_cost").status).toBe("PASS");
+    expect(gate(verdict, "surrogate").status).toBe("PASS");
+    expect(gate(verdict, "holdout").status).toBe("PASS");
+  });
+
+  it("pure noise → KILL", () => {
+    const noise = makeNoise(600, 0.01, "pure-noise-42");
+    const verdict = validateStrategy(noise, {
+      trialCount: 50,
+      statistic: "sharpe",
+      surrogate: { iterations: 100 },
+    });
+    expect(verdict.verdict).toBe("KILL");
+    expect(verdict.scientificVerdict).toBe("KILL");
+  });
+
+  it("baselines absent (non-strict) caps the scientific verdict below SURVIVE", () => {
+    // The very same planted edge that SURVIVEs WITH baselines cannot reach SURVIVE
+    // without them: the baselines gate is ADVISORY (passed:true, non-binding) but the
+    // scientific verdict is capped at INDETERMINATE.
+    const { sleeve, panel } = makeRotationEdge(700, 6, 0.01, 0.01, "rotation-55");
+    const verdict = validateStrategy(sleeve, {
+      trialCount: 2,
+      statistic: "mean",
+      cost: { takerPerSide: 0 },
+      surrogate: {
+        iterations: 200,
+        crossSectional: true,
+        panel: { assetReturns: panel },
+        seed: "rotation-surrogate",
+      },
+      minDeflatedProbability: 0.95,
+    });
+    // Binary verdict stays PASS (ADVISORY baselines is non-binding, back-compat)...
+    expect(verdict.verdict).toBe("PASS");
+    expect(gate(verdict, "baselines").status).toBe("ADVISORY");
+    expect(gate(verdict, "baselines").passed).toBe(true);
+    expect(gate(verdict, "baselines").reason).toContain("not certified");
+    // ...but scientificVerdict is NOT SURVIVE — it is INDETERMINATE without baselines.
+    expect(verdict.scientificVerdict).toBe("INDETERMINATE");
+  });
+});
+
+describe("validateStrategy — strict baselines", () => {
+  it("with NO baselines supplied, strict mode is a hard FAIL → INDETERMINATE", () => {
+    const { sleeve, panel } = makeRotationEdge(700, 6, 0.01, 0.01, "rotation-55");
+    const verdict = validateStrategy(sleeve, {
+      trialCount: 2,
+      statistic: "mean",
+      cost: { takerPerSide: 0 },
+      strictBaselines: true,
+      surrogate: {
+        iterations: 200,
+        crossSectional: true,
+        panel: { assetReturns: panel },
+        seed: "rotation-surrogate",
+      },
+      minDeflatedProbability: 0.95,
+    });
+    const baselines = gate(verdict, "baselines");
+    // Strict: the baselines gate does NOT vacuously certify — it FAILs.
+    expect(baselines.status).toBe("FAIL");
+    expect(baselines.passed).toBe(false);
+    // It is the binding gate (first non-passing) and the scientific verdict is INDETERMINATE.
+    expect(verdict.bindingGate).toBe("baselines");
+    expect(verdict.scientificVerdict).toBe("INDETERMINATE");
+  });
+
+  it("defaults to non-strict (ADVISORY, passed:true) for back-compat", () => {
+    const series = makeBorderlineSharpe(400, 0.001, 0.01, "strict-default");
+    const verdict = validateStrategy(series, {
+      trialCount: 1,
+      statistic: "sharpe",
+      cost: { takerPerSide: 0 },
+      surrogate: { iterations: 20 },
+    });
+    const baselines = gate(verdict, "baselines");
+    // Default (no strictBaselines): ADVISORY, passed:true — the legacy vacuous-pass
+    // back-compat behavior, so existing PASS verdicts are unchanged.
+    expect(baselines.status).toBe("ADVISORY");
+    expect(baselines.passed).toBe(true);
   });
 });
 
@@ -385,6 +628,70 @@ describe("surrogate generators preserve their analytic invariants (M1)", () => {
   });
 });
 
+describe("validateStrategy — leverage-aware costModel (dated-futures leak fix)", () => {
+  it("a financing-heavy levered model materially lowers the net-of-cost statistic", () => {
+    // Same deterministic series and seed for every call; only the cost treatment
+    // changes. The baseline charges ZERO turnover cost (cost.takerPerSide: 0), so the
+    // ONLY thing the levered model adds is the risk-free financing carry — sized to
+    // the FULL 2.95x levered notional, NOT to one unit. That is the dated-futures leak
+    // fix: charging RF on the real ~2.95x notional collapses the net edge.
+    const series = makeBorderlineSharpe(500, 0.0015, 0.01, "leverage-carry");
+    const base = {
+      trialCount: 1,
+      statistic: "compoundReturn" as const,
+      // Zero-turnover baseline so the financing carry is the only differentiator.
+      cost: { takerPerSide: 0 },
+      surrogate: { iterations: 20 },
+      seed: "lev",
+    };
+
+    // (1) WITHOUT a costModel: the default turnover path.
+    const without = validateStrategy(series, base);
+    // The default path is reproducible — two no-costModel calls are byte-identical.
+    const withoutAgain = validateStrategy(series, base);
+    expect(JSON.stringify(without)).toBe(JSON.stringify(withoutAgain));
+
+    // (2) WITH a financing-heavy, leverage-aware model on a flat-LONG book at 2.95x.
+    const positions = Array.from({ length: series.length }, () => 1); // flat long
+    const withModel = validateStrategy(series, {
+      ...base,
+      costModel: { ...DEFAULT_TAKER_MODEL, riskFreeApr: 0.05 }, // 5%/yr RF on the long leg
+      costModelLeverage: 2.95, // the audit's ~2.95x dated-futures leverage
+      costModelPositions: positions,
+      costModelPeriodsPerYear: 365,
+    });
+
+    // The real net statistic for statistic:"compoundReturn" lives in detail.netScore
+    // (alongside detail.netSharpe) on the net_of_cost gate.
+    const netWithout = gate(without, "net_of_cost").detail.netScore as number;
+    const netWith = gate(withModel, "net_of_cost").detail.netScore as number;
+
+    // The levered financing bites: the net statistic is MATERIALLY lower WITH the model.
+    expect(netWith).toBeLessThan(netWithout);
+    // "Materially" — the 2.95x RF carry erases a large fraction of the net edge,
+    // not a rounding-level sliver.
+    expect(netWithout - netWith).toBeGreaterThan(0.1);
+
+    // The model path was genuinely taken: turnover is the model's traded notional
+    // (~2.95 to establish the levered book), not the default per-period trade count (500).
+    expect(gate(withModel, "net_of_cost").detail.turnover as number).toBeLessThan(10);
+    expect(gate(without, "net_of_cost").detail.turnover as number).toBeGreaterThan(100);
+
+    // It is the LEVERAGE that bites: the same model at 1x leverage charges the RF carry
+    // on one unit, so it lands strictly between the no-model and the 2.95x-levered net.
+    const withModelLev1 = validateStrategy(series, {
+      ...base,
+      costModel: { ...DEFAULT_TAKER_MODEL, riskFreeApr: 0.05 },
+      costModelLeverage: 1,
+      costModelPositions: positions,
+      costModelPeriodsPerYear: 365,
+    });
+    const netLev1 = gate(withModelLev1, "net_of_cost").detail.netScore as number;
+    expect(netLev1).toBeLessThan(netWithout);
+    expect(netWith).toBeLessThan(netLev1);
+  });
+});
+
 describe("surrogate FFT performance (M2)", () => {
   it("runs the surrogate gate on a realistic-length series in well under a second", () => {
     const rnd = seededRandom("perf");
@@ -397,7 +704,8 @@ describe("surrogate FFT performance (M2)", () => {
       surrogate: { iterations: 200 },
     });
     const elapsed = Date.now() - start;
-    expect(verdict.perGate).toHaveLength(7);
+    // 8 gates now: the block_bootstrap gate sits between deflated_sharpe and cpcv_pbo.
+    expect(verdict.perGate).toHaveLength(8);
     // Generous bound; in practice this completes in a few hundred ms.
     expect(elapsed).toBeLessThan(5_000);
   });
