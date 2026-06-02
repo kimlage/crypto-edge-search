@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Crypto Edge-Search — Verdict Dashboard</title>
+<style>
+  :root {
+    --bg: #0f1117; --panel: #171a23; --border: #262b38; --fg: #e6e8ee;
+    --muted: #9aa3b2; --accent: #5b9dff;
+    --kill: #ef5350; --promising: #ffb300; --survive: #43a047;
+    --deferred: #8e8e93; --noverdict: #4a4f5e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header { padding: 24px 24px 8px; }
+  h1 { margin: 0 0 4px; font-size: 20px; }
+  .sub { color: var(--muted); margin: 0 0 16px; font-size: 13px; }
+  .counts { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 8px; }
+  .count-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 16px; min-width: 96px; display: flex; flex-direction: column;
+  }
+  .cc-n { font-size: 22px; font-weight: 700; }
+  .cc-label { font-size: 11px; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+  .cc-SURVIVE .cc-n { color: var(--survive); }
+  .cc-PROMISING .cc-n { color: var(--promising); }
+  .cc-KILL .cc-n { color: var(--kill); }
+  .cc-DEFERRED .cc-n { color: var(--deferred); }
+  .cc-total { border-color: var(--accent); }
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    padding: 8px 24px 16px; position: sticky; top: 0; background: var(--bg); z-index: 5;
+    border-bottom: 1px solid var(--border);
+  }
+  input[type="search"], select {
+    background: var(--panel); color: var(--fg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; font-size: 13px;
+  }
+  input[type="search"] { min-width: 260px; flex: 1 1 280px; }
+  label.flt { color: var(--muted); font-size: 12px; display: flex; gap: 6px; align-items: center; }
+  #shown { color: var(--muted); font-size: 12px; margin-left: auto; }
+  .table-wrap { padding: 0 24px 48px; overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 880px; }
+  thead th {
+    text-align: left; font-size: 11px; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--muted); padding: 10px 10px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 57px; background: var(--bg); cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  thead th .arrow { color: var(--accent); font-size: 10px; }
+  tbody td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:hover { background: #1b1f2b; }
+  .c-id { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .c-name { font-weight: 600; }
+  .c-detail { color: var(--muted); font-size: 12.5px; max-width: 520px; }
+  .c-domain { white-space: nowrap; }
+  .c-source a { color: var(--accent); text-decoration: none; font-size: 12px; white-space: nowrap; }
+  .c-source a:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px;
+    font-weight: 700; letter-spacing: .03em; white-space: nowrap;
+  }
+  .v-SURVIVE { background: rgba(67,160,71,.18); color: var(--survive); }
+  .v-PROMISING { background: rgba(255,179,0,.18); color: var(--promising); }
+  .v-KILL { background: rgba(239,83,80,.16); color: var(--kill); }
+  .v-DEFERRED { background: rgba(142,142,147,.18); color: var(--deferred); }
+  .v-NO-VERDICT { background: rgba(74,79,94,.30); color: var(--muted); }
+  .empty { padding: 32px; text-align: center; color: var(--muted); }
+  footer { padding: 0 24px 40px; color: var(--muted); font-size: 12px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Crypto Edge-Search — Verdict Dashboard</h1>
+  <p class="sub">~111 trading hypotheses through the committed anti-overfitting gauntlet on free public data at $0 cloud cost. 0 SURVIVE · 2 weak PROMISING · the rest KILL. Generated from the committed <code>output/edgehunt-*/SUMMARY.md</code> ledgers — nothing here is deployable.</p>
+  <div class="counts">
+    <div class="count-card cc-total"><span class="cc-n">80</span><span class="cc-label">Rows</span></div>
+      <div class="count-card cc-SURVIVE"><span class="cc-n">0</span><span class="cc-label">SURVIVE</span></div>
+      <div class="count-card cc-PROMISING"><span class="cc-n">6</span><span class="cc-label">PROMISING</span></div>
+      <div class="count-card cc-DEFERRED"><span class="cc-n">2</span><span class="cc-label">DEFERRED</span></div>
+      <div class="count-card cc-KILL"><span class="cc-n">70</span><span class="cc-label">KILL</span></div>
+      <div class="count-card cc-NO-VERDICT"><span class="cc-n">2</span><span class="cc-label">NO VERDICT</span></div>
+  </div>
+</header>
+<div class="controls">
+  <input id="q" type="search" placeholder="Search id, name, verdict, binding gate…" aria-label="Search" />
+  <label class="flt">Domain
+    <select id="f-domain">
+      <option value="">all</option>
+      <option value="D1">D1</option>
+      <option value="D2">D2</option>
+      <option value="D348">D348</option>
+      <option value="D5">D5</option>
+      <option value="D6">D6</option>
+      <option value="D7">D7</option>
+      <option value="audit-nb">audit-nb</option>
+      <option value="consensus">consensus</option>
+      <option value="onchain2">onchain2</option>
+      <option value="quant">quant</option>
+      <option value="requeue">requeue</option>
+    </select>
+  </label>
+  <label class="flt">Verdict
+    <select id="f-verdict">
+      <option value="">all</option>
+      <option value="SURVIVE">SURVIVE</option>
+      <option value="PROMISING">PROMISING</option>
+      <option value="DEFERRED">DEFERRED</option>
+      <option value="KILL">KILL</option>
+      <option value="NO VERDICT">NO VERDICT</option>
+    </select>
+  </label>
+  <span id="shown"></span>
+</div>
+<div class="table-wrap">
+  <table id="grid">
+    <thead>
+      <tr>
+        <th data-key="domain">Domain <span class="arrow"></span></th>
+        <th data-key="id">ID <span class="arrow"></span></th>
+        <th data-key="name">Hypothesis <span class="arrow"></span></th>
+        <th data-key="verdict">Verdict <span class="arrow"></span></th>
+        <th data-key="detail">Detail <span class="arrow"></span></th>
+        <th data-key="source">Ledger <span class="arrow"></span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-domain="consensus" data-verdict="PROMISING" data-search="consensus — dated-futures cash-and-carry (btc+eth) promising promising 2.27 (raw, net) · cross-sectional-shuffle p=0.66 (no expiry-selection alpha; 7/8 gates pass) · ~$640 (~$560 low-funding regime) · med">
+        <td class="c-domain">consensus</td>
+        <td class="c-id">—</td>
+        <td class="c-name">Dated-futures cash-and-carry (BTC+ETH)</td>
+        <td class="c-verdict"><span class="badge v-PROMISING">PROMISING</span></td>
+        <td class="c-detail">2.27 (raw, net) · cross-sectional-shuffle p=0.66 (no expiry-selection alpha; 7/8 gates pass) · ~$640 (~$560 low-funding regime) · med</td>
+        <td class="c-source"><a href="../output/edgehunt/SUMMARY.md">output/edgehunt/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="consensus" data-verdict="PROMISING" data-search="consensus — vrp harvest + crash-gate (btc/eth) promising promising 1.37 (realistic tail; 0.53–1.0 under tail stress) · deflated-sharpe@n=90 (0.53&lt;0.95) + shuffled-vrp placebo p=0.14 · ~$495 · med">
+        <td class="c-domain">consensus</td>
+        <td class="c-id">—</td>
+        <td class="c-name">VRP harvest + crash-gate (BTC/ETH)</td>
+        <td class="c-verdict"><span class="badge v-PROMISING">PROMISING</span></td>
+        <td class="c-detail">1.37 (realistic tail; 0.53–1.0 under tail stress) · Deflated-Sharpe@N=90 (0.53&lt;0.95) + shuffled-VRP placebo p=0.14 · ~$495 · med</td>
+        <td class="c-source"><a href="../output/edgehunt/SUMMARY.md">output/edgehunt/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="consensus" data-verdict="KILL" data-search="consensus — funding-momentum inverse (drift-stripped) kill kill +1.08 ann · deflated sharpe @ n=24 (prob 0.44&lt;0.95) · ($1,859, non-surviving) · high">
+        <td class="c-domain">consensus</td>
+        <td class="c-id">—</td>
+        <td class="c-name">Funding-momentum inverse (drift-stripped)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">+1.08 ann · Deflated Sharpe @ N=24 (prob 0.44&lt;0.95) · ($1,859, non-surviving) · high</td>
+        <td class="c-source"><a href="../output/edgehunt/SUMMARY.md">output/edgehunt/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="consensus" data-verdict="KILL" data-search="consensus — residual / idiosyncratic momentum (bhm) kill kill 0.76 best / 0.18 canonical · deflated sharpe @ n=192 (prob 0.18; gross fails too) + bootstrap ci spans 0 · ~$2,916 best (not investable) · high">
+        <td class="c-domain">consensus</td>
+        <td class="c-id">—</td>
+        <td class="c-name">Residual / idiosyncratic momentum (BHM)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.76 best / 0.18 canonical · Deflated Sharpe @ N=192 (prob 0.18; gross fails too) + bootstrap CI spans 0 · ~$2,916 best (not investable) · high</td>
+        <td class="c-source"><a href="../output/edgehunt/SUMMARY.md">output/edgehunt/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="consensus" data-verdict="KILL" data-search="consensus — funding dispersion (binance×bybit) kill kill 0.53 · beats-funding-level-baseline (−$296/mo vs baseline) + dsr 0.124 + hl pbonf=1.0 · $7.82 net / −$296 vs baseline · high">
+        <td class="c-domain">consensus</td>
+        <td class="c-id">—</td>
+        <td class="c-name">Funding dispersion (Binance×Bybit)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.53 · beats-funding-level-baseline (−$296/mo vs baseline) + DSR 0.124 + HL pBonf=1.0 · $7.82 net / −$296 vs baseline · high</td>
+        <td class="c-source"><a href="../output/edgehunt/SUMMARY.md">output/edgehunt/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="consensus" data-verdict="KILL" data-search="consensus — perp-spot cash-and-carry kill kill −0.17 excess (vs cash; +0.54 raw) · deflated sharpe (prob 0.0023 @ n=96); loses to cash on raw + cvar/calmar · +$284 gross / −$91 vs cash · high">
+        <td class="c-domain">consensus</td>
+        <td class="c-id">—</td>
+        <td class="c-name">Perp-spot cash-and-carry</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">−0.17 excess (vs cash; +0.54 raw) · Deflated Sharpe (prob 0.0023 @ N=96); loses to cash on raw + CVaR/Calmar · +$284 gross / −$91 vs cash · high</td>
+        <td class="c-source"><a href="../output/edgehunt/SUMMARY.md">output/edgehunt/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="consensus" data-verdict="KILL" data-search="consensus — tsmom-carry crash-hedge overlay kill kill 0.62 (worse than 0.73 matched-lev baseline) · left-tail control + calendar-reanchor surrogate p=0.33–0.36 · $897 (vs $1,074 for de-levering) · high">
+        <td class="c-domain">consensus</td>
+        <td class="c-id">—</td>
+        <td class="c-name">TSMOM-carry crash-hedge overlay</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.62 (worse than 0.73 matched-lev baseline) · left-tail control + calendar-reanchor surrogate p=0.33–0.36 · $897 (vs $1,074 for de-levering) · high</td>
+        <td class="c-source"><a href="../output/edgehunt/SUMMARY.md">output/edgehunt/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="consensus" data-verdict="KILL" data-search="consensus — vol-target / moreira-muir overlay (btc) kill kill 0.77 (levered beta; −0.17 oos vs control) · matched-exposure control flips −0.17 oos + garch surrogate p=0.386 + pbo=0.95 · n/a (levered beta, not alpha) · high">
+        <td class="c-domain">consensus</td>
+        <td class="c-id">—</td>
+        <td class="c-name">Vol-target / Moreira-Muir overlay (BTC)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.77 (levered beta; −0.17 OOS vs control) · matched-exposure control flips −0.17 OOS + GARCH surrogate p=0.386 + PBO=0.95 · n/a (levered beta, not alpha) · high</td>
+        <td class="c-source"><a href="../output/edgehunt/SUMMARY.md">output/edgehunt/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="consensus" data-verdict="KILL" data-search="consensus — pca basket stat-arb (avellaneda-lee) kill kill 0.17 (oos −1.16; gross negative at proper breadth) · surrogate null p≈0.20 (gross sharpe negative pre-cost, 0/81 configs &gt;0.5) · n/a (no real edge) · high">
+        <td class="c-domain">consensus</td>
+        <td class="c-id">—</td>
+        <td class="c-name">PCA basket stat-arb (Avellaneda-Lee)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.17 (OOS −1.16; gross negative at proper breadth) · surrogate null p≈0.20 (gross Sharpe negative pre-cost, 0/81 configs &gt;0.5) · n/a (no real edge) · high</td>
+        <td class="c-source"><a href="../output/edgehunt/SUMMARY.md">output/edgehunt/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="consensus" data-verdict="KILL" data-search="consensus — funding-sentiment contrarian fade kill kill −0.64 ann · deflated sharpe @ n=24 (fade prob 0.001); placebo p=0.88 beats it · n/a · high">
+        <td class="c-domain">consensus</td>
+        <td class="c-id">—</td>
+        <td class="c-name">Funding-sentiment contrarian fade</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">−0.64 ann · Deflated Sharpe @ N=24 (fade prob 0.001); placebo p=0.88 beats it · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt/SUMMARY.md">output/edgehunt/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D1" data-verdict="KILL" data-search="d1 d1-03 supertrend (atr-band trend overlay) kill kill 1.645 (gross 1.665) · b&amp;h vol-matched 0.917 · deflated-sharpe-vs-b&amp;h = 0.307 (need &lt;0.05); excess-over-b&amp;h ci straddles 0 (−0.00017 [−0.00065, +0.00033]) · 144 · 0.801 (vol-preserving; surrogate mean 1.926 &gt; observed 1.645) · n/a (artifact) · high">
+        <td class="c-domain">D1</td>
+        <td class="c-id">D1-03</td>
+        <td class="c-name">Supertrend (ATR-band trend overlay)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.645 (gross 1.665) · B&amp;H vol-matched 0.917 · deflated-Sharpe-vs-B&amp;H = 0.307 (need &lt;0.05); excess-over-B&amp;H CI straddles 0 (−0.00017 [−0.00065, +0.00033]) · 144 · 0.801 (vol-preserving; surrogate mean 1.926 &gt; observed 1.645) · n/a (artifact) · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D1/SUMMARY.md">output/edgehunt-D1/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D1" data-verdict="KILL" data-search="d1 d1-06 cci (z-scored typical-price oscillator) kill kill 1.768 (gross 1.784) · killed-rsi book 1.689 · deflated-sharpe-vs-rsi = 0.009 (need &lt;0.05); surrogate null p=1.0 · 128 · 1.0 (phase mean 2.413 / block mean 2.317, both &gt; observed 1.768) · n/a (artifact) · high">
+        <td class="c-domain">D1</td>
+        <td class="c-id">D1-06</td>
+        <td class="c-name">CCI (z-scored typical-price oscillator)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.768 (gross 1.784) · killed-RSI book 1.689 · deflated-Sharpe-vs-RSI = 0.009 (need &lt;0.05); surrogate null p=1.0 · 128 · 1.0 (phase mean 2.413 / block mean 2.317, both &gt; observed 1.768) · n/a (artifact) · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D1/SUMMARY.md">output/edgehunt-D1/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D1" data-verdict="NO VERDICT" data-search="d1 — 9 further d1 slots no verdict no verdict — · — · run never executed (rate-limited) · — · — · — · —">
+        <td class="c-domain">D1</td>
+        <td class="c-id">—</td>
+        <td class="c-name">9 further D1 slots</td>
+        <td class="c-verdict"><span class="badge v-NO-VERDICT">NO VERDICT</span></td>
+        <td class="c-detail">— · — · run never executed (rate-limited) · — · — · — · —</td>
+        <td class="c-source"><a href="../output/edgehunt-D1/SUMMARY.md">output/edgehunt-D1/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D2" data-verdict="KILL" data-search="d2 d2-cvd cvd literal/band-gated divergence (h&gt;=1) kill kill 0.237 (btc h=1) · net-sharpe&gt;0.3 · 45 · 0.17 (phase-rand 0.24) · n/a · high">
+        <td class="c-domain">D2</td>
+        <td class="c-id">D2-CVD</td>
+        <td class="c-name">CVD literal/band-gated divergence (h&gt;=1)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.237 (BTC h=1) · net-sharpe&gt;0.3 · 45 · 0.17 (phase-rand 0.24) · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D2/SUMMARY.md">output/edgehunt-D2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D2" data-verdict="KILL" data-search="d2 d2-tbr taker buy/sell ratio extreme imbalance kill kill 0.236 · net-sharpe&gt;0.3 · 24 · 0.038 · n/a · high">
+        <td class="c-domain">D2</td>
+        <td class="c-id">D2-TBR</td>
+        <td class="c-name">Taker buy/sell ratio extreme imbalance</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.236 · net-sharpe&gt;0.3 · 24 · 0.038 · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D2/SUMMARY.md">output/edgehunt-D2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D2" data-verdict="KILL" data-search="d2 d2-vwap anchored / session vwap mean-reversion kill kill 0.589 (artifact; full-sweep best -0.687) · beats-buyhold (also surrogate-p / dsr@n / boot-ci / pbo) · 396 · 0.278 · n/a · high">
+        <td class="c-domain">D2</td>
+        <td class="c-id">D2-VWAP</td>
+        <td class="c-name">Anchored / session VWAP mean-reversion</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.589 (artifact; full-sweep best -0.687) · beats-buyhold (also surrogate-p / DSR@N / boot-CI / PBO) · 396 · 0.278 · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D2/SUMMARY.md">output/edgehunt-D2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D2" data-verdict="KILL" data-search="d2 d2-vp volume-profile poc / value-area reversion kill kill -1.21 (15m) / -0.62 (daily) holdout · net-sharpe&gt;0.3 · 96 (15m) / 128 (daily) · 0.115 / 0.456 · n/a · high">
+        <td class="c-domain">D2</td>
+        <td class="c-id">D2-VP</td>
+        <td class="c-name">Volume-profile POC / value-area reversion</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">-1.21 (15m) / -0.62 (daily) holdout · net-sharpe&gt;0.3 · 96 (15m) / 128 (daily) · 0.115 / 0.456 · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D2/SUMMARY.md">output/edgehunt-D2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D2" data-verdict="KILL" data-search="d2 d2-obv obv / a-d trend confirmation kill kill 1.251 raw (-0.122 excess-over-trend = real volume edge) · dsr@n (raw) / &lt;=0 excess (volume) · 192 · 0.011 raw / 0.081 excess · n/a · high">
+        <td class="c-domain">D2</td>
+        <td class="c-id">D2-OBV</td>
+        <td class="c-name">OBV / A-D trend confirmation</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.251 raw (-0.122 excess-over-trend = real volume edge) · DSR@N (raw) / &lt;=0 excess (volume) · 192 · 0.011 raw / 0.081 excess · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D2/SUMMARY.md">output/edgehunt-D2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D2" data-verdict="KILL" data-search="d2 d2-m2 amihud illiquidity premium (cross-section) kill kill 1.23 (fails robustness gates) · boot-ci-lower&gt;0 (dsr@n 0.83 also fails) · 48 · 0.002 (real but non-stationary/survivorship) · n/a · high">
+        <td class="c-domain">D2</td>
+        <td class="c-id">D2-M2</td>
+        <td class="c-name">Amihud illiquidity premium (cross-section)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.23 (fails robustness gates) · boot-CI-lower&gt;0 (DSR@N 0.83 also fails) · 48 · 0.002 (real but non-stationary/survivorship) · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D2/SUMMARY.md">output/edgehunt-D2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D2" data-verdict="KILL" data-search="d2 d2-lt large-trade / whale-print short-horizon momentum kill kill 1.36 (dsr-deflated to coin flip; net 0.03 bp/bar) · dsr@n&gt;0.95 (0.513) · 48 · 0.001 (harvey-liu 0.048) · n/a · high">
+        <td class="c-domain">D2</td>
+        <td class="c-id">D2-LT</td>
+        <td class="c-name">Large-trade / whale-print short-horizon momentum</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.36 (DSR-deflated to coin flip; net 0.03 bp/bar) · DSR@N&gt;0.95 (0.513) · 48 · 0.001 (Harvey-Liu 0.048) · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D2/SUMMARY.md">output/edgehunt-D2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D2" data-verdict="KILL" data-search="d2 d2-liq liquidation-cascade fade/follow (proxy) kill kill 0.10 (standalone lagged; -2.0 flip raw) · net-sharpe&gt;0.3 · 72 · 0.28 · n/a · high">
+        <td class="c-domain">D2</td>
+        <td class="c-id">D2-LIQ</td>
+        <td class="c-name">Liquidation-cascade fade/follow (proxy)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.10 (standalone lagged; -2.0 flip raw) · net-sharpe&gt;0.3 · 72 · 0.28 · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D2/SUMMARY.md">output/edgehunt-D2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="KILL" data-search="d348 d4-m1 dual momentum (abs+rel) kill kill 0.85 is / −0.64 holdout (gated 1.60 = timed beta, resid α ~0) · consume-once holdout (dsr p 0.47, pbo 0.44) · 40 · 0.00 (is only; moot) · n/a · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D4-M1</td>
+        <td class="c-name">Dual momentum (abs+rel)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.85 IS / −0.64 holdout (gated 1.60 = timed beta, resid α ~0) · consume-once holdout (DSR p 0.47, PBO 0.44) · 40 · 0.00 (IS only; moot) · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="KILL" data-search="d348 d8-c1 funding dispersion (cross-venue) kill kill 3.0 realistic / 4.9 zero-cost (annualization-inflated) · deflated-sharpe @ n (p 0.59–0.70) + economic triviality · 48 · 0.00 (real but redundant w/ level) · $36 (≈$75 best) · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D8-C1</td>
+        <td class="c-name">Funding dispersion (cross-venue)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">3.0 realistic / 4.9 zero-cost (annualization-inflated) · Deflated-Sharpe @ N (p 0.59–0.70) + economic triviality · 48 · 0.00 (real but redundant w/ level) · $36 (≈$75 best) · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="KILL" data-search="d348 d4-s7 short-term reversal (weekly+daily xs) kill kill −0.39 (best of 36; −0.54 @28bps) · gross-negative/flat (no harvestable edge) · 36 · 0.45 · n/a · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D4-S7</td>
+        <td class="c-name">Short-term reversal (weekly+daily XS)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">−0.39 (best of 36; −0.54 @28bps) · gross-negative/flat (no harvestable edge) · 36 · 0.45 · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="KILL" data-search="d348 d4-m3 52-week-high nearness (anchoring) kill kill 1.04 raw (haircut 0; resid-α vs btc ~0) · harvey-liu haircut→0 + dsr 0.63 + nf1 surrogate + liquidity 1.04→0.51 · 30 · 0.04 (nf1) · n/a · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D4-M3</td>
+        <td class="c-name">52-week-high nearness (anchoring)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.04 raw (haircut 0; resid-α vs BTC ~0) · Harvey-Liu haircut→0 + DSR 0.63 + NF1 surrogate + liquidity 1.04→0.51 · 30 · 0.04 (NF1) · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="KILL" data-search="d348 d4-m4 frog-in-the-pan / info discreteness kill kill ~0 (fipspread 0.81 but +0.00004/wk incremental, ci spans 0) · incremental-over-momentum ci spans 0 + holdout (lowid −0.82) + dsr 0.68 · 64 · 0.01 (id placebo broken; moot) · n/a · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D4-M4</td>
+        <td class="c-name">Frog-in-the-pan / info discreteness</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">~0 (fipSpread 0.81 but +0.00004/wk incremental, CI spans 0) · incremental-over-momentum CI spans 0 + holdout (lowID −0.82) + DSR 0.68 · 64 · 0.01 (ID placebo broken; moot) · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="KILL" data-search="d348 d8-a7 ensemble stacking of weak signals kill kill 1.03 meta cpcv-oos / 0.58 holdout · key: fails to beat naive 1/k (holdout 0.58 vs 0.96) + surrogate · 72 (32 meta) · 0.82 (funding 0.65) · n/a · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D8-A7</td>
+        <td class="c-name">Ensemble stacking of weak signals</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.03 meta CPCV-OOS / 0.58 holdout · KEY: fails to beat naive 1/k (holdout 0.58 vs 0.96) + surrogate · 72 (32 meta) · 0.82 (funding 0.65) · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="KILL" data-search="d348 d8-b4 rebalancing premium / vol harvesting kill kill 0.17 (best freq) · corr-matched + xs-shuffle surrogate (dsr 0.069, boot ci spans 0) · 24 · 0.39 · ~$293 (ci spans 0 → n/a) · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D8-B4</td>
+        <td class="c-name">Rebalancing premium / vol harvesting</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.17 (best freq) · corr-matched + XS-shuffle surrogate (DSR 0.069, boot CI spans 0) · 24 · 0.39 · ~$293 (CI spans 0 → n/a) · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="KILL" data-search="d348 d8-b1 risk parity (inverse-vol / erc) kill kill 0.40 (rp−ew spread; construction-α ~0) · residualize-vs-low-vol-factor (α t≤0.94) + surrogate + dsr · 12 · 0.167 · n/a · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D8-B1</td>
+        <td class="c-name">Risk parity (inverse-vol / ERC)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.40 (RP−EW spread; construction-α ~0) · residualize-vs-low-vol-factor (α t≤0.94) + surrogate + DSR · 12 · 0.167 · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="KILL" data-search="d348 d3-a3 garch/egarch vol-forecast timing (btc) kill kill 0.45 (&lt; b&amp;h@matched 0.49, lift −0.037) · garch-simulated zero-edge surrogate (p_lift 0.575) + matched-exposure b&amp;h · 108 · 0.575 · n/a (~$1,937 = pure timed beta &lt; b&amp;h) · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D3-A3</td>
+        <td class="c-name">GARCH/EGARCH vol-forecast timing (BTC)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.45 (&lt; B&amp;H@matched 0.49, lift −0.037) · GARCH-simulated zero-edge surrogate (p_lift 0.575) + matched-exposure B&amp;H · 108 · 0.575 · n/a (~$1,937 = pure timed beta &lt; B&amp;H) · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="KILL" data-search="d348 d3-b9 dvol signals (spike/mom/level/timer) kill kill 0.11 honest fwd (1.01 = boundary-leak) · strict-forward-lag (1-day-lag collapse) + dsr @ n · 58 · 0.003 naive → n.s. de-leaked · n/a · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D3-B9</td>
+        <td class="c-name">DVOL signals (spike/mom/level/timer)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.11 honest fwd (1.01 = boundary-leak) · strict-forward-lag (1-day-lag collapse) + DSR @ N · 58 · 0.003 naive → n.s. de-leaked · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="DEFERRED" data-search="d348 d3-b1 gex / dealer gamma (walls, flip) deferred deferred −0.17 (proxy-only) · data-availability (per-strike oi+gamma history absent) + surrogate + dsr · 14 · 0.42 label / 0.51 block · n/a · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D3-B1</td>
+        <td class="c-name">GEX / dealer gamma (walls, flip)</td>
+        <td class="c-verdict"><span class="badge v-DEFERRED">DEFERRED</span></td>
+        <td class="c-detail">−0.17 (proxy-only) · data-availability (per-strike OI+gamma history absent) + surrogate + DSR · 14 · 0.42 label / 0.51 block · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D348" data-verdict="DEFERRED" data-search="d348 d3-b3 25-delta risk reversal / skew deferred deferred 0.095 raw (resid 0.45 = partial-out artifact, boot ci spans 0) · data-deferred (paid per-delta iv history); proxy fails lead-lag + boot + dsr + pbo · 48 · 0.50 boot / 0.60 lead-lag · n/a · high">
+        <td class="c-domain">D348</td>
+        <td class="c-id">D3-B3</td>
+        <td class="c-name">25-delta risk reversal / skew</td>
+        <td class="c-verdict"><span class="badge v-DEFERRED">DEFERRED</span></td>
+        <td class="c-detail">0.095 raw (resid 0.45 = partial-out artifact, boot CI spans 0) · data-DEFERRED (paid per-delta IV history); proxy fails lead-lag + boot + DSR + PBO · 48 · 0.50 boot / 0.60 lead-lag · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D348/SUMMARY.md">output/edgehunt-D348/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D5" data-verdict="PROMISING" data-search="d5 d5-08 exchange reserve/netflow trend promising promising 0.994 · deflated_sharpe · 54 · 0.013 · +0.53 · 0.912">
+        <td class="c-domain">D5</td>
+        <td class="c-id">D5-08</td>
+        <td class="c-name">Exchange reserve/netflow trend</td>
+        <td class="c-verdict"><span class="badge v-PROMISING">PROMISING</span></td>
+        <td class="c-detail">0.994 · deflated_sharpe · 54 · 0.013 · +0.53 · 0.912</td>
+        <td class="c-source"><a href="../output/edgehunt-D5/SUMMARY.md">output/edgehunt-D5/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D5" data-verdict="KILL" data-search="d5 d5-10 hash ribbons kill kill 1.133 · surrogate · 6 · 0.146 · +1.13 · 0.754">
+        <td class="c-domain">D5</td>
+        <td class="c-id">D5-10</td>
+        <td class="c-name">Hash Ribbons</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.133 · surrogate · 6 · 0.146 · +1.13 · 0.754</td>
+        <td class="c-source"><a href="../output/edgehunt-D5/SUMMARY.md">output/edgehunt-D5/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D5" data-verdict="KILL" data-search="d5 d5-05 realized-price cost-basis s/r kill kill 0.617 · baselines · 18 · 0.841 · +0.67 · 0.928">
+        <td class="c-domain">D5</td>
+        <td class="c-id">D5-05</td>
+        <td class="c-name">Realized-price cost-basis S/R</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.617 · baselines · 18 · 0.841 · +0.67 · 0.928</td>
+        <td class="c-source"><a href="../output/edgehunt-D5/SUMMARY.md">output/edgehunt-D5/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D5" data-verdict="KILL" data-search="d5 d5-17 stock-to-flow deviation kill kill 0.579 · baselines · 16 · 0.399 · +0.73 · 0.765">
+        <td class="c-domain">D5</td>
+        <td class="c-id">D5-17</td>
+        <td class="c-name">Stock-to-Flow deviation</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.579 · baselines · 16 · 0.399 · +0.73 · 0.765</td>
+        <td class="c-source"><a href="../output/edgehunt-D5/SUMMARY.md">output/edgehunt-D5/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D5" data-verdict="KILL" data-search="d5 d5-16 metcalfe active-addr residual kill kill 0.503 · baselines · 36 · 0.140 · -0.27 · 0.765">
+        <td class="c-domain">D5</td>
+        <td class="c-id">D5-16</td>
+        <td class="c-name">Metcalfe active-addr residual</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.503 · baselines · 36 · 0.140 · -0.27 · 0.765</td>
+        <td class="c-source"><a href="../output/edgehunt-D5/SUMMARY.md">output/edgehunt-D5/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D5" data-verdict="KILL" data-search="d5 d5-03 mvrv-z extreme bands kill kill 0.365 · baselines · 72 · 0.399 · -0.02 · 0.646">
+        <td class="c-domain">D5</td>
+        <td class="c-id">D5-03</td>
+        <td class="c-name">MVRV-Z extreme bands</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.365 · baselines · 72 · 0.399 · -0.02 · 0.646</td>
+        <td class="c-source"><a href="../output/edgehunt-D5/SUMMARY.md">output/edgehunt-D5/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D5" data-verdict="KILL" data-search="d5 d5-09 puell multiple kill kill 0.333 · baselines · 18 · 0.409 · 0.00 · 0.850">
+        <td class="c-domain">D5</td>
+        <td class="c-id">D5-09</td>
+        <td class="c-name">Puell Multiple</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.333 · baselines · 18 · 0.409 · 0.00 · 0.850</td>
+        <td class="c-source"><a href="../output/edgehunt-D5/SUMMARY.md">output/edgehunt-D5/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D5" data-verdict="KILL" data-search="d5 d5-13 stablecoin supply ratio kill kill 0.148 · baselines · 54 · 0.425 · +0.09 · 1.023">
+        <td class="c-domain">D5</td>
+        <td class="c-id">D5-13</td>
+        <td class="c-name">Stablecoin Supply Ratio</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.148 · baselines · 54 · 0.425 · +0.09 · 1.023</td>
+        <td class="c-source"><a href="../output/edgehunt-D5/SUMMARY.md">output/edgehunt-D5/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D6" data-verdict="KILL" data-search="d6 d6-m1 btc vs us rates + 2s10s yield-curve regime timer kill kill 1.548 · baselines (&lt; b&amp;h 1.522, &lt; random-lottery-95 1.666) · 60 cfg / macron 3 · 0.319 (ar-matched-rate) · n/a · high">
+        <td class="c-domain">D6</td>
+        <td class="c-id">D6-M1</td>
+        <td class="c-name">BTC vs US rates + 2s10s yield-curve regime timer</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.548 · baselines (&lt; B&amp;H 1.522, &lt; random-lottery-95 1.666) · 60 cfg / macroN 3 · 0.319 (AR-matched-rate) · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D6/SUMMARY.md">output/edgehunt-D6/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D6" data-verdict="KILL" data-search="d6 d6-m4 real yields / &quot;digital gold&quot; (falling 10y tips real yield → buy btc) kill kill 0.828 · ar(1)-matched placebo p=0.096 + regime-holdout oos −0.77 + dsr@n16 · 16 · 0.120 pair-shuffle / 0.096 ar(1) · n/a · high">
+        <td class="c-domain">D6</td>
+        <td class="c-id">D6-M4</td>
+        <td class="c-name">Real yields / &quot;digital gold&quot; (falling 10Y TIPS real yield → buy BTC)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.828 · AR(1)-matched placebo p=0.096 + regime-holdout OOS −0.77 + DSR@N16 · 16 · 0.120 pair-shuffle / 0.096 AR(1) · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D6/SUMMARY.md">output/edgehunt-D6/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D6" data-verdict="KILL" data-search="d6 d6-s5 gdelt news-tone (sentiment) timer kill kill 1.27 · baselines (&lt; b&amp;h 1.24, &lt; random-lottery-95 1.35) · 22 · 0.16 (ar-matched tone) · n/a · high">
+        <td class="c-domain">D6</td>
+        <td class="c-id">D6-S5</td>
+        <td class="c-name">GDELT news-tone (sentiment) timer</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.27 · baselines (&lt; B&amp;H 1.24, &lt; random-lottery-95 1.35) · 22 · 0.16 (AR-matched tone) · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D6/SUMMARY.md">output/edgehunt-D6/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D7" data-verdict="KILL" data-search="d7 d7.1 four-year halving cycle / post-halving drift kill kill 0.86 (canonical 365d) / 1.06 (547d strengthened) · b&amp;h 0.48 · dsr@n = 0.943 fails 0.95; + long-beta trap · 2 genuine (3 w/ partial 2016) · 0.0002 (reanchor) · n/a · high">
+        <td class="c-domain">D7</td>
+        <td class="c-id">D7.1</td>
+        <td class="c-name">Four-year halving cycle / post-halving drift</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.86 (canonical 365d) / 1.06 (547d strengthened) · B&amp;H 0.48 · DSR@N = 0.943 fails 0.95; + long-beta trap · 2 genuine (3 w/ partial 2016) · 0.0002 (reanchor) · n/a · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D7/SUMMARY.md">output/edgehunt-D7/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D7" data-verdict="KILL" data-search="d7 d7.18 stablecoin mint-as-event (supply prints precede pumps) kill kill 0.89 (selection-inflated) · btc b&amp;h 0.36 · deflated sharpe@n=128 = 0.65 (need &lt;0.05); cscv/pbo 0.59 · 128 · 0.31 btc / 0.41 eth (family-wise max; naive per-cell 0.007 is the trap) · n/a (+$1,599 inflated, do not bank) · high">
+        <td class="c-domain">D7</td>
+        <td class="c-id">D7.18</td>
+        <td class="c-name">Stablecoin mint-as-event (supply prints precede pumps)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.89 (selection-inflated) · BTC B&amp;H 0.36 · Deflated Sharpe@N=128 = 0.65 (need &lt;0.05); CSCV/PBO 0.59 · 128 · 0.31 BTC / 0.41 ETH (family-wise MAX; naive per-cell 0.007 is the trap) · n/a (+$1,599 inflated, do not bank) · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D7/SUMMARY.md">output/edgehunt-D7/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D7" data-verdict="KILL" data-search="d7 d7.19 funding settlement-timing micro-flows (refines carry) kill kill -0.073/8h standalone (best of 128); incremental -0.78/8h vs carry · carry baseline ~25 ann · must-add-over-carry-net-of-turnover (incremental sharpe &lt;0, bootstrap ci entirely &lt;0) · 128 · 1.0 incremental (0.0005 standalone, but real still loses) · -$1,992 if traded · high">
+        <td class="c-domain">D7</td>
+        <td class="c-id">D7.19</td>
+        <td class="c-name">Funding settlement-timing micro-flows (refines carry)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">-0.073/8h standalone (best of 128); incremental -0.78/8h vs carry · carry baseline ~25 ann · must-add-over-carry-net-of-turnover (incremental Sharpe &lt;0, bootstrap CI entirely &lt;0) · 128 · 1.0 incremental (0.0005 standalone, but real still loses) · -$1,992 if traded · high</td>
+        <td class="c-source"><a href="../output/edgehunt-D7/SUMMARY.md">output/edgehunt-D7/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="D7" data-verdict="NO VERDICT" data-search="d7 — 8 further d7 slots no verdict no verdict — · — · run never executed (rate-limited) · — · — · — · —">
+        <td class="c-domain">D7</td>
+        <td class="c-id">—</td>
+        <td class="c-name">8 further D7 slots</td>
+        <td class="c-verdict"><span class="badge v-NO-VERDICT">NO VERDICT</span></td>
+        <td class="c-detail">— · — · run never executed (rate-limited) · — · — · — · —</td>
+        <td class="c-source"><a href="../output/edgehunt-D7/SUMMARY.md">output/edgehunt-D7/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="audit-nb" data-verdict="KILL" data-search="audit-nb — q9-lowvol kill kill ~0.06 (corrected, coherent null; the audit&#39;s 0.397 was an inflated independent-per-config null) · 0.002 · 0.476 @ n=96 (harvey-liu adjp 0.673) · 0.877 (20%/yr borrow)">
+        <td class="c-domain">audit-nb</td>
+        <td class="c-id">—</td>
+        <td class="c-name">Q9-LOWVOL</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">~0.06 (corrected, coherent null; the audit&#39;s 0.397 was an inflated independent-per-config null) · 0.002 · 0.476 @ N=96 (Harvey-Liu adjP 0.673) · 0.877 (20%/yr borrow)</td>
+        <td class="c-source"><a href="../output/edgehunt-audit-nb/SUMMARY.md">output/edgehunt-audit-nb/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="audit-nb" data-verdict="KILL" data-search="audit-nb — o3-nvts kill kill 0.093 @ broad n=312 (real-best 1.332 &lt; surr95-max 1.384) · 0.005 / 0.006 · 0.894 @ n=312 (vs 0.968 only on the post-hoc n=54 carve-out) · ~1.31 (6% borrow, not binding)">
+        <td class="c-domain">audit-nb</td>
+        <td class="c-id">—</td>
+        <td class="c-name">O3-NVTS</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.093 @ broad N=312 (real-best 1.332 &lt; surr95-max 1.384) · 0.005 / 0.006 · 0.894 @ N=312 (vs 0.968 only on the post-hoc N=54 carve-out) · ~1.31 (6% borrow, not binding)</td>
+        <td class="c-source"><a href="../output/edgehunt-audit-nb/SUMMARY.md">output/edgehunt-audit-nb/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="onchain2" data-verdict="KILL" data-search="onchain2 o1-adract network-growth (adractcnt + txcnt) momentum timer, price-orthogonalized kill kill 0.963 · 594 · 0.243 · baselines (btc) / holdout (eth oos -0.19) · n/a">
+        <td class="c-domain">onchain2</td>
+        <td class="c-id">O1-ADRACT</td>
+        <td class="c-name">Network-growth (AdrActCnt + TxCnt) momentum timer, price-orthogonalized</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.963 · 594 · 0.243 · baselines (BTC) / holdout (ETH OOS -0.19) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-onchain2/SUMMARY.md">output/edgehunt-onchain2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="onchain2" data-verdict="KILL" data-search="onchain2 o2-realcap realized-cap / mvrv valuation band (thermocap deferred) kill kill 0.898 · 88 · 0.010 · baselines (loses to b&amp;h + price-only mayer control) · n/a">
+        <td class="c-domain">onchain2</td>
+        <td class="c-id">O2-REALCAP</td>
+        <td class="c-name">Realized-cap / MVRV valuation band (thermocap deferred)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.898 · 88 · 0.010 · baselines (loses to B&amp;H + price-only Mayer control) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-onchain2/SUMMARY.md">output/edgehunt-onchain2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="onchain2" data-verdict="PROMISING" data-search="onchain2 o3-nvts nvt signal, fee-revenue free proxy, causal contrarian promising promising 1.33 · 312 (54 restricted) · 0.005 · deflated_sharpe @ broad n=312 (clears @ a-priori n=54) · $6,304">
+        <td class="c-domain">onchain2</td>
+        <td class="c-id">O3-NVTS</td>
+        <td class="c-name">NVT signal, fee-revenue free proxy, causal contrarian</td>
+        <td class="c-verdict"><span class="badge v-PROMISING">PROMISING</span></td>
+        <td class="c-detail">1.33 · 312 (54 restricted) · 0.005 · deflated_sharpe @ broad N=312 (clears @ a-priori N=54) · $6,304</td>
+        <td class="c-source"><a href="../output/edgehunt-onchain2/SUMMARY.md">output/edgehunt-onchain2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="onchain2" data-verdict="KILL" data-search="onchain2 o4-stableflow stablecoin supply growth as lagged dry-powder flow kill kill 1.224 · 270 · 0.027 (reverse-causality-clean 0.060) · deflated_sharpe @ honest n (pbo + haircut + clean holdout -0.276 also fail) · n/a">
+        <td class="c-domain">onchain2</td>
+        <td class="c-id">O4-STABLEFLOW</td>
+        <td class="c-name">Stablecoin supply growth as lagged dry-powder flow</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.224 · 270 · 0.027 (reverse-causality-clean 0.060) · deflated_sharpe @ honest N (PBO + haircut + clean holdout -0.276 also fail) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-onchain2/SUMMARY.md">output/edgehunt-onchain2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="onchain2" data-verdict="KILL" data-search="onchain2 o5-heikin heikin-ashi trend / ha-ema timer kill kill 1.190 · 14 · 0.176 · deflated_sharpe (also dsr_vs_bh 0.102) · n/a">
+        <td class="c-domain">onchain2</td>
+        <td class="c-id">O5-HEIKIN</td>
+        <td class="c-name">Heikin-Ashi trend / HA-EMA timer</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.190 · 14 · 0.176 · deflated_sharpe (also dsr_vs_bh 0.102) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-onchain2/SUMMARY.md">output/edgehunt-onchain2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="onchain2" data-verdict="KILL" data-search="onchain2 o6-fractal williams 5-bar fractal breakout kill kill 0.682 · 1 (grid 24) · 0.206 · baselines · n/a">
+        <td class="c-domain">onchain2</td>
+        <td class="c-id">O6-FRACTAL</td>
+        <td class="c-name">Williams 5-bar fractal breakout</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.682 · 1 (grid 24) · 0.206 · baselines · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-onchain2/SUMMARY.md">output/edgehunt-onchain2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="onchain2" data-verdict="KILL" data-search="onchain2 o7-mayer mayer multiple (price / sma200) kill kill 0.910 (classic rule -0.380) · 62 · 0.150 · deflated_sharpe (substantively surrogate-recompute) · n/a">
+        <td class="c-domain">onchain2</td>
+        <td class="c-id">O7-MAYER</td>
+        <td class="c-name">Mayer Multiple (price / SMA200)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.910 (classic rule -0.380) · 62 · 0.150 · deflated_sharpe (substantively surrogate-recompute) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-onchain2/SUMMARY.md">output/edgehunt-onchain2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="onchain2" data-verdict="KILL" data-search="onchain2 o8-renko causal renko brick trend timer kill kill 0.646 · 44 · 0.050 · holdout (fails own b&amp;h oos; also deflated_sharpe) · n/a">
+        <td class="c-domain">onchain2</td>
+        <td class="c-id">O8-RENKO</td>
+        <td class="c-name">Causal Renko brick trend timer</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.646 · 44 · 0.050 · holdout (fails own B&amp;H OOS; also deflated_sharpe) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-onchain2/SUMMARY.md">output/edgehunt-onchain2/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="quant" data-verdict="KILL" data-search="quant q1-hmm strictly-causal gaussian hmm regime timer (btc) kill kill 0.779 · deflated_sharpe · 72 · 0.065 (garch) · n/a">
+        <td class="c-domain">quant</td>
+        <td class="c-id">Q1-HMM</td>
+        <td class="c-name">Strictly-causal Gaussian HMM regime timer (BTC)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.779 · deflated_sharpe · 72 · 0.065 (GARCH) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-quant/SUMMARY.md">output/edgehunt-quant/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="quant" data-verdict="KILL" data-search="quant q2-bocpd bayesian online change-point timer (d8-a5) kill kill 0.775 · deflated_sharpe · 108 · 0.103 (phase-rand) · n/a">
+        <td class="c-domain">quant</td>
+        <td class="c-id">Q2-BOCPD</td>
+        <td class="c-name">Bayesian online change-point timer (D8-A5)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.775 · deflated_sharpe · 108 · 0.103 (phase-rand) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-quant/SUMMARY.md">output/edgehunt-quant/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="quant" data-verdict="KILL" data-search="quant q3-accel acceleration momentum / momentum-of-momentum (d4-m6) kill kill 1.29 is / −0.27 oos · deflated_sharpe · 96 (≤138) · 0.004 (xs-shuffle) · n/a">
+        <td class="c-domain">quant</td>
+        <td class="c-id">Q3-ACCEL</td>
+        <td class="c-name">Acceleration momentum / momentum-of-momentum (D4-M6)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.29 IS / −0.27 OOS · deflated_sharpe · 96 (≤138) · 0.004 (XS-shuffle) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-quant/SUMMARY.md">output/edgehunt-quant/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="quant" data-verdict="KILL" data-search="quant q4-strev weekly residual short-term reversal (d4-s7/m2) kill kill 0.000 · baselines · 379 · 0.250 (xs-shuffle) · n/a">
+        <td class="c-domain">quant</td>
+        <td class="c-id">Q4-STREV</td>
+        <td class="c-name">Weekly residual short-term reversal (D4-S7/M2)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.000 · baselines · 379 · 0.250 (XS-shuffle) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-quant/SUMMARY.md">output/edgehunt-quant/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="quant" data-verdict="KILL" data-search="quant q5-tod time-of-day / utc-hour session timing (btc) kill kill 0.71 is / −0.78 oos · deflated_sharpe · 576 · 0.040 (cal-reanchor) · n/a">
+        <td class="c-domain">quant</td>
+        <td class="c-id">Q5-TOD</td>
+        <td class="c-name">Time-of-day / UTC-hour session timing (BTC)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.71 IS / −0.78 OOS · deflated_sharpe · 576 · 0.040 (cal-reanchor) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-quant/SUMMARY.md">output/edgehunt-quant/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="quant" data-verdict="KILL" data-search="quant q6-dvolts dvol term-structure (contango-sell) vol timing kill kill 3.40 (mined) · matched-exposure-control · 288 · 0.046 (tail-block) · n/a">
+        <td class="c-domain">quant</td>
+        <td class="c-id">Q6-DVOLTS</td>
+        <td class="c-name">DVOL term-structure (contango-sell) vol timing</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">3.40 (mined) · matched-exposure-control · 288 · 0.046 (tail-block) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-quant/SUMMARY.md">output/edgehunt-quant/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="quant" data-verdict="KILL" data-search="quant q7-volregime revive killed signal via vol-regime gate (d3-a4) kill kill 0.761 (ens.) / 1.279 (best) · baselines / matched-exposure · 600 / 4 · 0.022 (garch) · n/a">
+        <td class="c-domain">quant</td>
+        <td class="c-id">Q7-VOLREGIME</td>
+        <td class="c-name">Revive killed signal via vol-regime gate (D3-A4)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.761 (ens.) / 1.279 (best) · baselines / matched-exposure · 600 / 4 · 0.022 (GARCH) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-quant/SUMMARY.md">output/edgehunt-quant/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="quant" data-verdict="KILL" data-search="quant q8-effratio efficiency-ratio + adx trend-strength gate on tsmom kill kill 1.324 is / −0.058 oos · deflated_sharpe · 1456 · 0.002 (block-shift) · n/a">
+        <td class="c-domain">quant</td>
+        <td class="c-id">Q8-EFFRATIO</td>
+        <td class="c-name">Efficiency-Ratio + ADX trend-strength gate on TSMOM</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.324 IS / −0.058 OOS · deflated_sharpe · 1456 · 0.002 (block-shift) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-quant/SUMMARY.md">output/edgehunt-quant/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="quant" data-verdict="PROMISING" data-search="quant q9-lowvol cross-sectional low-volatility anomaly (β-neutral l/s) promising promising 1.12 (best-96) / 0.70 (pre-reg) · deflated_sharpe · 96 · 0.002 (best) / 0.056 (canon) · ~$2.6k">
+        <td class="c-domain">quant</td>
+        <td class="c-id">Q9-LOWVOL</td>
+        <td class="c-name">Cross-sectional low-volatility anomaly (β-neutral L/S)</td>
+        <td class="c-verdict"><span class="badge v-PROMISING">PROMISING</span></td>
+        <td class="c-detail">1.12 (best-96) / 0.70 (pre-reg) · deflated_sharpe · 96 · 0.002 (best) / 0.056 (canon) · ~$2.6k</td>
+        <td class="c-source"><a href="../output/edgehunt-quant/SUMMARY.md">output/edgehunt-quant/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="quant" data-verdict="KILL" data-search="quant q10-carrymom carry + momentum combo (super-additive claim) kill kill 2.722 is / −0.04 wf · cpcv_pbo + holdout · 96 · 0.002 (xs-shuffle) · n/a">
+        <td class="c-domain">quant</td>
+        <td class="c-id">Q10-CARRYMOM</td>
+        <td class="c-name">Carry + momentum combo (super-additive claim)</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">2.722 IS / −0.04 WF · cpcv_pbo + holdout · 96 · 0.002 (XS-shuffle) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-quant/SUMMARY.md">output/edgehunt-quant/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="PROMISING" data-search="requeue d1-ls-donch xs donchian channel-position long-short promising promising 1.69 (canon 1.41) · deflated_sharpe (only @n=72; passes @n=1 p=0.999) · 72 · 0.002 (xs-shuffle) · ~$4,116 (canonical, full-sample)">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D1-LS-DONCH</td>
+        <td class="c-name">XS Donchian channel-position long-short</td>
+        <td class="c-verdict"><span class="badge v-PROMISING">PROMISING</span></td>
+        <td class="c-detail">1.69 (canon 1.41) · deflated_sharpe (only @N=72; passes @N=1 p=0.999) · 72 · 0.002 (XS-shuffle) · ~$4,116 (canonical, full-sample)</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="KILL" data-search="requeue d1-ls-ichi xs ichimoku long-short kill kill 1.40 is / 0.10 holdout (n.s.) · deflated_sharpe (+ haircut; pre-reg holdout -0.72 oos) · 48 · 0.001 is / 0.072 holdout · n/a">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D1-LS-ICHI</td>
+        <td class="c-name">XS Ichimoku long-short</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.40 IS / 0.10 holdout (n.s.) · deflated_sharpe (+ haircut; pre-reg holdout -0.72 OOS) · 48 · 0.001 IS / 0.072 holdout · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="KILL" data-search="requeue d1-ls-boll xs bollinger %b reversion long-short kill kill -0.94 literal / +1.66 sign-flip rescue (dies oos -0.38) · holdout (reversion neg every year; rescue fails dsr+haircut+holdout) · 216 · 0.0025 (is only) · n/a">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D1-LS-BOLL</td>
+        <td class="c-name">XS Bollinger %b reversion long-short</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">-0.94 literal / +1.66 sign-flip rescue (dies OOS -0.38) · holdout (reversion neg every year; rescue fails DSR+haircut+holdout) · 216 · 0.0025 (IS only) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="KILL" data-search="requeue d1-candle btc candlestick patterns kill kill 0.92 (canon textbook -0.50) · deflated_sharpe (also pbo 0.50, haircut, holdout -0.66) · 192 · 0.040 · n/a">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D1-CANDLE</td>
+        <td class="c-name">BTC candlestick patterns</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.92 (canon textbook -0.50) · deflated_sharpe (also PBO 0.50, haircut, holdout -0.66) · 192 · 0.040 · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="KILL" data-search="requeue d6-fng fear &amp; greed contrarian timer kill kill 0.38 (&lt; b&amp;h 0.59) · baselines · 210 · 0.992 · n/a">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D6-FNG</td>
+        <td class="c-name">Fear &amp; Greed contrarian timer</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.38 (&lt; B&amp;H 0.59) · baselines · 210 · 0.992 · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="KILL" data-search="requeue d6-trends google trends &quot;bitcoin&quot; attention kill kill 0.84 · deflated_sharpe (holdout -0.25 inverts) · 96 · 0.055 · n/a">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D6-TRENDS</td>
+        <td class="c-name">Google Trends &quot;bitcoin&quot; attention</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.84 · deflated_sharpe (holdout -0.25 inverts) · 96 · 0.055 · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="KILL" data-search="requeue d6-liq global net-liquidity (m2/walcl) timer kill kill 1.31 (residual alpha 0.000) · spx_beta_alpha · 64 · 0.017 (ar-pass, alpha=0) · n/a">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D6-LIQ</td>
+        <td class="c-name">Global net-liquidity (M2/WALCL) timer</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.31 (residual alpha 0.000) · spx_beta_alpha · 64 · 0.017 (AR-pass, alpha=0) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="KILL" data-search="requeue d6-putcall options put/call (dvol skew) contrarian kill kill 0.89 honest (1.57 selection-inflated) · surrogate (ar-placebo 0.29) + deflated_sharpe · 1026 / 36 fair · 0.29 · n/a">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D6-PUTCALL</td>
+        <td class="c-name">Options put/call (DVOL skew) contrarian</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.89 honest (1.57 selection-inflated) · surrogate (AR-placebo 0.29) + deflated_sharpe · 1026 / 36 fair · 0.29 · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="KILL" data-search="requeue d7-seas sell-in-may / month seasonality kill kill 1.54 · surrogate (reanchor) · 141 · 1.000 · n/a">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D7-SEAS</td>
+        <td class="c-name">Sell-in-May / month seasonality</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">1.54 · surrogate (reanchor) · 141 · 1.000 · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="KILL" data-search="requeue d7-dow day-of-week effect kill kill 0.86 (~0 drift-removed) · deflated_sharpe · 2186 · 0.0695 (is-only reanchor) · n/a">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D7-DOW</td>
+        <td class="c-name">Day-of-week effect</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.86 (~0 drift-removed) · deflated_sharpe · 2186 · 0.0695 (IS-only reanchor) · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="KILL" data-search="requeue d7-tom turn-of-month kill kill 0.65 · deflated_sharpe (holdout sign-flips -0.93) · 25 · 0.001 · n/a">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D7-TOM</td>
+        <td class="c-name">Turn-of-month</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.65 · deflated_sharpe (holdout sign-flips -0.93) · 25 · 0.001 · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="requeue" data-verdict="KILL" data-search="requeue d7-cme cme weekend-gap fill kill kill 0.96 is (canon -0.26) · deflated_sharpe · 80 · 0.001 · n/a">
+        <td class="c-domain">requeue</td>
+        <td class="c-id">D7-CME</td>
+        <td class="c-name">CME weekend-gap fill</td>
+        <td class="c-verdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-detail">0.96 IS (canon -0.26) · deflated_sharpe · 80 · 0.001 · n/a</td>
+        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="empty" id="empty" hidden>No rows match the current filters.</div>
+</div>
+<footer>
+  Built by <code>scripts/build-dashboard.ts</code> (vanilla, no build step, no external dependencies). Each row links to its source ledger. A right-null surrogate PASS proves structure is non-random; it does not prove a positive mean at honest N on unseen data — that gap is the PROMISING/SURVIVE boundary, and no lead crossed it.
+</footer>
+<script>
+  (function () {
+    var q = document.getElementById("q");
+    var fDomain = document.getElementById("f-domain");
+    var fVerdict = document.getElementById("f-verdict");
+    var tbody = document.querySelector("#grid tbody");
+    var rows = Array.prototype.slice.call(tbody.querySelectorAll("tr"));
+    var shown = document.getElementById("shown");
+    var empty = document.getElementById("empty");
+    // Verdict rank for sorting: SURVIVE strongest, NO VERDICT weakest.
+    var vRank = { "SURVIVE": 0, "PROMISING": 1, "DEFERRED": 2, "KILL": 3, "NO VERDICT": 4 };
+
+    function apply() {
+      var term = q.value.trim().toLowerCase();
+      var dom = fDomain.value;
+      var ver = fVerdict.value;
+      var n = 0;
+      for (var i = 0; i < rows.length; i++) {
+        var tr = rows[i];
+        var ok = true;
+        if (dom && tr.getAttribute("data-domain") !== dom) ok = false;
+        if (ok && ver && tr.getAttribute("data-verdict") !== ver) ok = false;
+        if (ok && term && tr.getAttribute("data-search").indexOf(term) === -1) ok = false;
+        tr.hidden = !ok;
+        if (ok) n++;
+      }
+      shown.textContent = n + " / " + rows.length + " shown";
+      empty.hidden = n !== 0;
+    }
+
+    var sortKey = null, sortDir = 1;
+    function cellValue(tr, key) {
+      if (key === "verdict") {
+        var v = tr.getAttribute("data-verdict");
+        return String(vRank[v] !== undefined ? vRank[v] : 9);
+      }
+      var td = tr.querySelector(".c-" + key);
+      return td ? td.textContent.trim().toLowerCase() : "";
+    }
+    function sortBy(key) {
+      if (sortKey === key) { sortDir = -sortDir; } else { sortKey = key; sortDir = 1; }
+      rows.sort(function (a, b) {
+        var va = cellValue(a, key), vb = cellValue(b, key);
+        var na = parseFloat(va), nb = parseFloat(vb);
+        var both = !isNaN(na) && !isNaN(nb) && va !== "" && vb !== "";
+        var cmp = both ? (na - nb) : va < vb ? -1 : va > vb ? 1 : 0;
+        return cmp * sortDir;
+      });
+      for (var i = 0; i < rows.length; i++) tbody.appendChild(rows[i]);
+      var ths = document.querySelectorAll("#grid thead th");
+      for (var j = 0; j < ths.length; j++) {
+        var arrow = ths[j].querySelector(".arrow");
+        arrow.textContent = ths[j].getAttribute("data-key") === key ? (sortDir > 0 ? "▲" : "▼") : "";
+      }
+    }
+
+    q.addEventListener("input", apply);
+    fDomain.addEventListener("change", apply);
+    fVerdict.addEventListener("change", apply);
+    var ths = document.querySelectorAll("#grid thead th");
+    for (var k = 0; k < ths.length; k++) {
+      (function (th) {
+        th.addEventListener("click", function () { sortBy(th.getAttribute("data-key")); });
+      })(ths[k]);
+    }
+    apply();
+  })();
+</script>
+</body>
+</html>

@@ -17,6 +17,8 @@ After a deepening pass **and** an independent two-layer methodology audit
 
 > **0 clean SURVIVE · 2 weak PROMISING · everything else KILL. Nothing is deployable.**
 
+> **Browse every verdict interactively:** [`dashboard.html`](dashboard.html) — a single self-contained page (search + filter by domain/verdict over one sortable table) generated from the `output/edgehunt-*/SUMMARY.md` ledgers by `tsx scripts/build-dashboard.ts`.
+
 The two PROMISING leads are both held back at the **PROMISING/SURVIVE boundary** — the
 realized mean is not positive-with-significance at honest `N` on unseen data:
 

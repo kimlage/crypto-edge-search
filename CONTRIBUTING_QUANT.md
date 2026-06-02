@@ -150,6 +150,21 @@ Validate your artifacts before you open the PR:
 npm run schema:validate
 ```
 
+When your hypothesis lands in a per-domain ledger
+(`output/edgehunt-*/SUMMARY.md`), regenerate the verdict dashboard so the new row
+is searchable/filterable alongside every other hypothesis:
+
+```bash
+tsx scripts/build-dashboard.ts   # writes the committed docs/dashboard.html
+```
+
+`scripts/build-dashboard.ts` is pure and deterministic — it scans every
+committed `output/edgehunt-*/SUMMARY.md` verdict table and rebuilds a single
+self-contained, dependency-free [`docs/dashboard.html`](docs/dashboard.html)
+(no build step, no CDN, repo-relative links only). Commit the regenerated HTML
+in the same PR. (Tip: add `"dashboard": "tsx scripts/build-dashboard.ts"` to
+your local `package.json` scripts so it runs as `npm run dashboard`.)
+
 ---
 
 ## 5. Open the PR

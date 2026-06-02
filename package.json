@@ -3,19 +3,35 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "bin": {
     "crypto-edge": "src/cli/crypto-edge.ts"
   },
   "scripts": {
     "crypto-edge": "tsx src/cli/crypto-edge.ts",
     "build": "tsc --noEmit",
+    "build:lib": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "schema:validate": "tsx scripts/validate-schemas.ts",
     "refs:check": "tsx scripts/refs-check.ts",
-    "test:property": "vitest run test/property"
+    "test:property": "vitest run test/property",
+    "prepublishOnly": "npm run build:lib && npm test"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
