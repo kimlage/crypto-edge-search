@@ -13,6 +13,16 @@
 > on data it never saw. If you think a gate is wrong, make it **stricter** and re-run everything — never
 > looser. Loosening a gate to manufacture a "SURVIVE" defeats the entire purpose of the project.
 
+## Conventions
+
+- **English only.** Everything in this repository is in English — documentation, code, comments,
+  identifiers, commit messages, issues, and pull requests. This is a public, shareable project; keep it
+  English so anyone can read it, run it, and contribute.
+- **$0 / free public data only.** No paid feeds, no API keys on the core path, no cloud spend. If a
+  hypothesis genuinely needs paid data, mark the result `DEFERRED` and test the best free proxy.
+- **Honest both ways.** Report a KILL as loudly as a SURVIVE, and never manufacture either. A well-run
+  KILL is a contribution.
+
 ## Quick start
 
 ```bash
