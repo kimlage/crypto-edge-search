@@ -210,8 +210,8 @@ export { getNullForClaim, listClaimTypes } from "./lib/nulls/null-registry";
 export type { ClaimType, NullEntry } from "./lib/nulls/null-registry";
 export { iaaftSurrogate } from "./lib/nulls/iaaft";
 export { garchSurrogate } from "./lib/nulls/garch-surrogate";
-export { calendarReanchor, makeCalendarNull } from "./lib/nulls/calendar-reanchor";
-export { bracketOnSurrogate, makeBracketNull } from "./lib/nulls/bracket-on-surrogate";
+export { calendarReanchor } from "./lib/nulls/calendar-reanchor";
+export { bracketOnSurrogate } from "./lib/nulls/bracket-on-surrogate";
 export { detectorOnSurrogate } from "./lib/nulls/detector-on-surrogate";
 
 // ---------------------------------------------------------------------------
