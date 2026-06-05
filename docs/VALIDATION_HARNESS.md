@@ -1,5 +1,7 @@
 # Validation Harness — the anti-overfitting gauntlet, one API
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 > **Purpose.** The durable asset of this project is not a strategy — it is the
 > *methodology*. This page is the API reference for that methodology: the committed,
 > individually-tested gates that every hypothesis in the edge-search lab must clear,

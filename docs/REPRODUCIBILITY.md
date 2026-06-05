@@ -1,5 +1,7 @@
 # Reproducibility — how a stranger re-runs this at $0
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 > **Purpose.** This document lets anyone reproduce the edge-search lab from scratch — the
 > free public data, the environment, the committed validation harness, the exact run
 > command, the verdict scheme, the script families, and the on-disk caches — at a hard

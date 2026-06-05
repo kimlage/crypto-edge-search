@@ -1,5 +1,7 @@
 # Disclaimer
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 **This is not investment advice. It is not financial, legal, tax, or trading advice
 of any kind. It is software and research, published for educational and scientific
 purposes only.**

@@ -1,5 +1,7 @@
 # Methodology Conformance
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 This document is the audit bridge between **what the methodology claims** and **what
 the code actually does**. Every methodological claim / gate in
 [`METHODOLOGY.md`](METHODOLOGY.md) is mapped here to the exact source file and function

@@ -1,5 +1,11 @@
 # Documentation Index — Crypto Edge Search
 
+*[🧭 Wiki home (both domains)](INDEX.md) · [Polymarket domain](polymarket/README.md) · [Glossary](GLOSSARY.md) · [Methodology](METHODOLOGY.md) · [Unified synthesis](../SYNTHESIS.md)*
+
+> **This page is the crypto domain index.** For the cross-domain wiki home (crypto **+** Polymarket, the
+> concept map, and the reader journeys) start at **[INDEX.md](INDEX.md)**. The Polymarket campaign has its
+> own index at **[polymarket/README.md](polymarket/README.md)**.
+
 This is the documentation set for an open, rigor-first **crypto edge-search program** — a
 **$0, reproducible falsification lab** for retail/quant crypto trading strategies. We do not
 look for a story that fits a backtest; we try to **break** every technique with the same

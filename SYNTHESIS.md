@@ -16,6 +16,14 @@ Both domains independently reached the program's core meta-lesson: **a right-nul
 structure/sign is non-random — it does NOT prove a positive realized mean with significance at honest N on
 unseen data.** That gap *is* the PROMISING/SURVIVE boundary, and no lead crossed it.
 
+**The count.** **184+ distinct hypotheses & mechanisms** went through the one gauntlet — **~111 crypto**
+(across 8 domains) + **73 Polymarket** (a **35**-hypothesis backlog + **22** reverse-engineering mechanisms +
+**16** external-information leads) — plus a **29-test credibility battery**, a forensic falsification of
+**5 viral "Claude + copy-trade = print money" claims**, and **3 pre-registered forward tests** (the gold
+standard). **Clean SURVIVE: 0. Deployable edge: 0.** Every Polymarket verdict is indexed, with its binding
+gate and committed artifact, in [`output/campaign-D/results-ledger.json`](output/campaign-D/results-ledger.json);
+the crypto verdicts in [`output/results-ledger.json`](output/results-ledger.json).
+
 ## Crypto — where the edge is NOT
 
 Direction prediction (BTC trend, TSMOM, vol-targeting, seasonality, regime timers) · classic & microstructure
@@ -31,7 +39,7 @@ audit flipped three earlier PROMISINGs to KILL on one defect — a single-best-c
 ## Polymarket — where the edge is NOT (and here we can prove it: markets resolve)
 
 - **Copy-trading public wallets — KILL.** Performance does not persist; top-decile-train wallets *lose*
-  −$90k OOS; the wallet-label-shuffle surrogate is p=0.53 (copying the "best" is no better than random) and
+  −$90k OOS; the wallet-label-shuffle surrogate is p=0.528 (copying the "best" is no better than random) and
   the no-persistence holds across **5 walk-forward windows** (Stouffer z=−0.13). "70%+ win-rate" is the
   *anti*-signal (it selects longshot-sellers). The viral "Claude + copy-trade = print money" posts are
   recycled marketing + survivorship cherry-picks (the headline numbers are arithmetically self-inconsistent).

@@ -1,5 +1,7 @@
 # Edge-Search — Domain Campaign Results (2026-06)
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 > **Philosophy.** This is a public falsification lab. We do not look for a story that fits a backtest;
 > we try to *break* every technique with the same anti-overfitting protocol, and we publish whatever
 > survives **and** whatever dies. A clean backtest is a starting point, not evidence. The working

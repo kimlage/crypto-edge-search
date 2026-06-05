@@ -1,5 +1,7 @@
 # References — Annotated Bibliography
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 > **Purpose.** This is the consolidated, standalone bibliography for the entire
 > edge-search program — a $0, reproducible, honest crypto trading-strategy *falsification lab*.
 > Every gate in the anti-overfitting gauntlet and every one of the **~111 tested hypotheses**

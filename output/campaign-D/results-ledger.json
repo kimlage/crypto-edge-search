@@ -1,0 +1,233 @@
+[
+ {
+  "id": "PM-COPY",
+  "domain": "copy-trading",
+  "name": "Copy the top-decile wallets (non-persistence)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/persistence.json",
+  "binding": "deflated_sharpe",
+  "note": "top-decile train-ROI loses -$90,457 OOS; trainROI->OOSreturn r=-0.001; surrogate p=0.528"
+ },
+ {
+  "id": "PM-COPY-WF",
+  "domain": "copy-trading",
+  "name": "Copy-trading persistence across 5 walk-forward windows",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/walk_forward.json",
+  "binding": "surrogate",
+  "note": "surrogate p in {0.495,0.795,0.164,0.376,0.577}; Stouffer z=-0.13 (no aggregate skill)"
+ },
+ {
+  "id": "PM-COPY-DEEP",
+  "domain": "copy-trading",
+  "name": "Copy-trading robustness deepenings (eligibility thresholds)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/copy_deepenings.json",
+  "binding": "surrogate",
+  "note": "robust across eligibility thresholds, p=0.43-0.63"
+ },
+ {
+  "id": "PM-COPY-CR27",
+  "domain": "copy-trading",
+  "name": "CR27 pre-registered human-like wallet stratum (frozen forward)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/cr27_prereg_copy.json",
+  "binding": "surrogate",
+  "note": "reached PROMISING in-sample; KILL under family-wise correction on the frozen forward window"
+ },
+ {
+  "id": "PM-COHORT",
+  "domain": "copy-trading",
+  "name": "High-win-rate cohort profile (the longshot-seller anti-signal)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/cohort_profile.json",
+  "binding": "baselines",
+  "note": "70%+ win-rate selects longshot-sellers (win often, lose big); the win-rate filter is the anti-signal"
+ },
+ {
+  "id": "PM-CALIB",
+  "domain": "calibration",
+  "name": "Calibration / favorite-longshot fade (clean-binary, unified gauntlet)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/unified_gauntlet.json",
+  "binding": "deflated_sharpe",
+  "note": "clean-binary n=402; structure real but DSR=0.187@N=20, surrogate p=0.052, holdout fails; KILL at every cost"
+ },
+ {
+  "id": "PM-CALIB-CR28",
+  "domain": "calibration",
+  "name": "CR28 pre-registered single-config calibration (frozen forward)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/cr28_prereg_calib.json",
+  "binding": "holdout",
+  "note": "single frozen config scored on the forward window"
+ },
+ {
+  "id": "PM-CALIB-XCAT",
+  "domain": "calibration",
+  "name": "Cross-category favorite-longshot slope (family-wise MAX)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/cross_category_calib.json",
+  "binding": "net_of_cost",
+  "note": "geopolitics fl_slope=0.036, n=59; binds on net_of_cost"
+ },
+ {
+  "id": "PM-CALIB-ROBUST",
+  "domain": "calibration",
+  "name": "Calibration-verdict robustness across knobs/strata",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/cr_robustness.json",
+  "binding": "surrogate",
+  "note": "KILL holds across strata; verdict not a lucky-selection artifact"
+ },
+ {
+  "id": "PM-RE22",
+  "domain": "calibration",
+  "name": "RE22 keystone — aggregate calibration (on-winner gap vs price-tied null)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/re22.json",
+  "binding": "baselines",
+  "note": "entire corpus on-winner gap +0.0001 over 1.36M trades (market calibrated; the RE agent's 0.889 was wrong)"
+ },
+ {
+  "id": "PM-ARB",
+  "domain": "arbitrage",
+  "name": "negRisk basket riskless arbitrage scan",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/arb_baskets.json",
+  "binding": "net_of_cost",
+  "note": "579 baskets, median sum(ask)=1.073 (+7.3% overround); you pay the vig, not collect it"
+ },
+ {
+  "id": "PM-ARB-DECOMP",
+  "domain": "arbitrage",
+  "name": "Overround decomposition (void-avoidance vs upset-tail premium)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/arb_decomp.json",
+  "binding": "net_of_cost",
+  "note": "574 baskets, void-avoidance cost=0; overround concentrates in cheap longshot legs = favorite-longshot premium, harvestable only by shorting (= the killed fade)"
+ },
+ {
+  "id": "PM-MM",
+  "domain": "money-management",
+  "name": "Portfolio / risk-management gauntlet (sizing-invariance)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "docs/polymarket/MONEY_MGMT_AND_ARB.md",
+  "binding": "net_of_cost",
+  "note": "flat / fixed-fraction / Kelly / Martingale / anti-Martingale / D'Alembert / vol-target / max-loss-cap — no scheme rescues a <=0 edge; expectancy sign is sizing-invariant"
+ },
+ {
+  "id": "PM-RE13",
+  "domain": "reverse-engineering",
+  "name": "RE13 staleness / momentum mechanism",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "docs/polymarket/RE_LEDGER.md",
+  "binding": "surrogate",
+  "note": "surrogate p=1.0"
+ },
+ {
+  "id": "PM-RE10",
+  "domain": "reverse-engineering",
+  "name": "RE10 forecasting mechanism",
+  "rawVerdict": "DEFERRED",
+  "auditedVerdict": "DEFERRED",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "docs/polymarket/RE_LEDGER.md",
+  "binding": "n/a",
+  "note": "templates and the tradeable band are near-disjoint; not $0-decidable"
+ },
+ {
+  "id": "PM-VOLSPIKE",
+  "domain": "external-info",
+  "name": "Volume-spike momentum",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/volume_spike.json",
+  "binding": "surrogate",
+  "note": "net of 2c round-trip all configs negative; surrogate p=1.000 (no better than time-shuffle)"
+ },
+ {
+  "id": "PM-WEATHER-FWD",
+  "domain": "external-info",
+  "name": "Weather forecast pre-registered forward test (CR29)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/weather.json",
+  "binding": "baselines",
+  "note": "Brier market 0.0838 < Open-Meteo ensemble forecast 0.0953; the crowd beats a real forecast"
+ },
+ {
+  "id": "PM-WEATHER-BUY",
+  "domain": "external-info",
+  "name": "Weather edge (buy side)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/weather_edge.json",
+  "binding": "net_of_cost",
+  "note": "no cost-survivable forecast edge on the buy side"
+ },
+ {
+  "id": "PM-WEATHER-SELL",
+  "domain": "external-info",
+  "name": "Weather edge (sell side)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "output/campaign-D/weather_sell.json",
+  "binding": "net_of_cost",
+  "note": "no cost-survivable forecast edge on the sell side"
+ },
+ {
+  "id": "PM-CTRL-POS",
+  "domain": "positive-control",
+  "name": "Planted-edge positive control (delta=0.08)",
+  "rawVerdict": "SURVIVE",
+  "auditedVerdict": "SURVIVE",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "docs/polymarket/EVALUATION.md",
+  "binding": "none",
+  "note": "the gauntlet SURVIVEs a planted +8% per-bet edge — proves the harness has detection power"
+ },
+ {
+  "id": "PM-CTRL-NEG",
+  "domain": "positive-control",
+  "name": "Zero-edge negative control (delta=0)",
+  "rawVerdict": "KILL",
+  "auditedVerdict": "KILL",
+  "lastAudit": "2026-06-05",
+  "artifactPath": "docs/polymarket/EVALUATION.md",
+  "binding": "deflated_sharpe",
+  "note": "the gauntlet KILLs a 0% edge — detection floor ~5-8%"
+ }
+]

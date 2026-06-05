@@ -1,8 +1,10 @@
 # Campaign-D — References
 
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 The academic basis for each Campaign-D claim and gate. The anti-overfitting gauntlet anchors are shared
-with the crypto program (`docs/REFERENCES.md`); the prediction-market-specific literature is listed first.
+with the crypto program ([../REFERENCES.md](../REFERENCES.md)); the prediction-market-specific literature is listed first.
 
 ## Prediction-market structure, calibration & the favorite-longshot bias
 - **Wolfers, J. & Zitzewitz, E. (2004).** "Prediction Markets." *Journal of Economic Perspectives* 18(2).
@@ -22,7 +24,7 @@ with the crypto program (`docs/REFERENCES.md`); the prediction-market-specific l
 - **MacLean, Thorp & Ziemba (2011).** *The Kelly Capital Growth Investment Criterion.* — fractional Kelly, drawdown control, and why the expectancy SIGN (not the sizing) sets growth.
 - **Samuelson, P. (1971).** "The 'Fallacy' of Maximizing the Geometric Mean…" — caution on full Kelly; supports the quarter/half-Kelly variants tested.
 
-## Anti-overfitting gauntlet (shared anchors; see also crypto `docs/REFERENCES.md`)
+## Anti-overfitting gauntlet (shared anchors; see also crypto [../REFERENCES.md](../REFERENCES.md))
 - **Bailey & López de Prado (2014).** The Deflated Sharpe Ratio. *(gate `deflated_sharpe`)*
 - **Bailey, Borwein, López de Prado & Zhu (2017).** The Probability of Backtest Overfitting (CSCV/PBO). *(gate `cpcv_pbo`)*
 - **Harvey & Liu (2015).** "Backtesting" — the multiple-testing haircut Sharpe. *(gate `haircut`; Bonferroni/Holm/BHY)*

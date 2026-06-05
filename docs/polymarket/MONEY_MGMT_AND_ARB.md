@@ -1,5 +1,7 @@
 # Campaign-D — Money-Management, Risk & Arbitrage ($0 attack on everything left)
 
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 > After the proof phase and reverse-engineering both returned 0 edge, the owner asked to attack
 > *everything* that costs nothing — including **all portfolio/risk-management schemes** — to be sure

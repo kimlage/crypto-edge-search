@@ -1,6 +1,7 @@
 # Campaign-D — Polymarket: First-Principles Reverse-Engineering
 
-> shareable subtree unless explicitly requested (owner instruction, 2026-06-03).
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 > **Goal (owner's ask).** The proof phase (`RESULTS.md`) showed wallet performance does NOT persist —
 > so instead of *following* anyone, infer FROM FIRST PRINCIPLES the MECHANISM behind the skilled-

@@ -1,10 +1,11 @@
 # Polymarket Edge Search (Campaign-D)
 
+*[Wiki home](../INDEX.md) · [Crypto domain](../README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Honest evaluation](EVALUATION.md) · [Unified synthesis](../../SYNTHESIS.md)*
 
 A $0, ground-truth-provable falsification campaign on **Polymarket prediction markets**, opened
 2026-06-03 the viral "Claude + copy-trade top wallets = print
 money" posts. It inherits the crypto program's committed gauntlet and KILL/PROMISING/SURVIVE/DEFERRED
-scheme verbatim (`docs/METHODOLOGY.md`). The one structural advantage over the BTC price work:
+scheme verbatim ([../METHODOLOGY.md](../METHODOLOGY.md)). The one structural advantage over the BTC price work:
 **prediction markets resolve, so every market is a free ground-truth label.**
 
 ## The documents
@@ -37,14 +38,15 @@ against resolved outcomes:
 
 1. **"Mirror top wallets" — KILL.** Performance does not persist; top-decile-train-ROI wallets lose
    −$90k OOS in aggregate; copy surrogate p=0.528 (no better than random). Winrate persists (r=0.48) but
-   profitability does not (r=0.013). The "70%+ winrate" metric is the anti-signal (longshot-sellers).
+   profitability does not (r=−0.001). The "70%+ winrate" metric is the anti-signal (longshot-sellers).
 2. **Market is near-perfectly calibrated in aggregate** (price-tied on-winner gap = +0.0001 over 1.36M
    trades) — no population-level forecasting edge.
 3. **Favorite-longshot mispricing is REAL** (calibrated-Bernoulli surrogate p=0.012) but **not deployable**:
    every fade/buy child dies on the upset tail + wide longshot spread (holdout −1.0). It is the
    prediction-market analogue of crypto carry — real structure, sub-cost / tail-fragile / capacity-tiny.
-4. **No riskless arbitrage.** True negRisk baskets (by `negRiskMarketID`) carry a +6% median overround
-   (arb-free); within-market complete-set is structurally impossible; apparent "arbs" are incomplete/stale.
+4. **No riskless arbitrage.** True negRisk baskets (by `negRiskMarketID`) carry a **+7.3% median overround**
+   (median sum(ask)=1.073, arb-free); within-market complete-set is structurally impossible; apparent "arbs"
+   are incomplete/stale.
 5. **No money-management rescue.** Across flat / fixed-fraction / full-half-quarter Kelly / Martingale /
    anti-Martingale / D'Alembert / vol-target / max-loss-cap, every honest scheme loses on a ≤0 edge;
    honest (market-q) Kelly bets $0; aggressive sizing only accelerates ruin. Expectancy's sign is

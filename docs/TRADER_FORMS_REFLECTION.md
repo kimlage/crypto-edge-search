@@ -1,5 +1,7 @@
 # REFLECTION — Rigorously testing new trade-FORMS inside the anti-overfitting framework
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 *Three trader-style fronts (NF1 support/resistance, NF2 target+stop-loss brackets, NF3 low-N confluence) run through the committed gate stack, realistic cost, and a surrogate/placebo control. All three KILL. This note reflects on what the gates capture vs. miss for these forms, and the deeper reasons the kills were inevitable.*
 
 ---

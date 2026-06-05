@@ -1,7 +1,9 @@
 # Campaign-D — Methodology (Polymarket adaptation of the committed gauntlet)
 
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
 
-Campaign-D reuses the crypto program's anti-overfitting gauntlet verbatim (see `docs/METHODOLOGY.md`)
+
+Campaign-D reuses the crypto program's anti-overfitting gauntlet verbatim (see [../METHODOLOGY.md](../METHODOLOGY.md))
 and adds the adaptations a prediction-market domain requires. This page documents only the deltas.
 
 ## The one structural advantage: ground-truth labels

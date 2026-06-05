@@ -1,5 +1,7 @@
 # Campaign-D — External-Information Edges (free-data forecasting leads)
 
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 Enumeration of the strongest hypotheses for using **FREE external information** as a forecasting edge on
 Polymarket. Premise (from `WEATHER.md` / `RE_LEDGER.md`): the market is broadly well-calibrated and

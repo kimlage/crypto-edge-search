@@ -1,5 +1,7 @@
 # Methodology — The Gauntlet: A Binding-Order Anti-Overfitting Gate Chain
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 > **This is the durable asset of the project.** Across **~111 distinct crypto trading
 > hypotheses** — ~35 in prior rounds plus **58** in the 2026-06 parallelized domain campaign
 > plus an **18-hypothesis $0 backlog** — tested on real public data at full rigor (cloud

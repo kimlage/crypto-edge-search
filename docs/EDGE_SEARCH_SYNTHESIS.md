@@ -1,5 +1,7 @@
 # Edge Search — Findings & Synthesis
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 > **Purpose.** This is the canonical map of what the edge search actually learned, so a future
 > reader does not re-walk dead ground. It is the honest, public "Findings & Synthesis" page for
 > the whole program: a $0, reproducible falsification lab that pushed **~111 crypto

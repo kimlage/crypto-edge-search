@@ -1,5 +1,7 @@
 # RESULTS — the crypto edge-search ledger (canonical record)
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 > **What this is.** The single, canonical, English-language record of every hypothesis
 > this project has put through its anti-overfitting gauntlet in a systematic, $0,
 > reproducible search for a tradeable crypto edge. **~111 distinct hypotheses** have now

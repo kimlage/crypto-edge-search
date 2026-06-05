@@ -1,5 +1,7 @@
 # Campaign-D — Validation of the "$200 → $14,300 in 27 days" Claude Polymarket-Bot Article
 
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 > Adversarial fact-check of a viral article claiming a $200 seed grew to $14,300 in 27 days using a
 > Claude-powered Polymarket bot (4 free GitHub repos + Claude + a $5 VPS): 74% win rate, Sharpe 2.47,

@@ -1,5 +1,7 @@
 # Campaign-D — Validation Harness (`runGauntlet`)
 
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 The single entry point that packages the committed gate chain, mirroring the OSS project's
 `validateStrategy()`. Source: [`scripts/campaign-D/gauntlet.ts`](../../scripts/campaign-D/gauntlet.ts).

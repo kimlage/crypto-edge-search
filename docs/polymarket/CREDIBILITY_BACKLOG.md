@@ -1,5 +1,7 @@
 # Campaign-D — Credibility Backlog (additional tests + deepenings)
 
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 > A prioritized backlog of additional tests that strengthen the credibility of the **0 deployable edge**
 > verdict (or would surface a rare real edge). Generated 2026-06-03 by an 8-lens workflow (10 agents).
@@ -70,7 +72,7 @@ Order: CR01, CR06, CR04, CR12, CR13, CR08, CR17, CR21, CR15, CR11
 
 **CR03 — Walk-forward overfitting control: inject in-sample-only edge, confirm holdout/OOS gate catches it**  
 *positive-control / holdout-validation · gate: validates holdout gate effectiveness against overfitting; contrasts with real to · backtest-now*  
-- Method: On the existing 3 walk-forward windows, inject a +2% edge into TRAIN data only (no OOS bump) and run copy_trading_gauntlet.ts. Assert (a) train SURVIVE/PROMISING (edge visible in-sample), (b) OOS holdout KILL or severe mean collapse. Proves the consume-once holdout is a functional brake on data-snooping, not ceremonial. Output walk_forward_control.json.
+- Method: On the existing walk-forward windows, inject a +2% edge into TRAIN data only (no OOS bump) and run copy_trading_gauntlet.ts. Assert (a) train SURVIVE/PROMISING (edge visible in-sample), (b) OOS holdout KILL or severe mean collapse. Proves the consume-once holdout is a functional brake on data-snooping, not ceremonial. Output walk_forward_control.json.
 - Expected: Train passes, OOS holdout fails on injected in-sample-only edge; confirms holdout catches snooping the same way it catches real top-decile wallets
 
 **CR04 — Alternative surrogate generators (IAAFT, sign-permutation, block-bootstrap labels) vs the seeded-RNG null**  
@@ -115,7 +117,7 @@ Order: CR01, CR06, CR04, CR12, CR13, CR08, CR17, CR21, CR15, CR11
 
 **CR12 — Extended walk-forward to 6+ disjoint rolling windows with Stouffer meta-test**  
 *forward / robustness · gate: gate 8 — lifts the KILL from 3 windows to 6+ sequential temporal regimes · backtest-now*  
-- Method: Extend the committed 3-window walk-forward to 6+ disjoint rolling windows over the full tape span (2025-06 -> 2026-06): each TRAIN 3mo / OOS 1mo, non-overlapping. Run copy-trading gauntlet per window; record per-window surrogate p, mean, DSR; aggregate via Stouffer Z across window p-values and plot per-window mean for regime drift. Output walk_forward_extended.json. Pass iff >5/6 windows p>0.05 an
+- Method: Extend the initial walk-forward to 6+ disjoint rolling windows over the full tape span (2025-06 -> 2026-06): each TRAIN 3mo / OOS 1mo, non-overlapping. *(Executed as 5 windows — see the CR12 result row below.)* Run copy-trading gauntlet per window; record per-window surrogate p, mean, DSR; aggregate via Stouffer Z across window p-values and plot per-window mean for regime drift. Output walk_forward_extended.json. Pass iff >5/6 windows p>0.05 an
 - Expected: 5-6/6 windows p>0.05; Stouffer rejects a persistent edge; no drift in per-window mean
 
 **CR13 — Deterministic re-fetch + SHA-256 drift gate (re-run verdict under any data drift)**  
@@ -239,7 +241,7 @@ as the forward markets resolve. Every one ends in a `runGauntlet` verdict.
 2. **Copy-trading:** the recent-~3,500-trade view **is the realistic copier's information set** — you cannot
    copy trades you never saw, so testing copyability on recent public trades is the *correct* test, not a bug.
    The wallet-label-shuffle null is a RELATIVE comparison (top vs random) on the *same* truncated tapes, and
-   the no-persistence KILL held across 3 walk-forward windows + 3 eligibility thresholds. Robust + disclosed.
+   the no-persistence KILL held across 5 walk-forward windows + 3 eligibility thresholds. Robust + disclosed.
 3. **Calibration/weather:** tapes are complete (the price-at-lead is reliable); the Gamma-month truncation
    drops latest-in-month markets, which can only ADD markets to a calibrated-null comparison, not flip it.
 

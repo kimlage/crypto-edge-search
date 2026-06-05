@@ -1,5 +1,7 @@
 # Campaign-D — Weather-Bot Hypothesis (validated)
 
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 Validation of the viral claim: a bot firing "Yes @ 9.1¢ / No @ 50¢" across 20+ cities, 74% win rate,
 +$3.7K, $366K volume, 955 predictions, "$90→$1,000 Taipei 32°C Yes @ 9.1¢". Data: 700 recent weather

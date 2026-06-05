@@ -1,5 +1,7 @@
 # Campaign-D — Honest Evaluation, Adversarial Audit & Publication-Parity Scorecard
 
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 > A sincere self-assessment of every Campaign-D test, an independent adversarial audit (8-agent
 > workflow that read the actual scripts + both doc sets), the corrections made in response, and a
@@ -21,7 +23,7 @@ Either way: **KILL at every cost level, 0 SURVIVE.**
 
 | Test | Confidence | Honest status after hardening |
 |---|---|---|
-| Copy-trading non-persistence | **High** | Correct wallet-label-shuffle null; robust across eligibility thresholds (p=0.43–0.63) and now committed (`compute_persistence.ts`: top-decile −$90,457 OOS, ROI-persistence r=−0.001). Caveat: one train/OOS *window*. |
+| Copy-trading non-persistence | **High** | Correct wallet-label-shuffle null; robust across eligibility thresholds (p=0.43–0.63) and now committed (`compute_persistence.ts`: top-decile −$90,457 OOS, ROI-persistence r=−0.001). Robust across 5 walk-forward windows (Stouffer z=−0.13, all p>0.05). |
 | Money-management sizing-invariance | **High (principle)** | Synthetic +12% control validates the harness; look-ahead of empirical-q Kelly proven (→ruin OOS). Caveat: demonstrated on shuffled streams (stateless schemes). |
 | No riskless arbitrage | **Medium-high** | Within-book complete-set impossibility is airtight; committed `arb_baskets.mjs`: 579 negRiskMarketID baskets, median sum(ask) **1.073** (+7.3% overround). Caveat: scan caps at offset 12k; completeness is a proxy. |
 | Calibration / favorite-longshot | **Medium** (was an overclaim) | Walked back from "market is calibrated, p=0.993" to: *no cost-survivable favorite-longshot trade survives.* Clean-binary-only (n=402) surrogate p≈0.05 marginal but fails DSR/holdout; KILL at every cost. |
@@ -57,7 +59,7 @@ the load-bearing numbers were hand-computed inline and never committed. Each fin
 
 ---
 
-## 4. Parity scorecard vs the published `crypto-edge-search` (independent audit: ~35% → now ~70%)
+## 4. Parity scorecard vs the published `crypto-edge-search` (independent audit: ~35% → ~70% after hardening → **~100% after the §5 closure pass**)
 
 | Dimension | OSS standard | Campaign-D (after hardening) | Parity |
 |---|---|---|---|
@@ -73,7 +75,7 @@ the load-bearing numbers were hand-computed inline and never committed. Each fin
 | English-only + leak scan | enforced | English; leak/PT scan run (see §5) | at-parity |
 | Public-release stance | MIT, public | MIT, public (this release) | at-parity |
 
-**Publication readiness:** repo-grade. After the §5 closure pass (incl. the now-complete 3-window
+**Publication readiness:** repo-grade. After the §5 closure pass (incl. the now-complete 5-window
 walk-forward) the rigor parity is **~100%** — every
 $0-decidable claim is committed and reproduced, the calibration is de-contaminated, the gauntlet is unified
 with realistic costs, copy-trading is walk-forward-validated, and every RE mechanism has a committed
@@ -90,21 +92,24 @@ The remaining gaps were closed:
   → KILL, surrogate p=1.0) + a committed census for RE02 (50-50 fallback 0.88% / 1.71% matchup).
   `RE_LEDGER.md` gives **all 22 mechanisms a committed disposition** (9 tested→KILL, 1 tested→deferred,
   12 DEFERRED with a specific $0-blocking data reason). **No agent-only narrative remains.**
-- **Walk-forward (DONE):** `walk_forward.ts` ran copy-trading persistence on **3 disjoint train/OOS windows** —
-  WF-A 2025-06→10 (surrogate **p=0.495**, ROI-persist r=0.008), WF-mid 2025-10→2026-03 (**p=0.376**, r=0.013),
-  WF-B 2026-02→06 (**p=0.577**, r=0.051). Surrogate p ≫ 0.05 and r ≈ 0 in **every** window → the copy-trading
-  KILL is robust across time, not a single-split artifact (`walk_forward.json`).
+- **Walk-forward (DONE):** `walk_forward.ts` ran copy-trading persistence on **5 disjoint walk-forward windows** —
+  WF-A 2025-06→10 (surrogate **p=0.495**, r=0.008), WF-C 2025-07→11 (**p=0.795**, r=−0.024), WF-E 2025-09→2026-01
+  (**p=0.164**, r=0.013), WF-mid 2025-10→2026-03 (**p=0.376**, r=0.013), WF-B 2026-02→06 (**p=0.577**, r=0.051).
+  Surrogate p ≫ 0.05 and r ≈ 0 in **every** window, and the **Stouffer meta-test z=−0.13** → the copy-trading
+  KILL is robust across time, not a single-split artifact (`walk_forward.json`). (CR12 was scoped as "6+ windows";
+  5 were executed, bounded by the per-query tape cap — see the data-integrity note.)
 - **Cost model:** explicit **capital-lockup financing** line in `run_all.ts` (RF on the locked notional;
   ~1.4bps at the 24h lead, immaterial vs the ≥200bps spread — verdict unchanged, still **6/6 KILL**).
-- **Snapshot frozen:** `output/campaign-D/frozen/*.gz` + `SNAPSHOT.json` hashes → deterministic re-runs.
+- **Snapshot pinned:** `SNAPSHOT.json` (committed: sha256 + counts) pins the corpus; a frozen `*.gz` copy is
+  produced locally for deterministic re-runs (not committed — regenerate via the fetchers, see `REPRODUCIBILITY.md`).
 - **Harness documented:** `VALIDATION_HARNESS.md` (the OSS `validateStrategy` analogue).
-- **Scans:** leak 0 / Portuguese 0 over the doc set (`scan.txt`).
+- **Scans:** leak 0 / Portuguese 0 over the doc set (run as `scan.txt` locally before each release).
 
 **Residual is publication, not rigor:** the DEFERRED set stays deferred (needs paid PIT microstructure data,
 exactly as the crypto program's DEFERRED items)
 
 
 **Conclusion:** the campaign reproduces every cited number from committed code, applies the full gauntlet
-uniformly with realistic costs across 3 walk-forward windows, de-contaminates the calibration, and gives
+uniformly with realistic costs across 5 walk-forward windows, de-contaminates the calibration, and gives
 every RE mechanism a committed disposition — the verdict **"0 deployable edge"** is sound and conservative.
 *A correct negative result, now also a rigorous one — at parity with the open-source falsification model.*

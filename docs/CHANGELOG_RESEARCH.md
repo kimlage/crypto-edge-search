@@ -1,5 +1,7 @@
 # Research Changelog — audited verdict flips
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 A dated log of every place the cross-domain adversarial audit overrode a per-domain raw
 verdict. The canonical state lives in `output/results-ledger.json` (see
 `docs/CANONICAL_STATE.md`); this file records *why* each `auditedVerdict` differs from its

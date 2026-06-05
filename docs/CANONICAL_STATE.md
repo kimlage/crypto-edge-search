@@ -1,5 +1,7 @@
 # Canonical State — where the verdicts live
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 This project tests trading hypotheses through a committed anti-overfitting gauntlet and
 records the outcome of each one. Several documents and one dashboard report those
 outcomes. To keep them from drifting apart, there is exactly **one** authoritative source

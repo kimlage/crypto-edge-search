@@ -1,5 +1,7 @@
 # Campaign-D — Reverse-Engineering Mechanism Ledger (committed dispositions)
 
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 Every one of the 22 reverse-engineering mechanisms now has a **committed disposition** — either an
 independent gauntlet/census run, or a formal **DEFERRED** with the specific $0-blocking data reason

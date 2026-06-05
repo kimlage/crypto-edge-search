@@ -1,5 +1,7 @@
 # On-Chain at $0 — Feasibility, Data Catalog, and Results
 
+*[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
+
 > **What this page is.** A public, reproducible account of (a) how far a rigorous,
 > anti-overfitting on-chain edge search can go for **$0 / no paid keys**, (b) exactly which
 > free on-chain metrics that buys you (and which premium ones it does not), and (c) the

@@ -1,13 +1,14 @@
 # Campaign-D — Polymarket Edge Search: Hypothesis Backlog & Execution Plan
 
-> Campaign-D content goes to the public repo (`crypto-edge-search`) or any shareable subtree
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 > **What this is.** A $0, ground-truth-provable falsification campaign on Polymarket prediction
 > markets, inheriting the crypto program's committed gauntlet (`net_of_cost(+financing) ->
 > baselines -> deflated_sharpe@honestN -> block_bootstrap -> cpcv_pbo -> haircut -> right-null
 > surrogate -> consume-once holdout`) and the **KILL / PROMISING / SURVIVE / DEFERRED** scheme.
-> The methodology, gates, and named failure modes are documented in `docs/METHODOLOGY.md` /
-> `docs/EDGE_SEARCH_SYNTHESIS.md` and are reused verbatim.
+> The methodology, gates, and named failure modes are documented in [../METHODOLOGY.md](../METHODOLOGY.md) /
+> [../EDGE_SEARCH_SYNTHESIS.md](../EDGE_SEARCH_SYNTHESIS.md) and are reused verbatim.
 
 ## Why this domain is different (the one real advantage)
 

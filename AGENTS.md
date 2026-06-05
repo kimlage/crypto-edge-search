@@ -1,11 +1,14 @@
 # AGENTS.md — operating guide for crypto-edge-search
 
-> **This repo is agent-ready.** It is a public **falsification lab**: a $0, reproducible body of
-> evidence about which crypto trading techniques actually survive an honest anti-overfitting gauntlet
-> (so far, across ~111 hypotheses, **none** clear it to a deployable edge). The durable asset is the
-> **methodology**, not a strategy. This file tells a human or an AI agent how the repo is laid out, how
-> the validation framework works, and the **non-negotiable rules** for using it. Read it before
-> proposing, testing, or "reviving" any strategy.
+> **This repo is agent-ready.** It is a public **falsification lab** spanning **two domains** — **crypto**
+> trading techniques **and Polymarket prediction markets** — testing which strategies survive an honest
+> anti-overfitting gauntlet on **$0 free public data** (so far, across **184+ hypotheses & mechanisms**,
+> **none** clear it to a deployable edge). The durable asset is the **methodology**, not a strategy. This
+> file tells a human or an AI agent how the repo is laid out, how the validation framework works, and the
+> **non-negotiable rules** for using it. Read it before proposing, testing, or "reviving" any strategy.
+>
+> **New here? Start at the wiki home: [`docs/INDEX.md`](docs/INDEX.md)** (cross-domain concept map + reader
+> journeys), with every term defined in [`docs/GLOSSARY.md`](docs/GLOSSARY.md).
 
 ## The one rule
 
@@ -29,7 +32,12 @@
 npm install
 npm test          # the committed gates + their unit tests — must be green before you start
 npm run typecheck # tsc --noEmit over src/ (the gates); the scripts/edgehunt-* run under tsx
-npx tsx scripts/edgehunt-D5/harness.ts   # a per-domain gauntlet harness (the canonical reference)
+npx tsx scripts/edgehunt-D5/harness.ts   # crypto: a per-domain gauntlet harness (the canonical reference)
+
+# Polymarket (Campaign-D) — same gauntlet, ground-truth-provable on resolved markets:
+node  scripts/campaign-D/fetch_resolved.mjs 202001   # fetch the free corpus (run once)
+npx tsx scripts/campaign-D/run_all.ts                # run every family through the complete gauntlet
+# full run order + per-script index: scripts/campaign-D/README.md
 ```
 
 All work runs at **$0** on free public data (Binance / Bybit / OKX public REST, Coin Metrics Community
@@ -46,15 +54,19 @@ No paid data, no cloud spend, no API keys for the core path.
 | `src/lib/training/statistical-validation.ts` | A re-export shim of the primitives (the path the 2026-06 edge-search scripts import). |
 | `src/lib/reorientation/*` | Strategy building blocks used by the prior-round audits (funding carry, TS/XS momentum, regime, turnover). |
 | `scripts/audit-*.ts` | The prior-round hypothesis audits (TA, momentum, pairs, carry, seasonality, …). |
-| `scripts/edgehunt-*/` | The **2026-06 domain campaign** — per-domain harnesses (`runGauntlet`), data fetchers, and one script per hypothesis test, plus the two-layer audit. |
-| `output/edgehunt-*/SUMMARY.md` | The per-domain **result ledgers** (the evidence). Large raw data caches are gitignored and regenerable via the fetchers. |
-| `docs/` | The wiki — see **Documentation** below. |
+| `scripts/edgehunt-*/` | The **crypto 2026-06 domain campaign** — per-domain harnesses (`runGauntlet`), data fetchers, and one script per hypothesis test, plus the two-layer audit. |
+| `output/edgehunt-*/SUMMARY.md` | The per-domain crypto **result ledgers** (the evidence). Large raw data caches are gitignored and regenerable via the fetchers. |
+| `scripts/campaign-D/` | The **Polymarket campaign** — the unified `gauntlet.ts::runGauntlet`, the `$0` fetchers, and one script per family (copy-trading, calibration, arbitrage, money-management, reverse-engineering, weather). Indexed in [`scripts/campaign-D/README.md`](scripts/campaign-D/README.md). |
+| `docs/polymarket/` | The **Polymarket docs** (Campaign-D): results, reverse-engineering, money-mgmt & arbitrage, the honest evaluation/audit, the per-mechanism ledger. Hub: [`docs/polymarket/README.md`](docs/polymarket/README.md). |
+| `output/campaign-D/*.json` | The Polymarket **result JSONs** + the verdict ledger [`output/campaign-D/results-ledger.json`](output/campaign-D/results-ledger.json) (raw `.jsonl` tapes gitignored, regenerable via the fetchers). |
+| `docs/` | The wiki — start at [`docs/INDEX.md`](docs/INDEX.md) (cross-domain home) + [`docs/GLOSSARY.md`](docs/GLOSSARY.md); see **Documentation** below. |
 | `.claude/skills/` | **Operating skills** (agent-invokable procedures): `test-hypothesis`, `audit-result`, `reproduce-result`. |
 
 ## The validation framework (the gauntlet)
 
-Every hypothesis is judged by the **same committed gauntlet, in this binding order** (the *binding gate*
-is the first failure):
+Every hypothesis — in **either** domain — **ALWAYS** runs the **complete gauntlet, in this binding order**
+(the *binding gate* is the first failure). **No partial validation, ever**: a candidate that clears only some
+gates is not "partially validated", it is **not validated**. Never report a verdict from a subset of gates.
 
 ```
 net_of_cost → baselines → deflated_sharpe → block_bootstrap → cpcv_pbo → haircut → surrogate → holdout
@@ -124,8 +136,10 @@ per-domain fetcher (e.g. `scripts/edgehunt-D2/fetch-data.ts`) to download the $0
 
 ## Documentation
 
-- [`docs/README.md`](docs/README.md) — docs index + reading order.
-- [`docs/RESULTS.md`](docs/RESULTS.md) — the full ~111-hypothesis ledger (the centerpiece).
+- [`docs/INDEX.md`](docs/INDEX.md) — **the wiki home**: cross-domain concept map, the unified funnel, the glossary index, reader journeys.
+- [`docs/GLOSSARY.md`](docs/GLOSSARY.md) — every load-bearing term (the gates, the verdict scheme, the prediction-market nulls), one paragraph each.
+- [`docs/README.md`](docs/README.md) — the crypto docs index + reading order.
+- [`docs/RESULTS.md`](docs/RESULTS.md) — the full ~111-hypothesis crypto ledger (the centerpiece).
 - [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) — the gauntlet + the right-null-per-claim table + the RULES.
 - [`docs/EDGE_SEARCH_SYNTHESIS.md`](docs/EDGE_SEARCH_SYNTHESIS.md) — the narrative map: where the edge is *not*.
 - [`docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md`](docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md) — the 2026-06 campaign roll-up + the two-layer audit.
@@ -134,6 +148,8 @@ per-domain fetcher (e.g. `scripts/edgehunt-D2/fetch-data.ts`) to download the $0
 - [`docs/VALIDATION_HARNESS.md`](docs/VALIDATION_HARNESS.md) — the gates API.
 - [`docs/ONCHAIN_FEASIBILITY.md`](docs/ONCHAIN_FEASIBILITY.md) — on-chain $0 feasibility + results.
 - [`docs/BACKLOG.md`](docs/BACKLOG.md) — 155 referenced hypotheses for future tests.
+- **[`docs/polymarket/`](docs/polymarket/README.md)** — the **Polymarket campaign** (prediction markets): [results](docs/polymarket/RESULTS.md), [reverse-engineering](docs/polymarket/REVERSE_ENGINEERING.md), [money-mgmt & arbitrage](docs/polymarket/MONEY_MGMT_AND_ARB.md), the [honest evaluation/audit](docs/polymarket/EVALUATION.md), and the [per-mechanism ledger](docs/polymarket/RE_LEDGER.md).
+- [`SYNTHESIS.md`](SYNTHESIS.md) — the unified verdict across both domains (where the edge is NOT).
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — how to contribute (a well-run KILL is a contribution).
 
 ## Honest framing

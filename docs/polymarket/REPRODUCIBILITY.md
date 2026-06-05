@@ -1,5 +1,7 @@
 # Campaign-D — Reproducibility
 
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 Every cited number is produced by a committed script under `scripts/campaign-D/`. All data is from FREE
 public endpoints (Gamma, CLOB, data-api); cloud spend **$0**. Gauntlet primitives reused verbatim from

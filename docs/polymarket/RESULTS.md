@@ -1,6 +1,7 @@
 # Campaign-D — Polymarket: Proof-Phase Results
 
-> shareable subtree unless explicitly requested (owner instruction, 2026-06-03).
+*[Home](../INDEX.md) · [Polymarket](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](../GLOSSARY.md) · [Crypto](../README.md)*
+
 
 > **Scope.** This page records the *proof phase*: the two flagship, most-provable claims from the
 > 35-hypothesis backlog (`BACKLOG.md`), run through the committed gauntlet on $0 ground-truth data.
@@ -15,7 +16,7 @@
 |---|---|---|
 | "Mirror the top wallets (70%+ winrate, high PnL) and print money" | **KILL** | Top-decile-train-ROI wallets **lose −$90k OOS in aggregate**; copy surrogate **p=0.528** (no better than random) |
 | "Find the favorite-longshot edge / fade longshots" | **KILL** | Mispricing structure is **real** (surrogate p=0.012) but the book **blows up out-of-sample** (holdout mean −1.0; bootstrap CI includes 0) |
-| Is there *any* genuinely-skilled, copyable, persistent cohort? | **No (not detectable)** | train-ROI→OOS-ROI **r=0.013**; top-decile OOS-positive rate **0.472 < 0.511 population** (anti-persistence) |
+| Is there *any* genuinely-skilled, copyable, persistent cohort? | **No (not detectable)** | train-ROI→OOS-ROI **r=−0.001**; top-decile OOS-positive rate **0.472 < 0.511 population** (anti-persistence) |
 
 Both flagship claims fall, and they tell **one coherent story**: the "best traders" are mostly
 **survivorship + longshot-premium harvesting** — high win-rate, small steady wins, rare ruinous tail —
@@ -84,7 +85,7 @@ wallets — random-best-of-grid (0.585) routinely beats the real top (0.118). Th
 | | value |
 |---|---|
 | train-winrate → OOS-winrate correlation | **r=0.479** (winrate persists…) |
-| train-ROI → OOS-return correlation | **r=0.013** (…but profitability does NOT) |
+| train-ROI → OOS-return correlation | **r=−0.001** (…but profitability does NOT) |
 | population OOS-positive rate | 0.511 |
 | **top-decile-train-ROI OOS-positive rate** | **0.472** (below population) |
 | bottom-decile-train-ROI OOS-positive rate | 0.398 |
