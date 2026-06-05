@@ -1,0 +1,284 @@
+[
+  {
+    "name": "calibration-family (clean binary, cost=flat1, n=402)",
+    "gates": [
+      {
+        "id": "net_of_cost",
+        "pass": true,
+        "detail": "mean net=0.3334 n=226"
+      },
+      {
+        "id": "baselines",
+        "pass": true,
+        "detail": "blindNO 0.1580, blindYES -0.0070 | strat 0.3334"
+      },
+      {
+        "id": "deflated_sharpe",
+        "pass": false,
+        "detail": "DSR=0.187 @N=20 (sharpe 0.056, expMax 0.106)"
+      },
+      {
+        "id": "block_bootstrap",
+        "pass": false,
+        "detail": "mean 95% CI [-0.5466, 1.5126]"
+      },
+      {
+        "id": "cpcv_pbo",
+        "pass": false,
+        "detail": "PBO=0.552"
+      },
+      {
+        "id": "haircut",
+        "pass": false,
+        "detail": "raw p=0.3961, Bonferroni@N=20 p=1.0000, BHY p=1.0000"
+      },
+      {
+        "id": "surrogate",
+        "pass": false,
+        "detail": "real 0.3334 vs null95 0.3414, p=0.052"
+      },
+      {
+        "id": "holdout",
+        "pass": false,
+        "detail": "OOS n=45 mean=1.1190 sharpe=0.145 DSR@1=0.904"
+      }
+    ],
+    "bindingGate": "deflated_sharpe",
+    "verdict": "KILL"
+  },
+  {
+    "name": "copy-trading top-k (cost=flat1, eligible=1764)",
+    "gates": [
+      {
+        "id": "net_of_cost",
+        "pass": true,
+        "detail": "mean net=0.1174 n=130"
+      },
+      {
+        "id": "baselines",
+        "pass": true,
+        "detail": "copy-all-crowd -0.1415 | strat 0.1174"
+      },
+      {
+        "id": "deflated_sharpe",
+        "pass": false,
+        "detail": "DSR=0.640 @N=8 (sharpe 0.145, expMax 0.117)"
+      },
+      {
+        "id": "block_bootstrap",
+        "pass": false,
+        "detail": "mean 95% CI [-0.1610, 0.4352]"
+      },
+      {
+        "id": "cpcv_pbo",
+        "pass": false,
+        "detail": "PBO=0.700"
+      },
+      {
+        "id": "haircut",
+        "pass": false,
+        "detail": "raw p=0.0975, Bonferroni@N=8 p=0.7799, BHY p=1.0000"
+      },
+      {
+        "id": "surrogate",
+        "pass": false,
+        "detail": "real 0.1174 vs null95 0.4651, p=0.376"
+      },
+      {
+        "id": "holdout",
+        "pass": false,
+        "detail": "OOS n=65 mean=0.0932 sharpe=0.165 DSR@1=0.947"
+      }
+    ],
+    "bindingGate": "deflated_sharpe",
+    "verdict": "KILL"
+  },
+  {
+    "name": "calibration-family (clean binary, cost=prop, n=402)",
+    "gates": [
+      {
+        "id": "net_of_cost",
+        "pass": true,
+        "detail": "mean net=0.3249 n=148"
+      },
+      {
+        "id": "baselines",
+        "pass": true,
+        "detail": "blindNO 0.1129, blindYES -0.0425 | strat 0.3249"
+      },
+      {
+        "id": "deflated_sharpe",
+        "pass": false,
+        "detail": "DSR=0.107 @N=20 (sharpe 0.047, expMax 0.137)"
+      },
+      {
+        "id": "block_bootstrap",
+        "pass": false,
+        "detail": "mean 95% CI [-0.8622, 1.8677]"
+      },
+      {
+        "id": "cpcv_pbo",
+        "pass": false,
+        "detail": "PBO=0.512"
+      },
+      {
+        "id": "haircut",
+        "pass": false,
+        "detail": "raw p=0.5656, Bonferroni@N=20 p=1.0000, BHY p=1.0000"
+      },
+      {
+        "id": "surrogate",
+        "pass": false,
+        "detail": "real 0.3249 vs null95 0.3391, p=0.053"
+      },
+      {
+        "id": "holdout",
+        "pass": false,
+        "detail": "OOS n=35 mean=1.5047 sharpe=0.173 DSR@1=0.920"
+      }
+    ],
+    "bindingGate": "deflated_sharpe",
+    "verdict": "KILL"
+  },
+  {
+    "name": "copy-trading top-k (cost=prop, eligible=1764)",
+    "gates": [
+      {
+        "id": "net_of_cost",
+        "pass": true,
+        "detail": "mean net=0.0632 n=130"
+      },
+      {
+        "id": "baselines",
+        "pass": true,
+        "detail": "copy-all-crowd -0.1726 | strat 0.0632"
+      },
+      {
+        "id": "deflated_sharpe",
+        "pass": false,
+        "detail": "DSR=0.332 @N=8 (sharpe 0.085, expMax 0.121)"
+      },
+      {
+        "id": "block_bootstrap",
+        "pass": false,
+        "detail": "mean 95% CI [-0.1885, 0.3503]"
+      },
+      {
+        "id": "cpcv_pbo",
+        "pass": false,
+        "detail": "PBO=0.786"
+      },
+      {
+        "id": "haircut",
+        "pass": false,
+        "detail": "raw p=0.3302, Bonferroni@N=8 p=1.0000, BHY p=1.0000"
+      },
+      {
+        "id": "surrogate",
+        "pass": false,
+        "detail": "real 0.0632 vs null95 0.4144, p=0.418"
+      },
+      {
+        "id": "holdout",
+        "pass": false,
+        "detail": "OOS n=65 mean=0.0667 sharpe=0.122 DSR@1=0.874"
+      }
+    ],
+    "bindingGate": "deflated_sharpe",
+    "verdict": "KILL"
+  },
+  {
+    "name": "calibration-family (clean binary, cost=wide, n=402)",
+    "gates": [
+      {
+        "id": "net_of_cost",
+        "pass": false,
+        "detail": "mean net=-0.0360 n=191"
+      },
+      {
+        "id": "baselines",
+        "pass": false,
+        "detail": "blindNO 0.0188, blindYES -0.2394 | strat -0.0360"
+      },
+      {
+        "id": "deflated_sharpe",
+        "pass": false,
+        "detail": "DSR=0.000 @N=20 (sharpe -0.167, expMax 0.090)"
+      },
+      {
+        "id": "block_bootstrap",
+        "pass": false,
+        "detail": "mean 95% CI [-0.0830, 0.0006]"
+      },
+      {
+        "id": "cpcv_pbo",
+        "pass": false,
+        "detail": "PBO=0.583"
+      },
+      {
+        "id": "haircut",
+        "pass": false,
+        "detail": "raw p=0.0211, Bonferroni@N=20 p=0.4213, BHY p=1.0000"
+      },
+      {
+        "id": "surrogate",
+        "pass": false,
+        "detail": "real -0.0360 vs null95 0.0065, p=0.987"
+      },
+      {
+        "id": "holdout",
+        "pass": false,
+        "detail": "OOS n=43 mean=-0.0604 sharpe=-0.232 DSR@1=0.008"
+      }
+    ],
+    "bindingGate": "net_of_cost",
+    "verdict": "KILL"
+  },
+  {
+    "name": "copy-trading top-k (cost=wide, eligible=1764)",
+    "gates": [
+      {
+        "id": "net_of_cost",
+        "pass": false,
+        "detail": "mean net=-0.0053 n=130"
+      },
+      {
+        "id": "baselines",
+        "pass": true,
+        "detail": "copy-all-crowd -0.2182 | strat -0.0053"
+      },
+      {
+        "id": "deflated_sharpe",
+        "pass": false,
+        "detail": "DSR=0.060 @N=8 (sharpe -0.008, expMax 0.129)"
+      },
+      {
+        "id": "block_bootstrap",
+        "pass": false,
+        "detail": "mean 95% CI [-0.2302, 0.2500]"
+      },
+      {
+        "id": "cpcv_pbo",
+        "pass": false,
+        "detail": "PBO=0.771"
+      },
+      {
+        "id": "haircut",
+        "pass": false,
+        "detail": "raw p=0.9262, Bonferroni@N=8 p=1.0000, BHY p=1.0000"
+      },
+      {
+        "id": "surrogate",
+        "pass": false,
+        "detail": "real -0.0053 vs null95 0.2270, p=0.303"
+      },
+      {
+        "id": "holdout",
+        "pass": false,
+        "detail": "OOS n=65 mean=-0.0080 sharpe=-0.019 DSR@1=0.441"
+      }
+    ],
+    "bindingGate": "net_of_cost",
+    "verdict": "KILL"
+  }
+]

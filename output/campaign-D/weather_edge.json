@@ -1,0 +1,53 @@
+{
+  "usable": 556,
+  "brier_model": 0.10050970018385703,
+  "brier_market": 0.0708110848414313,
+  "best_band": 0.2,
+  "verdict": {
+    "name": "weather-edge climatology (n=556)",
+    "gates": [
+      {
+        "id": "net_of_cost",
+        "pass": false,
+        "detail": "mean net=-0.2610 n=104"
+      },
+      {
+        "id": "baselines",
+        "pass": false,
+        "detail": "blindYES -0.5783, blindNO -0.0393, calib-no-model -0.6435 | strat -0.2610"
+      },
+      {
+        "id": "deflated_sharpe",
+        "pass": false,
+        "detail": "DSR=0.003 @N=6 (sharpe -0.211, expMax 0.193)"
+      },
+      {
+        "id": "block_bootstrap",
+        "pass": false,
+        "detail": "mean 95% CI [-0.4847, -0.0080]"
+      },
+      {
+        "id": "cpcv_pbo",
+        "pass": true,
+        "detail": "PBO=0.414"
+      },
+      {
+        "id": "haircut",
+        "pass": false,
+        "detail": "raw p=0.0315, Bonferroni@N=6 p=0.1891, BHY p=0.4632"
+      },
+      {
+        "id": "surrogate",
+        "pass": false,
+        "detail": "real -0.2610 vs null95 -0.1858, p=0.149"
+      },
+      {
+        "id": "holdout",
+        "pass": false,
+        "detail": "OOS n=28 mean=-0.4108 sharpe=-0.590 DSR@1=0.002"
+      }
+    ],
+    "bindingGate": "net_of_cost",
+    "verdict": "KILL"
+  }
+}

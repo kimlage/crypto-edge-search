@@ -1,0 +1,14 @@
+{
+  "preregistered": "2026-06-03",
+  "claim": "single-config (honest N=1) calibration favorite-longshot",
+  "config": {
+    "direction": "favorite",
+    "deadband": 0.1,
+    "lead": "p_24h",
+    "filter": "clean-binary non-negRisk",
+    "cost": "weather-style proportional half-spread max(0.02,0.15*min(p,1-p))",
+    "hold": "to resolution"
+  },
+  "rule": "bet toward the favorite (YES if mid>0.6, NO if mid<0.4); score on markets resolving over the next 120 days; honest N=1 (frozen before any further search)",
+  "sha256_16": "5d9efd1220101557"
+}

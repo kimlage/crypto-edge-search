@@ -14,6 +14,16 @@ Below is the table. Find your tool. Find the number that killed it. Then, if you
 
 ---
 
+## Now two domains: crypto **and** prediction markets
+
+The same gauntlet has since been run on **Polymarket prediction markets** — where it can do something crypto can't: **prove** the verdict, because every market resolves to a ground-truth label. Over **172,830 resolved markets** and **1,355,837 trades** (all $0, on the free Polymarket Gamma / CLOB / data-api and the free Open-Meteo forecast), it tested a **35-hypothesis backlog**, copy-trading & wallet-skill, calibration / favorite-longshot, static arbitrage, money-management, **22 reverse-engineering mechanisms**, **16 external-information leads**, a **29-test credibility battery**, and a forensic falsification of **5 viral "Claude + copy-trade = print money" claims.**
+
+**Same verdict: 0 deployable edge.** Copy-trading public wallets does not persist (the wallet-label-shuffle null is **p=0.53** across **5 walk-forward windows**, Stouffer z=−0.13; "70%+ win-rate" is the *anti*-signal — it selects longshot-sellers); the market is calibrated in aggregate (+0.0001 over 1.36M trades); the favorite-longshot premium is real but tail-fragile / sub-cost; **no riskless arbitrage**; **no money-management scheme rescues a ≤0 edge** (sizing is expectancy-sign-invariant; "98% win-rate" longshot-sellers pass Sharpe/DSR but **fail the right null**); and even a real Open-Meteo ensemble forecast does **not** beat the crowd in a **pre-registered forward test**. A **planted-edge positive control** confirms the harness *would* SURVIVE a real +8% edge — so 0-SURVIVE is a property of the *markets*, not a dead gauntlet.
+
+→ **[docs/polymarket/](docs/polymarket/)** — the full campaign: [overview](docs/polymarket/README.md) · [results](docs/polymarket/RESULTS.md) · [the honest audit](docs/polymarket/EVALUATION.md) · [credibility backlog](docs/polymarket/CREDIBILITY_BACKLOG.md) · [the viral-claim takedown](docs/polymarket/CLAUDE_BOT_ARTICLE_VALIDATION.md). The unified verdict across both domains — **184+ distinct hypotheses & mechanisms, 0 clean SURVIVE, 0 deployable edge** — is in **[SYNTHESIS.md](SYNTHESIS.md)**.
+
+---
+
 ## Find your tool
 
 Verdicts: **KILL** = no edge net of cost on unseen data · **PROMISING** = real structure, but too weak / not deployable · **SURVIVE** = cleared every gate (count: **zero**) · **DEFERRED** = needs paid data we won't buy. Full per-technique numbers and the binding gate for every row live in **[docs/RESULTS.md](docs/RESULTS.md)**.
@@ -247,6 +257,8 @@ Genuinely — maybe it does. This is a falsification lab, and **a KILL is a vali
 | [docs/BACKLOG.md](docs/BACKLOG.md) | 155 techniques queued to falsify, each with its right surrogate null, honest-N concern, and references. |
 | [AGENTS.md](AGENTS.md) | The agent contract — how to run a hypothesis end-to-end through the gauntlet. |
 | [`output/edgehunt-*/SUMMARY.md`](output/) | Per-domain syntheses, so any verdict can be challenged against the *same* gates. |
+| **[SYNTHESIS.md](SYNTHESIS.md)** | **The unified verdict across both domains (crypto + Polymarket): where the edge is NOT, and why.** |
+| **[docs/polymarket/](docs/polymarket/)** | **The Polymarket prediction-markets campaign** — [overview](docs/polymarket/README.md), [results](docs/polymarket/RESULTS.md), [methodology](docs/polymarket/METHODOLOGY.md), [reverse-engineering](docs/polymarket/REVERSE_ENGINEERING.md), [money-management & arbitrage](docs/polymarket/MONEY_MGMT_AND_ARB.md), [external-information edges](docs/polymarket/EXTERNAL_INFO_EDGES.md), [weather studies](docs/polymarket/WEATHER.md), the [honest evaluation/audit](docs/polymarket/EVALUATION.md), and the [credibility backlog](docs/polymarket/CREDIBILITY_BACKLOG.md). Run it: `scripts/campaign-D/`. |
 
 ---
 

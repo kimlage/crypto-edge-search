@@ -1,0 +1,41 @@
+{
+  "all-eligible (baseline)": {
+    "n": 1764,
+    "p": 0.367,
+    "r": 0.013
+  },
+  "CR17 human-like (15-50 train trades)": {
+    "n": 1338,
+    "p": 0.043,
+    "r": 0.012
+  },
+  "CR17 bot-like (>100 train trades)": {
+    "n": 221,
+    "p": 0.309,
+    "r": 0.028
+  },
+  "CR22 low-volume tercile": {
+    "n": 588,
+    "p": 0.94,
+    "r": 0.006
+  },
+  "CR22 high-volume tercile": {
+    "n": 588,
+    "p": 0.426,
+    "r": 0.021
+  },
+  "CR19 sans-insiders (OOS concentration<0.5)": {
+    "n": 749,
+    "p": 0.557,
+    "r": 0.017
+  },
+  "CR19 insider-like (concentration>=0.5)": {
+    "n": 1015,
+    "p": 0.377,
+    "r": 0.011
+  },
+  "CR18 new-wallet OOS-half1->half2 persistence": {
+    "n": 3455,
+    "r": -0.062
+  }
+}

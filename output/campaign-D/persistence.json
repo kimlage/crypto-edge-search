@@ -1,0 +1,19 @@
+{
+  "minTrainTrades": 15,
+  "wallets": 264103,
+  "eligible": 1764,
+  "population_OOS_positive_rate": 0.511,
+  "topDecile": {
+    "n": 176,
+    "OOS_positive_rate": 0.472,
+    "total_OOS_PnL": -90457
+  },
+  "bottomDecile": {
+    "n": 176,
+    "OOS_positive_rate": 0.398,
+    "total_OOS_PnL": 36496
+  },
+  "topDecile_lift_over_population": -0.04,
+  "trainWinrate_to_OOSWinrate_corr": 0.479,
+  "trainROI_to_OOSreturn_corr": -0.001
+}

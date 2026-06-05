@@ -1,0 +1,8 @@
+{
+  "geopolitics": {
+    "verdict": "KILL",
+    "binding": "net_of_cost",
+    "n": 59,
+    "fl_slope": 0.036
+  }
+}

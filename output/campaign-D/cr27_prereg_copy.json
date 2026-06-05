@@ -1,0 +1,33 @@
+{
+  "preregistered": "2026-06-03",
+  "claim": "human-like (15-50 train trades) copy-trading PROMISING-per-stratum",
+  "config": "copy top-25 by TRAIN PnL among 15-50-train-trade wallets, OOS, weather-spread, hold to resolution",
+  "wallets": [
+    "0xb1a279adb096d316b1b168993e8ed976d3cd372a",
+    "0x37e4728b3c4607fb2b3b205386bb1d1fb1a8c991",
+    "0x0aa3744338ddf9f39fb3a80bc9c916179d0b64e9",
+    "0xb2304a93c928e05c13e3b96b07be1f2ea8374193",
+    "0xa9fe4929d4ea1525ca03bd0ff68ea1fbf9e7f135",
+    "0x507e52ef684ca2dd91f90a9d26d149dd3288beae",
+    "0xd71a361f2c54d1dc1a7ab1b162aa419105ae9498",
+    "0xcd3638fea0107fe3355544251f96a10980daa8ac",
+    "0x9e5c74c0bf46f0bf3fcd1064d17e6201c67fd8e6",
+    "0x97bcb1873605e3b07e74898e2050974c8bf930cd",
+    "0x6bab41a0dc40d6dd4c1a915b8c01969479fd1292",
+    "0x832d13d39011acf2da1b8e56182b0961d02fd420",
+    "0xad947fcb81100b67a4e43727449b845aa2c585b1",
+    "0x5b982588ac30dafd0413bf7b4803557d40eadf12",
+    "0xc9966221540a89efa8063572555c2d690ee8bb65",
+    "0x69e7ad68b5f11e97927e4bd938baf7dfb60bd3b0",
+    "0x56c9fbdeccf198f1f5ad95ace39b24f5f7fb0d9e",
+    "0x5fa9abe43baa8494ab08197460fe13237301a36d",
+    "0x6c743aafd813475986dcd930f380a1f50901bd4e",
+    "0xf975c19db5d1da14029109a4df52ee87d0a64354",
+    "0x4d67c31a30314cca29b97e1f031247629a007a40",
+    "0x036e3e41ee423583e62e2266a749de4fbdc39276",
+    "0x212954857f5efc138748c33d032a93bf95974222",
+    "0xcf24a202d98cb7f859942c784b89326f398c15ec",
+    "0x33c2ea1151c4399309715df027688845a6a99818"
+  ],
+  "sha256_16": "a502113c6613678e"
+}

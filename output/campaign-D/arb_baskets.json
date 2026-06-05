@@ -1,0 +1,18 @@
+{
+  "scanned_open_markets": 10100,
+  "negRiskMarketID_baskets_ge3legs": 579,
+  "median_basket_sum_ask": 1.073,
+  "overround_median": 0.073,
+  "baskets_sum_below_1": 31,
+  "note": "median sum(ask) > 1 => arb-free buy side; sub-1 baskets are undercounted/incomplete (this scan itself caps at offset 12000).",
+  "tightest8": [
+    0.004,
+    0.268,
+    0.454,
+    0.598,
+    0.608,
+    0.646,
+    0.788,
+    0.851
+  ]
+}

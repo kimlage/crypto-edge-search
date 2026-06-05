@@ -1,0 +1,79 @@
+{
+  "note": "Pinned snapshot manifest. Data is from FREE Gamma/CLOB/data-api endpoints; re-fetching later yields DIFFERENT markets (new resolutions), so these hashes pin the exact analysis corpus.",
+  "generated_marker": "stamp at commit time; do not use Date.now in-script",
+  "files": {
+    "resolved-markets.jsonl": {
+      "rows": 172830,
+      "sha256_16": "7f496b801fbad9b9",
+      "bytes": 99351044
+    },
+    "copy-markets.jsonl": {
+      "rows": 500,
+      "sha256_16": "7a3d18501ce4dd00",
+      "bytes": 104848
+    },
+    "calib-markets.jsonl": {
+      "rows": 1200,
+      "sha256_16": "85acb0d51149ba91",
+      "bytes": 167456
+    },
+    "calibration.jsonl": {
+      "rows": 1467,
+      "sha256_16": "81d21a560fdba55c",
+      "bytes": 343109
+    }
+  },
+  "resolved_corpus": {
+    "total": 172830,
+    "binary_clean_resolved": 82736,
+    "yes": 21717,
+    "base_rate_yes": 0.262
+  },
+  "truncated_months_at_10k_cap": [
+    {
+      "month": "2025-08",
+      "count": 10000
+    },
+    {
+      "month": "2025-09",
+      "count": 10000
+    },
+    {
+      "month": "2025-10",
+      "count": 10000
+    },
+    {
+      "month": "2025-11",
+      "count": 10000
+    },
+    {
+      "month": "2025-12",
+      "count": 10000
+    },
+    {
+      "month": "2026-01",
+      "count": 10000
+    },
+    {
+      "month": "2026-02",
+      "count": 10000
+    },
+    {
+      "month": "2026-03",
+      "count": 10000
+    },
+    {
+      "month": "2026-04",
+      "count": 10000
+    },
+    {
+      "month": "2026-05",
+      "count": 10000
+    },
+    {
+      "month": "2026-06",
+      "count": 10000
+    }
+  ],
+  "truncation_bias": "Months at the 10k cap drop the LATEST-closing markets within the month (ascending endDate order) — a recency-truncation bias to disclose."
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "label": "WF-A 2025-06..08/08..10",
+    "eligible": 1794,
+    "surrogate_p": 0.495,
+    "roi_persist_r": 0.008,
+    "topDecile_OOSpos_lift": 0.044
+  },
+  {
+    "label": "WF-C 2025-07..10/10..11",
+    "eligible": 1401,
+    "surrogate_p": 0.795,
+    "roi_persist_r": -0.024,
+    "topDecile_OOSpos_lift": 0.041
+  },
+  {
+    "label": "WF-E 2025-09..12/12..01",
+    "eligible": 1280,
+    "surrogate_p": 0.164,
+    "roi_persist_r": 0.013,
+    "topDecile_OOSpos_lift": 0.013
+  },
+  {
+    "label": "WF-mid 2025-10..12/2026-01..03",
+    "eligible": 1764,
+    "surrogate_p": 0.376,
+    "roi_persist_r": 0.013,
+    "topDecile_OOSpos_lift": 0.01
+  },
+  {
+    "label": "WF-B 2026-02..04/04..06",
+    "eligible": 1559,
+    "surrogate_p": 0.577,
+    "roi_persist_r": 0.051,
+    "topDecile_OOSpos_lift": 0.034
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "negRisk_baskets": 574,
+  "median_sum_ask": 1.074,
+  "void_avoidance_cost": "0 — negRisk=true is 46,095/46,095 clean (committed census); the overround is NOT a void premium",
+  "overround_total_avg": 0.945,
+  "overround_from_cheap_legs_lt_0_10": 0.0298,
+  "overround_from_legs_ge_0_10": 0.9152,
+  "note": "the overround concentrates in the cheap longshot legs => it is the favorite-longshot premium (over-priced tails), harvestable only by shorting the basket = the killed longshot-fade, not a free arb."
+}

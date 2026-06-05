@@ -1,0 +1,21 @@
+{
+  "note": "observed pctOnWinner vs price-tied Bernoulli null. gap>0 => above price regime (survivorship for the selected cohort); ~0 => calibrated/no forecasting skill.",
+  "cohort_97": {
+    "n": 16236,
+    "observed_onWinner": 0.8493,
+    "priceTied_null": 0.792,
+    "gap": 0.0573
+  },
+  "all_eligible": {
+    "n": 367545,
+    "observed_onWinner": 0.6277,
+    "priceTied_null": 0.6136,
+    "gap": 0.0141
+  },
+  "entire_corpus": {
+    "n": 1355837,
+    "observed_onWinner": 0.6027,
+    "priceTied_null": 0.6025,
+    "gap": 0.0001
+  }
+}

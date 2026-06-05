@@ -1,0 +1,873 @@
+{
+  "generatedFor": "first-principles reverse-engineering",
+  "params": {
+    "MIN_TRAIN": 15,
+    "TOPQ": 0.1
+  },
+  "counts": {
+    "wallets": 264103,
+    "eligible": 2198,
+    "topByTrain": 219,
+    "cohort": 97,
+    "persistenceRate": 0.443
+  },
+  "cohortProfile": {
+    "wallets": 97,
+    "trades": 16236,
+    "avgTradesPerWallet": 167.4,
+    "medianSizeShares": 31.7,
+    "meanEntryPrice": 0.159,
+    "entryPriceBuckets": [
+      {
+        "range": "[0,0.1)",
+        "share": 0.658
+      },
+      {
+        "range": "[0.1,0.3)",
+        "share": 0.157
+      },
+      {
+        "range": "[0.3,0.5)",
+        "share": 0.062
+      },
+      {
+        "range": "[0.5,0.7)",
+        "share": 0.049
+      },
+      {
+        "range": "[0.7,0.9)",
+        "share": 0.04
+      },
+      {
+        "range": "[0.9,1)",
+        "share": 0.033
+      }
+    ],
+    "medianHrsBeforeResolution": 48.3,
+    "pctBuy": 0.19,
+    "pctOnEventualWinner": 0.849,
+    "scalpRate": 0.257
+  },
+  "populationProfile": {
+    "wallets": 2198,
+    "trades": 384499,
+    "avgTradesPerWallet": 174.9,
+    "medianSizeShares": 43.8,
+    "meanEntryPrice": 0.589,
+    "entryPriceBuckets": [
+      {
+        "range": "[0,0.1)",
+        "share": 0.172
+      },
+      {
+        "range": "[0.1,0.3)",
+        "share": 0.118
+      },
+      {
+        "range": "[0.3,0.5)",
+        "share": 0.108
+      },
+      {
+        "range": "[0.5,0.7)",
+        "share": 0.123
+      },
+      {
+        "range": "[0.7,0.9)",
+        "share": 0.127
+      },
+      {
+        "range": "[0.9,1)",
+        "share": 0.351
+      }
+    ],
+    "medianHrsBeforeResolution": 55.6,
+    "pctBuy": 0.733,
+    "pctOnEventualWinner": 0.623,
+    "scalpRate": 0.401
+  },
+  "fingerprintDelta": {
+    "meanEntryPrice": -0.43,
+    "medianHrsBeforeResolution": -7.3,
+    "pctOnEventualWinner": 0.226,
+    "scalpRate": -0.144,
+    "pctBuy": -0.543
+  },
+  "cohortWallets": [
+    {
+      "w": "0x9ecb3c202cd4f415d019c64cf490db18512fa693",
+      "trainPnl": 520,
+      "oosPnl": 150,
+      "trainN": 18,
+      "oosN": 23,
+      "markets": 20
+    },
+    {
+      "w": "0x54c07612771e38ccd18810bf0a925637b392a338",
+      "trainPnl": 1108,
+      "oosPnl": 1124,
+      "trainN": 26,
+      "oosN": 47,
+      "markets": 26
+    },
+    {
+      "w": "0x41583f2efc720b8e2682750fffb67f2806fece9f",
+      "trainPnl": 2866,
+      "oosPnl": 403,
+      "trainN": 19,
+      "oosN": 14,
+      "markets": 6
+    },
+    {
+      "w": "0x9e5c74c0bf46f0bf3fcd1064d17e6201c67fd8e6",
+      "trainPnl": 34224,
+      "oosPnl": 3568,
+      "trainN": 21,
+      "oosN": 4,
+      "markets": 8
+    },
+    {
+      "w": "0x4e608e633426d8a85491165e0ffd52631fb6051c",
+      "trainPnl": 127,
+      "oosPnl": 77,
+      "trainN": 39,
+      "oosN": 10,
+      "markets": 10
+    },
+    {
+      "w": "0x1d4687b8a278eb3dfb0cd0c3f6302998aa92fdb2",
+      "trainPnl": 116,
+      "oosPnl": 128,
+      "trainN": 15,
+      "oosN": 5,
+      "markets": 6
+    },
+    {
+      "w": "0xca836a4a98fc36c231e72bf03d0c8f3d89494d2b",
+      "trainPnl": 50,
+      "oosPnl": 9,
+      "trainN": 38,
+      "oosN": 32,
+      "markets": 6
+    },
+    {
+      "w": "0x1b0cb27ca85abdde93d1576da01c2e7c24aa1a42",
+      "trainPnl": 3240,
+      "oosPnl": 35,
+      "trainN": 31,
+      "oosN": 2,
+      "markets": 9
+    },
+    {
+      "w": "0xb166c8a6358d0c5f7b002e4a11252a08e16c7ba1",
+      "trainPnl": 4096,
+      "oosPnl": 399,
+      "trainN": 24,
+      "oosN": 6,
+      "markets": 12
+    },
+    {
+      "w": "0xcacf2bf1906bb3c74a0e0453bfb91f1374e335ff",
+      "trainPnl": 725,
+      "oosPnl": 311,
+      "trainN": 145,
+      "oosN": 53,
+      "markets": 75
+    },
+    {
+      "w": "0x89bd2d7fd71c763673bb8fad3525dc3d311301bf",
+      "trainPnl": 39,
+      "oosPnl": 4,
+      "trainN": 51,
+      "oosN": 4,
+      "markets": 39
+    },
+    {
+      "w": "0x2358c7d959047751c14f88539b3de1ae87c02c64",
+      "trainPnl": 61,
+      "oosPnl": 5,
+      "trainN": 33,
+      "oosN": 2,
+      "markets": 25
+    },
+    {
+      "w": "0x659074f8b95176e50dbdeb720be78b1666063a26",
+      "trainPnl": 61,
+      "oosPnl": 263,
+      "trainN": 16,
+      "oosN": 52,
+      "markets": 46
+    },
+    {
+      "w": "0x928589e0b5b686e33f95aaddab8b6a0f8d3ac19d",
+      "trainPnl": 107,
+      "oosPnl": 427,
+      "trainN": 23,
+      "oosN": 74,
+      "markets": 61
+    },
+    {
+      "w": "0x362840aca394e092acdd29f823280a315ef4bf4f",
+      "trainPnl": 28,
+      "oosPnl": 1,
+      "trainN": 21,
+      "oosN": 1,
+      "markets": 19
+    },
+    {
+      "w": "0xc56909fd0c506661621a4e07fbbf363bcd62039b",
+      "trainPnl": 20,
+      "oosPnl": 0,
+      "trainN": 26,
+      "oosN": 1,
+      "markets": 17
+    },
+    {
+      "w": "0xbf7f220b708074f54a292003f3df605c54f2abea",
+      "trainPnl": 22,
+      "oosPnl": 8,
+      "trainN": 114,
+      "oosN": 15,
+      "markets": 13
+    },
+    {
+      "w": "0x6a8328b1ae11569f7b27600073558879885e4c59",
+      "trainPnl": 2913,
+      "oosPnl": 24,
+      "trainN": 20,
+      "oosN": 1,
+      "markets": 6
+    },
+    {
+      "w": "0x807e7bb71f8486e12ac5b088e8ef8faab03450d6",
+      "trainPnl": 60,
+      "oosPnl": 13,
+      "trainN": 15,
+      "oosN": 5,
+      "markets": 7
+    },
+    {
+      "w": "0x4c4ed99ced89e29721416b19d9f3b6c97cd4b978",
+      "trainPnl": 85,
+      "oosPnl": 354,
+      "trainN": 45,
+      "oosN": 116,
+      "markets": 7
+    },
+    {
+      "w": "0xca6e9879b0a83eb471f974e159f2483c08b546f2",
+      "trainPnl": 17074,
+      "oosPnl": 14426,
+      "trainN": 59,
+      "oosN": 64,
+      "markets": 23
+    },
+    {
+      "w": "0x94fb389d0f9d3686b363b8bbf30ec240ce97d6cb",
+      "trainPnl": 1846,
+      "oosPnl": 95,
+      "trainN": 17,
+      "oosN": 2,
+      "markets": 9
+    },
+    {
+      "w": "0x61ac2c7a923c4f2c61febb5358a02fbb892d73e3",
+      "trainPnl": 13,
+      "oosPnl": 1,
+      "trainN": 21,
+      "oosN": 5,
+      "markets": 17
+    },
+    {
+      "w": "0x4a1f13f733dae181838b216d238e7ea3de891a9f",
+      "trainPnl": 146,
+      "oosPnl": 3,
+      "trainN": 76,
+      "oosN": 85,
+      "markets": 10
+    },
+    {
+      "w": "0xf27de6607cbd15be1133619b9807ff63fb86e6d3",
+      "trainPnl": 287,
+      "oosPnl": 12,
+      "trainN": 25,
+      "oosN": 1,
+      "markets": 6
+    },
+    {
+      "w": "0x560b69a33751e15bd28123910ec268a8742f85d7",
+      "trainPnl": 47,
+      "oosPnl": 0,
+      "trainN": 24,
+      "oosN": 4,
+      "markets": 13
+    },
+    {
+      "w": "0x87e3f8c8d4d1648ba3f0de21d4b85cb1e834d0de",
+      "trainPnl": 65,
+      "oosPnl": 125,
+      "trainN": 37,
+      "oosN": 6,
+      "markets": 17
+    },
+    {
+      "w": "0x3969b3ec94f4490816ccde65fae1cf8e1f246e2c",
+      "trainPnl": 1184,
+      "oosPnl": 1461,
+      "trainN": 360,
+      "oosN": 456,
+      "markets": 27
+    },
+    {
+      "w": "0xce316f28ac125b4eb96f30f629bc14d7b0ea19c4",
+      "trainPnl": 509,
+      "oosPnl": 154,
+      "trainN": 229,
+      "oosN": 228,
+      "markets": 49
+    },
+    {
+      "w": "0x02a49d06ca3b91bb18e615425e987a9d00806d14",
+      "trainPnl": 518,
+      "oosPnl": 83,
+      "trainN": 39,
+      "oosN": 9,
+      "markets": 24
+    },
+    {
+      "w": "0x79cbe531cca9eb9320b6ce22b6e471a7bb5d331e",
+      "trainPnl": 200,
+      "oosPnl": 9,
+      "trainN": 59,
+      "oosN": 19,
+      "markets": 16
+    },
+    {
+      "w": "0xa1780833ffe35cc09f51a832b8affd26bf7ae683",
+      "trainPnl": 77,
+      "oosPnl": 46,
+      "trainN": 23,
+      "oosN": 95,
+      "markets": 9
+    },
+    {
+      "w": "0xdfb7d327955f2b9e9c42e6e0cf08a9d30d7fe45e",
+      "trainPnl": 39,
+      "oosPnl": 8,
+      "trainN": 17,
+      "oosN": 4,
+      "markets": 15
+    },
+    {
+      "w": "0x3bef3a6bc4b1d895ed24ca37e88f06367a8ef04e",
+      "trainPnl": 149,
+      "oosPnl": 51,
+      "trainN": 186,
+      "oosN": 97,
+      "markets": 41
+    },
+    {
+      "w": "0x199f9e490b812d977c8549c993e2ce0cccfb3d76",
+      "trainPnl": 3800,
+      "oosPnl": 4262,
+      "trainN": 17,
+      "oosN": 5,
+      "markets": 15
+    },
+    {
+      "w": "0xc7bdc3e1ddeb40eae3a0268f6888d784be46ccfc",
+      "trainPnl": 18,
+      "oosPnl": 6,
+      "trainN": 15,
+      "oosN": 3,
+      "markets": 10
+    },
+    {
+      "w": "0xd3179f7ca7e1313a89aff7f09353c77ebbab025a",
+      "trainPnl": 2680,
+      "oosPnl": 395,
+      "trainN": 38,
+      "oosN": 31,
+      "markets": 14
+    },
+    {
+      "w": "0x0a219f1326fd4424d1c2151b4697e5ca56487dae",
+      "trainPnl": 31,
+      "oosPnl": 8,
+      "trainN": 30,
+      "oosN": 13,
+      "markets": 20
+    },
+    {
+      "w": "0x8e9eedf20dfa70956d49f608a205e402d9df38e4",
+      "trainPnl": 20229,
+      "oosPnl": 5043,
+      "trainN": 4433,
+      "oosN": 3874,
+      "markets": 68
+    },
+    {
+      "w": "0x35e4f89223ab2372477479016589226e0db45bbc",
+      "trainPnl": 866,
+      "oosPnl": 4173,
+      "trainN": 22,
+      "oosN": 44,
+      "markets": 28
+    },
+    {
+      "w": "0x57015ec09578ea194d9da8bc1b5dba49b826463a",
+      "trainPnl": 106,
+      "oosPnl": 15,
+      "trainN": 17,
+      "oosN": 3,
+      "markets": 6
+    },
+    {
+      "w": "0x673a02e6ddf0633db553d5d3a0c4dbabcc917926",
+      "trainPnl": 60,
+      "oosPnl": 32,
+      "trainN": 15,
+      "oosN": 4,
+      "markets": 6
+    },
+    {
+      "w": "0x0224bb9eb0a5c9fd261ac9123a72cbdd5748292a",
+      "trainPnl": 1666,
+      "oosPnl": 3293,
+      "trainN": 20,
+      "oosN": 6,
+      "markets": 10
+    },
+    {
+      "w": "0xe3fef40e69edb58016615f4b08d8edd1a13508d0",
+      "trainPnl": 16,
+      "oosPnl": 2,
+      "trainN": 15,
+      "oosN": 1,
+      "markets": 8
+    },
+    {
+      "w": "0x96ca2a99b83db409e91a89c141710e5a62fd5a71",
+      "trainPnl": 3003,
+      "oosPnl": 68,
+      "trainN": 39,
+      "oosN": 13,
+      "markets": 23
+    },
+    {
+      "w": "0x5e10bea5b234d7d8f992c6044986c23da35570f4",
+      "trainPnl": 969,
+      "oosPnl": 0,
+      "trainN": 99,
+      "oosN": 3,
+      "markets": 23
+    },
+    {
+      "w": "0xf2c3ddb09a513eb6c89c04efc9ad90274ee336ee",
+      "trainPnl": 3917,
+      "oosPnl": 12,
+      "trainN": 39,
+      "oosN": 3,
+      "markets": 8
+    },
+    {
+      "w": "0x4c86cdfff0fcff0f6b56a9ddb9f805b4b28f6993",
+      "trainPnl": 2021,
+      "oosPnl": 193,
+      "trainN": 16,
+      "oosN": 30,
+      "markets": 20
+    },
+    {
+      "w": "0xc7f7edb333f5cbd8a3146805e21602984b852abf",
+      "trainPnl": 341,
+      "oosPnl": 94,
+      "trainN": 17,
+      "oosN": 10,
+      "markets": 9
+    },
+    {
+      "w": "0xdf6da574f8b0c0ce5e01ddb1c5a49b87993e9c5c",
+      "trainPnl": 1424,
+      "oosPnl": 3,
+      "trainN": 24,
+      "oosN": 1,
+      "markets": 9
+    },
+    {
+      "w": "0x56c6a8caa07aa054c67ca2c7c0ef8a89ab6b0ea4",
+      "trainPnl": 46,
+      "oosPnl": 22,
+      "trainN": 30,
+      "oosN": 20,
+      "markets": 25
+    },
+    {
+      "w": "0xf3505345381358c2311ef9bc8096ace10165f3ff",
+      "trainPnl": 865,
+      "oosPnl": 112,
+      "trainN": 16,
+      "oosN": 8,
+      "markets": 10
+    },
+    {
+      "w": "0xaa9229257860a5d5fa2bf65603f4d3d2af110d27",
+      "trainPnl": 757,
+      "oosPnl": 63,
+      "trainN": 47,
+      "oosN": 18,
+      "markets": 13
+    },
+    {
+      "w": "0xe1b361d6a6f237b9ed7534d19b232df8369e1426",
+      "trainPnl": 1249,
+      "oosPnl": 703,
+      "trainN": 18,
+      "oosN": 10,
+      "markets": 5
+    },
+    {
+      "w": "0x37e4728b3c4607fb2b3b205386bb1d1fb1a8c991",
+      "trainPnl": 104458,
+      "oosPnl": 10729,
+      "trainN": 15,
+      "oosN": 7,
+      "markets": 15
+    },
+    {
+      "w": "0x303c5f6f2641f1293cb8e548d080b1c02d9f4487",
+      "trainPnl": 267,
+      "oosPnl": 4,
+      "trainN": 20,
+      "oosN": 2,
+      "markets": 11
+    },
+    {
+      "w": "0x63c652270a37e53a170303b6b264a2aa835743a5",
+      "trainPnl": 1799,
+      "oosPnl": 969,
+      "trainN": 26,
+      "oosN": 38,
+      "markets": 10
+    },
+    {
+      "w": "0xc77bc7c12cff77cd80de2d3377ce22aec3a6a526",
+      "trainPnl": 651,
+      "oosPnl": 40,
+      "trainN": 121,
+      "oosN": 32,
+      "markets": 11
+    },
+    {
+      "w": "0xde9b75edf5d0befed9de18238e75f376bbc444fd",
+      "trainPnl": 229,
+      "oosPnl": 811,
+      "trainN": 44,
+      "oosN": 42,
+      "markets": 26
+    },
+    {
+      "w": "0x6a2688cdb2c88fe628aa076697b2cd6834c78acb",
+      "trainPnl": 1128,
+      "oosPnl": 73,
+      "trainN": 29,
+      "oosN": 16,
+      "markets": 20
+    },
+    {
+      "w": "0x74f0de81293dcf963116344442cd5406fd3067e3",
+      "trainPnl": 348,
+      "oosPnl": 8,
+      "trainN": 20,
+      "oosN": 30,
+      "markets": 17
+    },
+    {
+      "w": "0x84f7860753f0fb62e7e786523690661c4255ade1",
+      "trainPnl": 3076,
+      "oosPnl": 2933,
+      "trainN": 143,
+      "oosN": 70,
+      "markets": 36
+    },
+    {
+      "w": "0x60d18d444868e6eddd3bb7238efdcda591190c8f",
+      "trainPnl": 1327,
+      "oosPnl": 3465,
+      "trainN": 15,
+      "oosN": 48,
+      "markets": 28
+    },
+    {
+      "w": "0x9880c4ed99c293999b35a4359b4eed0451d482d6",
+      "trainPnl": 2958,
+      "oosPnl": 17,
+      "trainN": 33,
+      "oosN": 4,
+      "markets": 15
+    },
+    {
+      "w": "0x587bcff09b7e887186a4e2b3086653f10dcd2622",
+      "trainPnl": 692,
+      "oosPnl": 109,
+      "trainN": 22,
+      "oosN": 21,
+      "markets": 24
+    },
+    {
+      "w": "0x1e1aed3928a9617e7c7ae674c4fa7aebbd9d7690",
+      "trainPnl": 4968,
+      "oosPnl": 3212,
+      "trainN": 566,
+      "oosN": 279,
+      "markets": 44
+    },
+    {
+      "w": "0xfd45a9bfaacc6b9cfafd813defe3c96b6f0bc05e",
+      "trainPnl": 28,
+      "oosPnl": 0,
+      "trainN": 26,
+      "oosN": 14,
+      "markets": 7
+    },
+    {
+      "w": "0xb3e78ed815f70103b5f5691da64d7f3d3b155989",
+      "trainPnl": 22,
+      "oosPnl": 1,
+      "trainN": 21,
+      "oosN": 2,
+      "markets": 5
+    },
+    {
+      "w": "0xfa394a598dbf573202a8286b45f512c7a383977f",
+      "trainPnl": 105,
+      "oosPnl": 279,
+      "trainN": 48,
+      "oosN": 41,
+      "markets": 52
+    },
+    {
+      "w": "0x442d6cb25b2200682d6ba45050ca4cdb6356523e",
+      "trainPnl": 50,
+      "oosPnl": 32,
+      "trainN": 205,
+      "oosN": 82,
+      "markets": 41
+    },
+    {
+      "w": "0x63093c592b9b0921be9b996edccd7a559843103e",
+      "trainPnl": 16,
+      "oosPnl": 7,
+      "trainN": 15,
+      "oosN": 14,
+      "markets": 21
+    },
+    {
+      "w": "0xe6c9eee27de792a9fdcdd322822452625d0f975e",
+      "trainPnl": 113,
+      "oosPnl": 73,
+      "trainN": 36,
+      "oosN": 57,
+      "markets": 18
+    },
+    {
+      "w": "0xcd5a86ab9a6721163a3b1cbddf0c007b37fa2ff7",
+      "trainPnl": 41,
+      "oosPnl": 38,
+      "trainN": 15,
+      "oosN": 4,
+      "markets": 11
+    },
+    {
+      "w": "0x3975aba26471a704ca021b4afa2f7dfd49360f53",
+      "trainPnl": 1221,
+      "oosPnl": 425,
+      "trainN": 115,
+      "oosN": 66,
+      "markets": 36
+    },
+    {
+      "w": "0xbf03e0c977294a1582c35ca5a28b0997afa7a4ca",
+      "trainPnl": 62,
+      "oosPnl": 12,
+      "trainN": 15,
+      "oosN": 5,
+      "markets": 12
+    },
+    {
+      "w": "0xe0aaa89d43b4e5cf29d5cdf412b54832065289ad",
+      "trainPnl": 3239,
+      "oosPnl": 297,
+      "trainN": 77,
+      "oosN": 35,
+      "markets": 22
+    },
+    {
+      "w": "0xe154165732b79548f7533fc45168b102dd7a0b7f",
+      "trainPnl": 418,
+      "oosPnl": 471,
+      "trainN": 18,
+      "oosN": 18,
+      "markets": 31
+    },
+    {
+      "w": "0xb8038d2e0f41c0d95d0846e470357e4d0e79b265",
+      "trainPnl": 8,
+      "oosPnl": 297,
+      "trainN": 18,
+      "oosN": 22,
+      "markets": 21
+    },
+    {
+      "w": "0x53007d598723f8d9106bc18bc772710ce794d039",
+      "trainPnl": 875,
+      "oosPnl": 2090,
+      "trainN": 30,
+      "oosN": 8,
+      "markets": 9
+    },
+    {
+      "w": "0x33c2ea1151c4399309715df027688845a6a99818",
+      "trainPnl": 11324,
+      "oosPnl": 3820,
+      "trainN": 37,
+      "oosN": 3,
+      "markets": 9
+    },
+    {
+      "w": "0xa1b8992b6b730135a46ab1d84107a817a57cb766",
+      "trainPnl": 13,
+      "oosPnl": 2,
+      "trainN": 23,
+      "oosN": 10,
+      "markets": 22
+    },
+    {
+      "w": "0xd90344155919671d44fd7e769caf4d4f50b2bf9d",
+      "trainPnl": 4798,
+      "oosPnl": 1920,
+      "trainN": 52,
+      "oosN": 1,
+      "markets": 16
+    },
+    {
+      "w": "0x9a3fa403a6666eef75f92f181fcf13f9c051914a",
+      "trainPnl": 443,
+      "oosPnl": 486,
+      "trainN": 18,
+      "oosN": 13,
+      "markets": 18
+    },
+    {
+      "w": "0x582b1bc8aa2ca73ca0819d549a7b5bc9b2a620af",
+      "trainPnl": 191,
+      "oosPnl": 0,
+      "trainN": 31,
+      "oosN": 2,
+      "markets": 17
+    },
+    {
+      "w": "0x75cab035de4c72feabacb3683f0f0c5fe6cba461",
+      "trainPnl": 787,
+      "oosPnl": 137,
+      "trainN": 15,
+      "oosN": 5,
+      "markets": 10
+    },
+    {
+      "w": "0x373559a78c0fdc5adcb7df68601ef1644b8c4282",
+      "trainPnl": 706,
+      "oosPnl": 38,
+      "trainN": 24,
+      "oosN": 7,
+      "markets": 4
+    },
+    {
+      "w": "0x1488c9a546650fc2d2f06875fe1d14af42f0e492",
+      "trainPnl": 229,
+      "oosPnl": 149,
+      "trainN": 82,
+      "oosN": 15,
+      "markets": 13
+    },
+    {
+      "w": "0xc6dd722558dbfbd8fa780efcbe819ed8c6604b9f",
+      "trainPnl": 14029,
+      "oosPnl": 4083,
+      "trainN": 64,
+      "oosN": 25,
+      "markets": 13
+    },
+    {
+      "w": "0x29c0a89b23af58739b6a4ab5f9c8b459af4aefaa",
+      "trainPnl": 1238,
+      "oosPnl": 257,
+      "trainN": 57,
+      "oosN": 10,
+      "markets": 22
+    },
+    {
+      "w": "0x0909e73b7733638b4b94de7498cd4f29951891ca",
+      "trainPnl": 566,
+      "oosPnl": 1,
+      "trainN": 28,
+      "oosN": 5,
+      "markets": 24
+    },
+    {
+      "w": "0x9def9524630e31ff90f884eed32c3eecfbf8d1a5",
+      "trainPnl": 3610,
+      "oosPnl": 908,
+      "trainN": 35,
+      "oosN": 10,
+      "markets": 20
+    },
+    {
+      "w": "0x2005d16a84ceefa912d4e380cd32e7ff827875ea",
+      "trainPnl": 16227,
+      "oosPnl": 4884,
+      "trainN": 133,
+      "oosN": 189,
+      "markets": 57
+    },
+    {
+      "w": "0x0619dafd91786867631d0546917aa35c244ed801",
+      "trainPnl": 223,
+      "oosPnl": 516,
+      "trainN": 20,
+      "oosN": 24,
+      "markets": 26
+    },
+    {
+      "w": "0x366c74554db8ea58ad71bff0ffd659d3f1808184",
+      "trainPnl": 1106,
+      "oosPnl": 226,
+      "trainN": 26,
+      "oosN": 4,
+      "markets": 11
+    },
+    {
+      "w": "0xbea30873865bc10b394a652faf5c6ff4f735e34f",
+      "trainPnl": 94,
+      "oosPnl": 98,
+      "trainN": 18,
+      "oosN": 7,
+      "markets": 9
+    },
+    {
+      "w": "0xc54a4a11ebaf00858c8f0c03b925598ce026ead9",
+      "trainPnl": 328,
+      "oosPnl": 54,
+      "trainN": 27,
+      "oosN": 11,
+      "markets": 16
+    },
+    {
+      "w": "0x8b72cb885a6bd4ea9d1da393ca231f0fa3476dbe",
+      "trainPnl": 135,
+      "oosPnl": 35,
+      "trainN": 21,
+      "oosN": 13,
+      "markets": 19
+    }
+  ]
+}
