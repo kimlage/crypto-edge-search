@@ -153,9 +153,11 @@ edge, so correcting them can only deepen a KILL, never manufacture a survivor.
 A **PROMISING** hypothesis clears the **core economic gates** (it makes money net of cost and beats its
 baselines) but **trips a multiple-testing or Deflated-Sharpe gate** — the *sign* of the edge is real, but
 its *realized mean is not significant at [honest N](#honest-n) on unseen data*. It is a real structural
-fingerprint that is too small, too rare, or too searched-for to bank. The two crypto leads that reached
-PROMISING (a beta-neutral cross-sectional Donchian breakout; a thin unlevered dated-futures basis) are the
-canonical examples; the Polymarket favorite-longshot structure is a third.
+fingerprint that is too small, too rare, or too searched-for to bank. The sole remaining crypto lead at
+PROMISING (a thin unlevered dated-futures basis) is the canonical example; the Polymarket favorite-longshot
+structure is a second. (A beta-neutral cross-sectional Donchian breakout was also PROMISING until
+2026-06-09, when a survivorship-free point-in-time rebuild showed even its *structure* — not just its
+magnitude — failed, and it flipped to KILL.)
 
 ### SURVIVE
 

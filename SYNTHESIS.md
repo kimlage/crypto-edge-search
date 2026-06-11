@@ -8,7 +8,7 @@
 | | Crypto (~111 hypotheses, 8 domains) | Polymarket (prediction markets) |
 |---|---|---|
 | Clean **SURVIVE** | **0** | **0** |
-| Weak **PROMISING** | **2** (beta-neutral XS Donchian breakout; thin unlevered dated-futures basis) — both held at the honest-N magnitude-significance boundary | **0** (one stratum reached PROMISING then fell to KILL under family-wise correction) |
+| Weak **PROMISING** | **1** (thin unlevered dated-futures basis) — held at the honest-N magnitude-significance boundary; the beta-neutral XS Donchian breakout was the 2nd until 2026-06-09, then flipped to KILL on a survivorship-free point-in-time rebuild | **0** (one stratum reached PROMISING then fell to KILL under family-wise correction) |
 | The rest | **KILL** | **KILL / DEFERRED** |
 | The one real thing | **carry** — a limits-to-arbitrage premium, decayed **below the risk-free rate** in 2025-26; a *regime trade*, not a business | the **favorite-longshot premium** — real structure, but sub-cost / tail-fragile / capacity-tiny; the prediction-market analogue of carry |
 

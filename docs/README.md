@@ -21,22 +21,24 @@ backlog — every one on **free public data at $0 cloud cost**.
 After a deepening pass **and** an independent two-layer methodology audit
 (audit-of-the-audit re-deriving each disputed number from the committed primitives):
 
-> **0 clean SURVIVE · 2 weak PROMISING · everything else KILL. Nothing is deployable.**
+> **0 clean SURVIVE · 1 weak PROMISING · everything else KILL. Nothing is deployable.**
 
 > **Browse every verdict interactively:** [`dashboard.html`](dashboard.html) — a single self-contained page (search + filter by domain/verdict over one sortable table) generated from the `output/edgehunt-*/SUMMARY.md` ledgers by `tsx scripts/build-dashboard.ts`.
 
-The two PROMISING leads are both held back at the **PROMISING/SURVIVE boundary** — the
+The sole remaining PROMISING lead is held back at the **PROMISING/SURVIVE boundary** — its
 realized mean is not positive-with-significance at honest `N` on unseen data:
 
-1. **Cross-sectional Donchian channel-position long-short** — genuinely beta-neutral; the
-   *structure* is real (cross-sectional-shuffle null `p=0.009`, positive at every `N` and
-   every holdout quarter), but on the 388-row consume-once holdout the **magnitude is
-   indistinguishable from zero** (DSR@N=1 = 0.79, Newey-West `t`(mean) = 0.96), and charging
-   financing on the continuous short notional erodes the out-of-sample Sharpe to a range
-   **~0.3–0.5**.
-2. **Dated-futures basis carry** — **unlevered-thin only** (~4.9%/yr, `t=2.41`), which is
+1. **Dated-futures basis carry** — **unlevered-thin only** (~4.9%/yr, `t=2.41`), which is
    below every multiple-testing bar; the levered headline was a **financing-leak artifact**
    (the harness charged the risk-free rate on 1 unit but borrow on the ~2.9×-levered notional).
+
+> **2026-06-09 — XS Donchian downgraded PROMISING → KILL (survivorship).** The
+> cross-sectional Donchian L/S lead looked beta-neutral with a real structure on the 30-name
+> survivor panel (`p=0.009`), but rebuilt on the delisted-inclusive point-in-time universe
+> (the honest 161 ever-members) it was substantially survivorship: the family-wise shuffle
+> `p` moved **0.002 → 0.103** and the alpha `t` **3.22 → 1.60** (BTC beta → +0.36); the
+> gauntlet binds on DSR 0.451 @N=72. See [`CHANGELOG_RESEARCH.md`](CHANGELOG_RESEARCH.md) and
+> `scripts/edgehunt-donchian-pit/RESULTS.md`.
 
 The audit was load-bearing. It **flipped three earlier PROMISINGs to KILL** — BTC exchange
 reserve-depletion, the Q9 cross-sectional low-vol anomaly, and the O3 fee-revenue NVT
@@ -69,7 +71,7 @@ that killed ~109 in-sample Sharpes that would otherwise have looked like wins.
 
 | Document | One-line description |
 |---|---|
-| `README.md` (this file) | **Front door & index** — what the program is, the audited headline (~111 tested / 0 SURVIVE / 2 weak PROMISING / rest KILL), and the map to every other doc. |
+| `README.md` (this file) | **Front door & index** — what the program is, the audited headline (~111 tested / 0 SURVIVE / 1 weak PROMISING / rest KILL), and the map to every other doc. |
 | [`RESULTS.md`](RESULTS.md) | **The findings, as tables** — the per-hypothesis result tables and the headline tally, with the binding gate that killed (or capped) each hypothesis. |
 | [`METHODOLOGY.md`](METHODOLOGY.md) | **How the killing was done** — the binding gauntlet order, the right surrogate null per claim (incl. the family-wise MAX-statistic for searched grids), honest `N`, honest financing, and the consume-once holdout. |
 | [`GLOSSARY.md`](GLOSSARY.md) | **The terms, defined** — one clear paragraph each for DSR, PBO/CSCV, the Harvey-Liu haircut, the family-wise MAX-statistic, the surrogate/placebo null, honest `N`, the consume-once holdout, the matched-exposure baseline, beta-neutrality, h=0 leakage, and financing-on-full-notional. |
@@ -87,7 +89,7 @@ that killed ~109 in-sample Sharpes that would otherwise have looked like wins.
 
 ## Suggested reading order (for a newcomer evaluating the rigor)
 
-1. **This index** — get the audited headline (~111 tested, 0 SURVIVE, 2 weak PROMISING, the
+1. **This index** — get the audited headline (~111 tested, 0 SURVIVE, 1 weak PROMISING, the
    rest KILL; the methodology is the asset) and the lay of the land.
 2. **[`EDGE_SEARCH_SYNTHESIS.md`](EDGE_SEARCH_SYNTHESIS.md)** — the narrative: read this to
    understand *what was learned and why nothing tradeable survived*. It frames everything

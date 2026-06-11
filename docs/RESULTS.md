@@ -2,6 +2,19 @@
 
 *[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
 
+> **2026-06-09 update — XS Donchian downgraded PROMISING → KILL; tally now 0 SURVIVE / 1 PROMISING.**
+> The delisted-inclusive point-in-time replay (`scripts/edgehunt-donchian-pit/RESULTS.md`)
+> showed the cross-sectional Donchian L/S lead was substantially **survivorship**: on the
+> honest 161-ever-member universe (vs the 30-name survivor panel that scored it; mean overlap
+> 16.8/30, old-LUNA held through its crash) the family-wise cross-sectional-shuffle null moved
+> **p 0.002 → 0.103** and beta-neutral alpha **t 3.22 → 1.60** (BTC beta → +0.36); the library
+> gauntlet binds on **deflated_sharpe (DSR 0.451 @ honest N=72)**. Pipeline parity 9/9 vs the
+> published numbers was proven first. The **dated-futures basis carry (unlevered-thin)** is now
+> the **sole** remaining PROMISING. Two new campaign-E hypotheses are also recorded: a
+> cross-sectional funding-rank L/S carry (**KILL**, `scripts/edgehunt-fundingrank/RESULTS.md`)
+> and Kalshi × Polymarket same-event convergence (**DEFERRED** on data,
+> `scripts/edgehunt-kalshi/RESULTS.md`).
+
 > **What this is.** The single, canonical, English-language record of every hypothesis
 > this project has put through its anti-overfitting gauntlet in a systematic, $0,
 > reproducible search for a tradeable crypto edge. **~111 distinct hypotheses** have now
@@ -10,11 +23,13 @@
 > event/carry/on-chain POC), (2) the **2026-06 domain campaign** (~58 across eight
 > domains), and (3) the **new $0 backlog** (18: quant/regime/vol + on-chain/price-action).
 >
-> **Final, audited verdict: 0 clean SURVIVE. 2 weak PROMISING. Everything else KILL.**
-> Nothing is deployable. The two PROMISING leads are real *structures* that never crossed
-> the PROMISING→SURVIVE boundary — i.e. their realized mean is **not** positive-with-
-> significance at honest trial-count `N` on data the search never saw. Read their full
-> caveats in §1 before quoting any number from them.
+> **Final, audited verdict: 0 clean SURVIVE. 1 weak PROMISING. Everything else KILL.**
+> Nothing is deployable. The sole remaining PROMISING lead is a real *structure* that never
+> crossed the PROMISING→SURVIVE boundary — i.e. its realized mean is **not** positive-with-
+> significance at honest trial-count `N` on data the search never saw. Read its full
+> caveats in §1 before quoting any number from it. (XS Donchian was a 2nd PROMISING until
+> 2026-06-09, when the point-in-time replay showed it was substantially survivorship — see
+> the banner above and §1.)
 >
 > **The durable asset is the methodology, not a strategy.** A committed, fixed-order
 > gauntlet — net-of-cost, matched-exposure baselines, Deflated Sharpe at *honest* `N`,
@@ -49,9 +64,9 @@
 |---|---:|---|
 | **Hypotheses tested (all eras, all $0)** | **~111** | ~35 prior rounds + 58 the 2026-06 campaign + 18 the new backlog |
 | **Clean SURVIVE** | **0** | nothing cleared the full gauntlet on unseen data |
-| **PROMISING (weak, caveated)** | **2** | XS Donchian L/S; dated-futures basis carry (unlevered-thin only) |
-| **KILL** | **~109** | every other hypothesis, net of realistic cost |
-| **Audit flips (PROMISING → KILL)** | **3** | reserve-depletion, Q9 low-vol, O3 fee-NVT — all on the *same* defect |
+| **PROMISING (weak, caveated)** | **1** | dated-futures basis carry (unlevered-thin only) — XS Donchian fell to KILL 2026-06-09 (survivorship, §1) |
+| **KILL** | **~110** | every other hypothesis, net of realistic cost |
+| **Audit flips (PROMISING → KILL)** | **4** | reserve-depletion, Q9 low-vol, O3 fee-NVT (one *same* defect) + XS Donchian (survivorship, 2026-06-09) |
 
 **The one sentence.** A right-null surrogate **pass** proves a signal's *structure/sign is
 non-random*; it does **not** prove the realized mean is positive-with-significance at honest
@@ -62,49 +77,42 @@ this body of negative evidence.
 
 ---
 
-## 1. The two weak PROMISING leads (full caveats — read before quoting)
+## 1. The sole weak PROMISING lead — plus the XS Donchian downgrade (full caveats — read before quoting)
 
-Both passed the *right* surrogate null (so the structure is real), beat their baselines, and
-survived a consume-once holdout in *sign* — but each trips a magnitude / multiple-testing
-gate on unseen data, which is why neither is SURVIVE and neither is deployable. Both carry a
-**financing caveat**: the campaign's harness charged zero borrow on the short/levered
-notional (a systemic leak; see §4), so the OOS economics below are reported *after* charging
-it, as a range.
+The remaining lead passed the *right* surrogate null (so the structure is real), beat its
+baselines, and survived a consume-once holdout in *sign* — but it trips a magnitude /
+multiple-testing gate on unseen data, which is why it is not SURVIVE and not deployable. It
+carries a **financing caveat**: the campaign's harness charged zero borrow on the
+short/levered notional (a systemic leak; see §4), so the OOS economics below are reported
+*after* charging it, as a range.
 
-### Lead 1 — Cross-sectional Donchian channel-position long-short (beta-neutral)
+### Downgraded 2026-06-09 — Cross-sectional Donchian channel-position long-short (was PROMISING → now KILL)
 
 Rank a 30-coin panel by each coin's position within its N-day high-low channel (breakout
 strength); go long high-position, short low-position, dollar-neutral, continuous z-scored
-weights. *(`output/edgehunt-requeue/SUMMARY.md`; deepened in `output/edgehunt-deepen/SUMMARY.md`.)*
+weights. *(`output/edgehunt-requeue/SUMMARY.md`; the survivorship adjudication is
+`scripts/edgehunt-donchian-pit/RESULTS.md`.)*
 
-- **What is real.** Genuinely **beta-neutral** (betas on {BTC, equal-weight} ≈ [−0.09, +0.08],
-  alpha t ≈ 3.4–3.6 in-sample), so it is not timed long-beta. It **beats every baseline**
-  (B&H, equal-weight-long, random dollar-neutral) and **passes the right null** — the
-  cross-sectional-shuffle placebo at **p = 0.009** (the shuffled book is ≈ −1.1 Sharpe).
-  The tilt is positive at **every** channel length N ∈ [20, 200] and in **every** holdout
-  quarter. Harvey-Liu adjP = 0.0099; PBO = 0.000; per-config DSR@N=1 ≈ 0.999.
-- **Why it is *not* SURVIVE.** On the **388-row consume-once holdout the magnitude is
-  statistically indistinguishable from zero**: DSR@N=1 = **0.79** (< 0.95), Newey-West
-  t(mean) = **0.96**, block-bootstrap mean CI-lower < 0. The full grid carries an honest
-  **N = 72** search penalty that the per-config DSR ignores. The 30-coin panel is
-  **survivorship-biased** (LUNA / FTT absent), so even the holdout is an upper bound — a
-  −90% delisting shock flips the holdout negative in **17%** of draws.
-- **The financing caveat.** The first pass cited a beta-hedge gate of 0.318, which the
-  deepening showed was an **in-sample over-hedge artifact** (honest-OOS hedge β = 0.78).
-  Charging borrow on the continuous ~1.0× short notional erodes the OOS holdout Sharpe from
-  ~0.53 toward 0 / negative under expensive alt borrow (DOGE/AVAX/INJ…). **Report the OOS
-  Sharpe as a range ~0.3–0.5, never a point.**
-- **Money (canonical N=120 z-score-HIGH config, gross-2×, full-sample, illustrative only).**
-  ~4.1%/mo gross → ~$412/mo @ $10k, ~$4,116/mo @ $100k; the deepening's corrected,
-  financing-aware figure is **~$2,298/mo @ $100k**. *These are in-sample/full-history upper
-  bounds — the honest OOS magnitude is ~0.* Trade the canonical, not the grid-best (1.69),
-  which DSR correctly haircuts.
-- **Verdict: PROMISING.** Next step is **not** more backtesting: pre-register the canonical
-  config, rebuild the panel point-in-time / survivorship-free, and track the beta-hedged
-  holdout Sharpe live (graduates only if it stabilizes above ~0.4 hedged; dies if XS-momentum
-  decay continues).
+- **Why it was PROMISING.** On the **30-name survivor panel** it looked genuinely
+  beta-neutral (alpha t ≈ 3.4–3.6 in-sample), beat every baseline, and **passed the right
+  null** — the cross-sectional-shuffle placebo at **p = 0.009** — positive at every channel
+  length and in every holdout quarter. The single open caveat was always **survivorship**: the
+  panel had LUNA / FTT absent.
+- **Why it is now KILL (the survivorship adjudication).** Rebuilt on the **delisted-inclusive
+  point-in-time universe** — the honest **161 ever-member** assets (vs 30 in the survivor
+  panel; mean overlap **16.8/30**, old-LUNA held *through* its 2022 crash) — its two pillars
+  collapse. The **family-wise cross-sectional-shuffle p moves 0.002 → 0.103** (no longer
+  significant) and the **beta-neutral alpha t 3.22 → 1.60** with the book now loading
+  **+0.36 on BTC** (beta-neutrality was itself panel-dependent). The library `runGauntlet`
+  on the honest panel binds on **deflated_sharpe (DSR 0.451 @ honest N=72)**, and also fails
+  haircut, surrogate, and holdout. Pipeline **parity 9/9** vs the published numbers was proven
+  before trusting the new figures. The published edge was **substantially an artifact of
+  scoring a 2026 universe on 2021 history**.
+- **Verdict: KILL (survivorship + family-wise surrogate).** The only honest residual path is
+  the pre-registered forward watch (forward data is survivorship-free by construction), whose
+  prior is now materially weaker.
 
-### Lead 2 — Dated-futures basis cash-and-carry (BTC+ETH), **unlevered-thin only**
+### Lead 1 (sole remaining PROMISING) — Dated-futures basis cash-and-carry (BTC+ETH), **unlevered-thin only**
 
 Short the contango quarterly future + long spot, hold to convergence; harvest the
 term-structure premium *beyond* perp funding. *(`scripts/edgehunt/dated_futures_carry.ts`,
@@ -126,9 +134,10 @@ term-structure premium *beyond* perp funding. *(`scripts/edgehunt/dated_futures_
   business. Next: honest financing on a vol-targeted spread, live basis + borrow data, and an
   explicit stress of the thin-contango regime.
 
-> **Neither lead is investable today.** Their common next step is the same: pre-register one
-> config, acquire the missing data (survivorship-free universe / live basis + borrow), and
-> validate **strictly forward** — not more in-sample search.
+> **The remaining lead is not investable today.** Its next step: pre-register one config,
+> acquire the missing data (live basis + borrow), and validate **strictly forward** — not more
+> in-sample search. (The XS Donchian lead took exactly this survivorship-free path and **failed
+> it** — see the 2026-06-09 downgrade above.)
 
 ---
 
@@ -195,10 +204,11 @@ that survived prediction-vs-carry is structural carry, and it decayed below the 
 One large, parallelized campaign pushed ~58 hypotheses across eight domains through the
 committed gauntlet at $0, as a fan-out of domain workflows each genuinely trying to *find*
 edge. Cross-domain roll-up: `docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md`. Per-domain syntheses are
-cited inline. After deepening + the two-layer audit (§4) the campaign's audited tally is
-**0 SURVIVE, 2 PROMISING (the Donchian + dated-futures-unlevered leads in §1), ~51 KILL.**
+cited inline. After deepening + the two-layer audit (§4) and the 2026-06-09 XS Donchian
+survivorship downgrade (§1), the campaign's audited tally is
+**0 SURVIVE, 1 PROMISING (the dated-futures-unlevered lead in §1), ~52 KILL.**
 
-### 3.1 Consensus / carry-arb family (`output/edgehunt/SUMMARY.md`) — 9 tested, 7 KILL, 2 PROMISING→(audited)
+### 3.1 Consensus / carry-arb family (`output/edgehunt/SUMMARY.md`) — 9 tested, 7 KILL, 1 PROMISING + 1 PROMISING→KILL (audited)
 
 | Hypothesis | Verdict | Binding gate | Decisive number |
 |---|---|---|---|
@@ -214,7 +224,8 @@ cited inline. After deepening + the two-layer audit (§4) the campaign's audited
 
 ### 3.2 D1 — indicators & price action (`output/edgehunt-D1/SUMMARY.md`, `output/edgehunt-requeue/SUMMARY.md`)
 
-The XS Donchian PROMISING (§1) lives here (re-queue batch). The rest are KILL:
+The XS Donchian lead (§1) lives here (re-queue batch); it was PROMISING until the 2026-06-09
+survivorship downgrade to **KILL**. The rest are KILL:
 
 | Hypothesis | Verdict | Binding gate | Decisive number |
 |---|---|---|---|
@@ -365,17 +376,19 @@ it **inflated the headline**:
 
 ### 4.4 Corrected tally and the meta-conclusion
 
-**Audited final state: 0 clean SURVIVE; 2 weak PROMISING (XS Donchian; dated-futures
-unlevered-thin); everything else KILL** (~109 across all eras, with the 3 flips above moving
-from PROMISING to KILL). The financing leak re-anchors the dated-futures carry; the
-family-wise surrogate flips reserve, Q9, and O3.
+**Audited final state: 0 clean SURVIVE; 1 weak PROMISING (dated-futures unlevered-thin);
+everything else KILL** (~110 across all eras, with the 3 family-wise flips above plus the
+2026-06-09 XS Donchian survivorship downgrade moving from PROMISING to KILL). The financing
+leak re-anchors the dated-futures carry; the family-wise surrogate flips reserve, Q9, and O3;
+the point-in-time survivorship replay flips XS Donchian (§1).
 
 > **The meta-conclusion.** A right-null surrogate **PASS** proves the structure/sign is
 > non-random — **not** that the realized mean is positive-with-significance at honest `N` on
 > unseen data. That gap is exactly the PROMISING/SURVIVE boundary, and **no lead, in any era,
 > crossed it.** Nothing is deployable. The durable deliverable is the **methodology** plus
 > this body of negative evidence. The two prior carry "survivors" (perp funding, dated-futures
-> basis) remain **sub-risk-free** regime trades.
+> basis) remain **sub-risk-free** regime trades, and the last cross-sectional lead (XS Donchian)
+> fell to a survivorship-free rebuild in 2026-06.
 
 ---
 

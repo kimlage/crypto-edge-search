@@ -7,8 +7,9 @@
  * Schema 2020-12 alone cannot express:
  *   (a) auditOverrideReason is REQUIRED iff rawVerdict != auditedVerdict (and MUST be
  *       absent when they are equal — a reason without a flip is a provenance error);
- *   (b) the audited headline MUST be exactly 0 SURVIVE and 2 PROMISING
- *       {D1-LS-DONCH, D8-C6-DATED}, everything else KILL/DEFERRED.
+ *   (b) the audited headline MUST be exactly 0 SURVIVE and 1 PROMISING
+ *       {D8-C6-DATED}, everything else KILL/DEFERRED. (XS Donchian / D1-LS-DONCH was
+ *       downgraded PROMISING -> KILL on 2026-06-09 as substantially survivorship.)
  * Plus a leak guard: no artifactPath may be an absolute or machine-local path.
  *
  * Exits non-zero on any failure.
@@ -60,7 +61,7 @@ export function ledgerInvariantErrors(entries: LedgerEntry[]): string[] {
   const survive = entries.filter((e) => e.auditedVerdict === "SURVIVE");
   const promising = entries.filter((e) => e.auditedVerdict === "PROMISING").map((e) => e.id).sort();
   if (survive.length !== 0) errors.push(`headline: expected 0 SURVIVE, got ${survive.length}`);
-  const expectedPromising = ["D1-LS-DONCH", "D8-C6-DATED"];
+  const expectedPromising = ["D8-C6-DATED"];
   if (JSON.stringify(promising) !== JSON.stringify(expectedPromising)) {
     errors.push(`headline: expected PROMISING ${JSON.stringify(expectedPromising)}, got ${JSON.stringify(promising)}`);
   }

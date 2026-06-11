@@ -514,7 +514,7 @@ export function renderHtml(rows: DisplayRow[]): string {
   <p class="sub">~111 trading hypotheses through the committed anti-overfitting gauntlet on free public data at $0 cloud cost. The FINAL verdict and every headline count below come from the canonical audited ledger <code>output/results-ledger.json</code> (not the raw per-domain tables). Each row also shows its RAW per-domain verdict for provenance; where the two-layer audit overturned a lead, the row is flagged.</p>
   <div class="banner">
     <span class="tag">Canonical audited state</span>
-    0 SURVIVE · 2 weak PROMISING · rest KILL/DEFERRED — nothing deployable
+    0 SURVIVE · 1 weak PROMISING · rest KILL/DEFERRED — nothing deployable
   </div>
   <div class="counts">
     <div class="count-card cc-total"><span class="cc-n">${total}</span><span class="cc-label">Hypotheses</span></div>

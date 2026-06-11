@@ -380,10 +380,12 @@ node_modules/.bin/tsx scripts/edgehunt-D5/<your-file>.ts
 
 **Expect a KILL.** Across the lab's ~111 tested hypotheses (≈35 prior rounds + 58 in the
 2026-06 domain campaign + 18 newer `$0` backlog ideas, all on free public data, all
-through this gauntlet) the final audited count is **0 clean SURVIVE, 2 weak PROMISING, the
-rest KILL** — and the two PROMISING leads (a beta-neutral cross-sectional Donchian
-channel-position book whose 388-row holdout magnitude is ~0; a dated-futures basis carry
-that survives only thin and unlevered at ~4.9%/yr) are **not deployable**. The harness is
+through this gauntlet) the final audited count is **0 clean SURVIVE, 1 weak PROMISING, the
+rest KILL** — and the sole PROMISING lead (a dated-futures basis carry that survives only
+thin and unlevered at ~4.9%/yr) is **not deployable**. (The beta-neutral cross-sectional
+Donchian channel-position book was a 2nd PROMISING until 2026-06-09, when a survivorship-free
+point-in-time rebuild flipped it to KILL — its 30-name survivor panel had carried the edge.)
+The harness is
 honest by construction: if your parent pool is empty under this gauntlet, the **target**
 lacks edge net of cost — the gauntlet is not too strict. **Change the target, never the
 gates.**

@@ -14,8 +14,9 @@
 > survives **and** whatever dies. The program tested **~111 hypotheses across 8 domains**
 > (~35 prior rounds + 58 in the 2026-06 domain campaign + 18 in two later $0 backlog
 > batches), all on free public data, all through the committed gauntlet. **Final audited
-> tally: 0 clean SURVIVE, 2 weak/caveated PROMISING, everything else KILL — nothing
-> deployable.** The durable deliverable is the **methodology** + the body of negative
+> tally: 0 clean SURVIVE, 1 weak/caveated PROMISING, everything else KILL — nothing
+> deployable.** (XS Donchian was the 2nd PROMISING until 2026-06-09, when a survivorship-free
+> point-in-time rebuild flipped it to KILL.) The durable deliverable is the **methodology** + the body of negative
 > evidence (see `docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md` for the cross-domain roll-up and the
 > per-domain `output/edgehunt-*/SUMMARY.md` files for the detail).
 >
@@ -200,18 +201,21 @@ proves the structure/sign is non-random — it does **not** prove the realized *
 positive with significance at honest N on unseen data*. That gap is exactly the
 PROMISING/SURVIVE line, and **no lead crossed it**.
 
-### The two surviving PROMISINGs (both weak, both caveated)
+### The sole surviving PROMISING (weak, caveated) — plus the downgraded Donchian
 
-1. **XS Donchian channel-position long-short** — beta-neutral cross-sectional breakout.
-   Structure is real (cross-sectional-shuffle null **p=0.009**, positive at every N∈[20,200]
-   and every holdout quarter), but on the **388-row consume-once holdout the magnitude is
-   indistinguishable from zero**: DSR@N=1 **0.79**, Newey-West t(mean) **0.96**,
-   block-bootstrap CI-lower < 0. Charging borrow on the continuous ~1.0× short notional
-   erodes the OOS Sharpe to a range **~0.3–0.5**. Survivorship-biased panel.
-2. **Dated-futures basis carry** — structural carry, **unlevered-thin only**: ~**4.9%/yr,
+1. **Dated-futures basis carry** — structural carry, **unlevered-thin only**: ~**4.9%/yr,
    t=2.41**, sub-every-multiple-testing-bar and regime-fragile. The levered headline was a
    **financing-leak artifact** (RF charged on 1 unit while ~2.95×-levered; correcting it
    collapses the levered series to DSR 0.13, ~$447/mo).
+
+**Downgraded 2026-06-09 — XS Donchian channel-position long-short (was PROMISING → now KILL).**
+On the 30-name survivor panel the structure looked real (cross-sectional-shuffle null
+**p=0.009**), but rebuilt on the delisted-inclusive point-in-time universe (the honest 161
+ever-members; mean overlap 16.8/30; old-LUNA held through its crash) it was **substantially
+survivorship**: the family-wise shuffle **p moved 0.002 → 0.103** and the beta-neutral alpha
+**t 3.22 → 1.60** (BTC beta → +0.36); the gauntlet binds on **DSR 0.451 @N=72**. Reproduce via
+`scripts/edgehunt-donchian-pit/` (see its `RESULTS.md`; pipeline parity 9/9 vs the published
+numbers first).
 
 ### What the audit flipped (and why it matters)
 
@@ -326,8 +330,8 @@ reproduce the **entire** falsification program — the data, the gauntlet, every
 ### See also
 
 - `docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md` — the cross-domain roll-up of the 2026-06 campaign
-  (the audited final tally, the two PROMISINGs, the KILL ledger by domain, methodology
-  notes, and the bibliography).
+  (the audited final tally, the sole remaining PROMISING + the downgraded Donchian, the KILL
+  ledger by domain, methodology notes, and the bibliography).
 - `docs/BACKLOG.md` — the research backlog (155 testable hypotheses across 8 domains).
 - `output/edgehunt-*/SUMMARY.md` — per-domain syntheses;
   `output/edgehunt-audit/SUMMARY.md` + `output/edgehunt-audit-nb/SUMMARY.md` — the

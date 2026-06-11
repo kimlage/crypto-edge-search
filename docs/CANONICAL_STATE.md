@@ -24,9 +24,11 @@ It is an array of audited entries — one per hypothesis the program ran — con
 - supporting evidence (`bindingGate`, `honestN`, `surrogateP`, `monthlyAt100k`,
   `lastAudit`, `artifactPath`).
 
-**Audited headline (authoritative): 0 SURVIVE, 2 PROMISING — (1) XS Donchian
-channel-position long-short, (2) dated-futures basis carry (unlevered-thin only) — and
-everything else KILL or DEFERRED.**
+**Audited headline (authoritative): 0 SURVIVE, 1 PROMISING — dated-futures basis carry
+(unlevered-thin only) — and everything else KILL or DEFERRED.** (XS Donchian channel-position
+long-short was the 2nd PROMISING until 2026-06-09, when the delisted-inclusive point-in-time
+replay showed it was substantially survivorship and it flipped to KILL — see
+`docs/CHANGELOG_RESEARCH.md` and `scripts/edgehunt-donchian-pit/RESULTS.md`.)
 
 ## The human-readable view
 
@@ -44,7 +46,7 @@ program can check, read the ledger.
 - **The consistency check** is `scripts/validate-results-ledger.ts` plus
   `test/results-ledger.test.ts`: they validate `output/results-ledger.json` against the
   schema, enforce the override-reason invariant, and assert the audited headline (0
-  SURVIVE, 2 PROMISING). `scripts/build-results-ledger.ts` regenerates the ledger
+  SURVIVE, 1 PROMISING). `scripts/build-results-ledger.ts` regenerates the ledger
   deterministically and the test asserts the on-disk file matches byte-for-byte.
 - **`docs/BACKLOG.md`** is the research queue; its verdict cells are advisory and tagged
   `[audited: …]` where they were reconciled to the ledger.

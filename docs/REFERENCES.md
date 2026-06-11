@@ -29,8 +29,9 @@
 The project's claim is **methodological, not predictive**: a committed validation gauntlet, run at
 $0 on free public data, pushed **~111 hypotheses across eight domains** (≈35 prior rounds + 58 in the
 2026-06 parallelized domain campaign + 18 from the new $0 backlog) through the same anti-overfitting
-protocol. **Final audited state: 0 clean SURVIVE; 2 weak PROMISING; everything else KILL.** The
-bibliography below is the audit trail for that claim. Two conventions:
+protocol. **Final audited state: 0 clean SURVIVE; 1 weak PROMISING; everything else KILL.** (XS
+Donchian was the 2nd PROMISING until 2026-06-09, when a survivorship-free point-in-time rebuild flipped
+it to KILL.) The bibliography below is the audit trail for that claim. Two conventions:
 
 - **Section A** maps each gate of the gauntlet to the paper that defines the statistic or control it
   implements. The committed gate primitives live in
@@ -46,9 +47,11 @@ bibliography below is the audit trail for that claim. Two conventions:
   regime trade.
 
 > **Honest framing.** This is a *negative-results + rigorous-methodology* contribution. **Nothing is
-> deployable.** The two weak PROMISING leads are held back from SURVIVE by the *same* boundary: a
+> deployable.** The sole remaining weak PROMISING lead is held back from SURVIVE by the boundary a
 > right-null surrogate **pass proves the structure/sign is non-random — it does not prove the realized
-> mean is positive-with-significance at honest N on unseen data.** No lead crossed that gap. The two
+> mean is positive-with-significance at honest N on unseen data.** No lead crossed that gap; the XS
+> Donchian lead, which once cleared the surrogate on the survivor panel, even lost the *structure*
+> claim itself once rebuilt survivorship-free (2026-06-09). The two
 > historical "carry survivors" (perpetual-funding carry, dated-futures basis) are real but sub-risk-free
 > regime trades, and a systemic financing-leak correction (zero borrow charged on levered/short
 > notional) halved their headline economics. The durable deliverable is the **methodology + the body of
@@ -59,12 +62,14 @@ bibliography below is the audit trail for that claim. Two conventions:
 ## The audited final state (one paragraph)
 
 ~111 hypotheses, all at $0 on free public data, all through the committed gauntlet:
-**0 clean SURVIVE; 2 weak PROMISING** —
-**(1)** XS Donchian channel-position long-short (beta-neutral; cross-sectional-shuffle null p=0.009;
-but the 388-row consume-once holdout magnitude is ~0 — DSR@N=1 0.79, Newey-West t 0.96 — and financing
-on the ~1.0× short notional erodes OOS to a range ~0.3–0.5);
-**(2)** dated-futures basis carry, **unlevered-thin only** (~4.9%/yr, t=2.41, sub-every-multiple-testing
+**0 clean SURVIVE; 1 weak PROMISING** —
+**(1)** dated-futures basis carry, **unlevered-thin only** (~4.9%/yr, t=2.41, sub-every-multiple-testing
 bar; the levered headline was a financing-leak artifact).
+**XS Donchian channel-position long-short** was a 2nd PROMISING until 2026-06-09: it cleared the
+cross-sectional-shuffle null (p=0.009) on the 30-name survivor panel, but rebuilt on the
+delisted-inclusive point-in-time universe (the honest 161 ever-members) it was substantially
+survivorship — the family-wise shuffle p moved 0.002 → 0.103, alpha t 3.22 → 1.60, binds on DSR 0.451
+@N=72 — and is now **KILL** (`scripts/edgehunt-donchian-pit/RESULTS.md`).
 A two-layer independent audit flipped **three** earlier PROMISINGs to KILL — BTC exchange
 reserve-depletion (netflow), Q9 cross-sectional low-volatility anomaly, and O3 fee-revenue NVT — all on
 the **same defect**: a single-best-config surrogate `p` masking a *searched* grid (the correct null is
@@ -229,7 +234,7 @@ and [`EDGE_SEARCH_DOMAIN_CAMPAIGN.md`](EDGE_SEARCH_DOMAIN_CAMPAIGN.md).
 
 ## See also (project documentation set)
 
-- [`EDGE_SEARCH_DOMAIN_CAMPAIGN.md`](EDGE_SEARCH_DOMAIN_CAMPAIGN.md) — the 2026-06 cross-domain roll-up: ~58 campaign hypotheses + the deepening + the two-layer audit; the corrected tally **0 SURVIVE, 2 PROMISING, the rest KILL**; the four-leads detail and the per-domain KILL ledger.
+- [`EDGE_SEARCH_DOMAIN_CAMPAIGN.md`](EDGE_SEARCH_DOMAIN_CAMPAIGN.md) — the 2026-06 cross-domain roll-up: ~58 campaign hypotheses + the deepening + the two-layer audit + the 2026-06-09 XS Donchian survivorship downgrade; the corrected tally **0 SURVIVE, 1 PROMISING, the rest KILL**; the four-leads detail and the per-domain KILL ledger.
 - [`BACKLOG.md`](BACKLOG.md) — the research backlog (155 testable hypotheses across 8 domains) with the right surrogate null, honest-N concern, the key long-beta-separating control, and references per item (§4 dense entries, §7 deduplicated bibliography).
 - `output/edgehunt-*/SUMMARY.md` — per-domain syntheses with every number; `output/edgehunt-audit/SUMMARY.md` + `output/edgehunt-audit-nb/SUMMARY.md` + `output/edgehunt-deepen/SUMMARY.md` — the deepening and two-layer audit.
 - [`src/lib/training/statistical-validation.ts`](../src/lib/training/statistical-validation.ts) — the committed gate primitives; chained by per-domain `runGauntlet` wrappers, e.g. [`scripts/edgehunt-D5/harness.ts`](../scripts/edgehunt-D5/harness.ts). *(The single-entry `validateStrategy()` wrapper is on the `oss-release` branch, not this one.)*

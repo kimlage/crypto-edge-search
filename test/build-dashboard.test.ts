@@ -150,13 +150,13 @@ describe("parseLedger", () => {
 /** A tiny synthetic ledger that mirrors the canonical shape (1 flip, 1 clean). */
 const fixture: LedgerEntry[] = [
   {
-    id: "D1-LS-DONCH",
-    domain: "requeue",
-    name: "XS Donchian channel-position long-short",
+    id: "D8-C6-DATED",
+    domain: "consensus",
+    name: "Dated-futures basis carry (unlevered, thin)",
     rawVerdict: "PROMISING",
     auditedVerdict: "PROMISING",
     lastAudit: "2026-06-01",
-    artifactPath: "output/edgehunt-requeue/SUMMARY.md",
+    artifactPath: "output/edgehunt-deepen/SUMMARY.md",
   },
   {
     id: "D5-08",
@@ -189,11 +189,11 @@ describe("buildDisplayRows", () => {
 
   it("carries the audited verdict, raw verdict, override reason and lastAudit through", () => {
     const rows = buildDisplayRows(fixture, []);
-    const donch = rows.find((r) => r.id === "D1-LS-DONCH") as DisplayRow;
-    expect(donch.auditedVerdict).toBe("PROMISING");
-    expect(donch.rawVerdict).toBe("PROMISING");
-    expect(donch.flipped).toBe(false);
-    expect(donch.lastAudit).toBe("2026-06-01");
+    const dated = rows.find((r) => r.id === "D8-C6-DATED") as DisplayRow;
+    expect(dated.auditedVerdict).toBe("PROMISING");
+    expect(dated.rawVerdict).toBe("PROMISING");
+    expect(dated.flipped).toBe(false);
+    expect(dated.lastAudit).toBe("2026-06-01");
   });
 
   it("enriches the detail column from a matching raw per-domain row", () => {
@@ -229,7 +229,7 @@ describe("renderHtml (audit-aware)", () => {
     expect(html.startsWith("<!doctype html>")).toBe(true);
     expect(html).toContain("<table");
     expect(html).toContain(
-      "0 SURVIVE · 2 weak PROMISING · rest KILL/DEFERRED — nothing deployable",
+      "0 SURVIVE · 1 weak PROMISING · rest KILL/DEFERRED — nothing deployable",
     );
   });
 
@@ -328,21 +328,21 @@ describe("generator audited counts == ledger audited counts", () => {
     {} as Record<string, number>,
   );
 
-  it("matches the ledger headline exactly: 0 SURVIVE, 2 PROMISING", () => {
+  it("matches the ledger headline exactly: 0 SURVIVE, 1 PROMISING", () => {
     expect(generated.SURVIVE).toBe(0);
-    expect(generated.PROMISING).toBe(2);
+    expect(generated.PROMISING).toBe(1);
     expect(generated.SURVIVE).toBe(ledgerHeadline.SURVIVE ?? 0);
     expect(generated.PROMISING).toBe(ledgerHeadline.PROMISING);
     expect(generated.KILL).toBe(ledgerHeadline.KILL);
     expect(generated.DEFERRED).toBe(ledgerHeadline.DEFERRED);
   });
 
-  it("the 2 audited PROMISING are XS Donchian and dated-futures", () => {
+  it("the sole audited PROMISING is the dated-futures basis carry", () => {
     const promising = rows
       .filter((r) => r.auditedVerdict === "PROMISING")
       .map((r) => r.id)
       .sort();
-    expect(promising).toEqual(["D1-LS-DONCH", "D8-C6-DATED"]);
+    expect(promising).toEqual(["D8-C6-DATED"]);
   });
 
   it("no row presents a flipped lead as a final PROMISING", () => {
@@ -352,9 +352,15 @@ describe("generator audited counts == ledger audited counts", () => {
         expect(r.auditedVerdict).not.toBe("PROMISING");
       }
     }
-    // The four documented flips all land on KILL.
+    // The five documented flips all land on KILL.
     const flips = rows.filter((r) => r.flipped);
-    expect(flips.map((r) => r.id).sort()).toEqual(["D5-08", "O3-NVTS", "Q9-LOWVOL", "VRP-HARVEST"]);
+    expect(flips.map((r) => r.id).sort()).toEqual([
+      "D1-LS-DONCH",
+      "D5-08",
+      "O3-NVTS",
+      "Q9-LOWVOL",
+      "VRP-HARVEST",
+    ]);
     for (const f of flips) {
       expect(f.rawVerdict).toBe("PROMISING");
       expect(f.auditedVerdict).toBe("KILL");
@@ -372,7 +378,7 @@ describe("generator audited counts == ledger audited counts", () => {
       flippedSeen++;
       expect(m[1]).not.toBe("PROMISING");
     }
-    expect(flippedSeen).toBe(4);
+    expect(flippedSeen).toBe(5);
   });
 });
 

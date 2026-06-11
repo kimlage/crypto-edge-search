@@ -2,7 +2,7 @@
 
 *[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
 
-> **CANONICAL VERDICTS:** `output/results-ledger.json` is the single machine-readable source of truth for every audited verdict (see `docs/CANONICAL_STATE.md`). Some verdict cells in this backlog predate the two-layer adversarial audit; where they disagree with the ledger, **the ledger wins**. Cells corrected to the audited reality are tagged `[audited: …]`. Audited headline: **0 SURVIVE, 2 PROMISING (XS Donchian + dated-futures-unlevered-thin), rest KILL/DEFERRED.**
+> **CANONICAL VERDICTS:** `output/results-ledger.json` is the single machine-readable source of truth for every audited verdict (see `docs/CANONICAL_STATE.md`). Some verdict cells in this backlog predate the two-layer adversarial audit; where they disagree with the ledger, **the ledger wins**. Cells corrected to the audited reality are tagged `[audited: …]`. Audited headline: **0 SURVIVE, 1 PROMISING (dated-futures-unlevered-thin), rest KILL/DEFERRED.** (XS Donchian fell to KILL 2026-06-09 — survivorship; see `docs/CHANGELOG_RESEARCH.md`.)
 
 **Status:** living research backlog · **Total hypotheses:** 155 across 8 domains (D1–D8)
 **Last compiled:** 2026-06-01 · **License posture:** MIT project, $0 cloud budget, free public data only.

@@ -6,7 +6,7 @@
 
 This project tested ~111 of those edges — the whole retail and quant playbook — on free public data, at $0, through one brutal anti-overfitting protocol that doesn't care about your priors. It tried to **break** each one.
 
-**Result: 0 survived clean. 2 limped through too weak to trade. The other ~109 are dead.**
+**Result: 0 survived clean. 1 limped through too weak to trade. The other ~110 are dead.**
 
 Below is the table. Find your tool. Find the number that killed it. Then, if you think yours is different, [fork it and run it through the same gauntlet](#think-yours-survives) — the protocol is open, the data is free, and **if your rule passes, I'll post it.**
 
@@ -147,7 +147,7 @@ Verdicts: **KILL** = no edge net of cost on unseen data · **PROMISING** = real 
 |---|---|---|
 | **Perp funding carry (delta-neutral)** | Harvest funding, market-neutral | **sub-T-bill** — net ~5.84% APR full-sample, but trailing-12m collapsed to **~3.35% < 4.5% risk-free**; a perfect-foresight timer earns only **+0.52%/yr**. A regime trade, not a business |
 | **Dated-futures basis cash-and-carry** | Short contango future, long spot | **PROMISING (weak)** — the levered headline was a **financing leak** (Sharpe 1.64 → 0.69 once borrow is charged); only a thin **~4.9%/yr (t=2.41)** unlevered excess survives, **below every multiple-testing bar** |
-| **Cross-sectional Donchian channel-position L/S** | Long breakouts, short breakdowns, market-neutral | **PROMISING (weak)** — genuinely beta-neutral, structure is real (XS-shuffle **p=0.009**), **but the realized magnitude is indistinguishable from zero** on the 388-row holdout (DSR 0.79, t=0.96); OOS Sharpe ~0.3–0.5 after borrow. *Not deployable* |
+| **Cross-sectional Donchian channel-position L/S** | Long breakouts, short breakdowns, market-neutral | **KILL** (downgraded 2026-06-09) — looked PROMISING on the 30-name survivor panel (XS-shuffle p=0.009), but rebuilt on the delisted-inclusive point-in-time universe (161 ever-members) it was **substantially survivorship**: family-wise shuffle **p 0.002 → 0.103**, alpha **t 3.22 → 1.60** (BTC beta → +0.36), binds on **DSR 0.451 @ N=72** |
 | **Cross-venue funding dispersion** | Arb the funding spread | **KILL** — wedge ~0.5 bps/8h vs **16 bps round-trip cost** (~30× too small) |
 | **Perp-spot cash-and-carry** | Risk-free basis | **KILL** — a short-crash option (skew −12.9, kurtosis 175); excess-vs-cash Sharpe **−0.17** |
 | **Funding-as-contrarian (fade extremes)** | Extreme funding reverts | **KILL** — backwards: extreme funding **persists** (0/8 coins; the placebo beats the real signal) |
@@ -172,14 +172,15 @@ Verdicts: **KILL** = no edge net of cost on unseen data · **PROMISING** = real 
 | Hypotheses tested | **~111** across **8 domains** |
 | Data / cloud cost | **$0** — free public exchange, on-chain, and macro APIs only |
 | Clean **SURVIVE** | **0** |
-| Weak **PROMISING** | **2** — XS Donchian L/S; dated-futures basis (unlevered, sub-T-bill) |
-| **KILL** | the rest (~109) |
+| Weak **PROMISING** | **1** — dated-futures basis (unlevered, sub-T-bill) |
+| **KILL** | the rest (~110) |
 | Deployed capital | **none** |
 
-The two PROMISING leads are **not investable today** (both are beta-neutral, both trip a multiple-testing / magnitude gate on data they never saw):
+The sole remaining PROMISING lead is **not investable today** (it is beta-neutral and trips a multiple-testing / magnitude gate on data it never saw):
 
-1. **Cross-sectional Donchian channel-position long/short** — real structure (XS-shuffle null **p=0.009**, positive in every channel window and holdout quarter), but on the 388-row consume-once holdout the **magnitude is indistinguishable from zero** (DSR 0.79, Newey-West t=0.96); after honest borrow on the short leg the OOS Sharpe erodes to **~0.3–0.5**.
-2. **Dated-futures basis carry (unlevered-thin only)** — a real ~4.9%/yr (t=2.41) market-neutral excess that sits **below every multiple-testing bar**, is sub-risk-free, and regime-fragile (the 2021 cohort was −37%). The headline "Sharpe 2.3" was a financing leak.
+1. **Dated-futures basis carry (unlevered-thin only)** — a real ~4.9%/yr (t=2.41) market-neutral excess that sits **below every multiple-testing bar**, is sub-risk-free, and regime-fragile (the 2021 cohort was −37%). The headline "Sharpe 2.3" was a financing leak.
+
+> **2026-06-09 — XS Donchian downgraded PROMISING → KILL.** The program's last cross-sectional lead was rebuilt on a delisted-inclusive point-in-time panel (the honest 161-ever-member universe, vs the 30-name survivor panel that scored it; mean overlap 16.8/30, old-LUNA held through its crash). Its two pillars collapsed: the family-wise cross-sectional-shuffle null moved **p 0.002 → 0.103** and beta-neutral alpha **t 3.22 → 1.60** (BTC beta → +0.36); the library gauntlet binds on **deflated_sharpe (DSR 0.451 @ honest N=72)**. It was substantially an artifact of scoring a 2026 universe on 2021 history. Tally is now **0 SURVIVE / 1 PROMISING**. Evidence: [`scripts/edgehunt-donchian-pit/RESULTS.md`](scripts/edgehunt-donchian-pit/RESULTS.md).
 
 **An independent two-layer audit even flipped three apparent winners *back* to KILL** — BTC exchange-flow, a cross-sectional low-vol anomaly, and a fee-revenue NVT signal — all on the *same* defect: a surrogate test run on **one hand-picked grid-best config** instead of the whole searched family. Under the correct family-wise MAX-statistic null, each fails (exchange-flow: single-config p=0.013 → family-wise **p≈0.24**). The same audit caught a **systemic financing leak** that had inflated the carry headlines. **No false-KILL was found anywhere.** The conservative verdict got *stronger* under scrutiny, not weaker.
 

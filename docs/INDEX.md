@@ -24,7 +24,7 @@ hypotheses through **one committed anti-overfitting gauntlet** on free public da
                            → cpcv_pbo → harvey_liu_haircut → right-null surrogate → consume-once holdout
         │
         ▼
-   0 clean SURVIVE · 2 weak PROMISING (crypto) · everything else KILL · rest DEFERRED ($0-undecidable)
+   0 clean SURVIVE · 1 weak PROMISING (crypto) · everything else KILL · rest DEFERRED ($0-undecidable)
 ```
 
 Plus a **29-test credibility battery**, a forensic falsification of **5 viral "Claude + copy-trade = print
@@ -38,7 +38,7 @@ planted-edge **[positive control](GLOSSARY.md#positive-control)** proves the har
 
 | Domain | Hub page | What was tested | Headline verdict |
 |---|---|---|---|
-| **Crypto** (BTC/USDT & cross-section) | **[README.md](README.md)** | ~111 hypotheses across 8 domains — fixed, adaptive, and genetically-evolved | **0 SURVIVE, 2 weak PROMISING**, rest KILL; the one real thing — [carry](GLOSSARY.md#carry) — is a sub-risk-free *regime trade* |
+| **Crypto** (BTC/USDT & cross-section) | **[README.md](README.md)** | ~111 hypotheses across 8 domains — fixed, adaptive, and genetically-evolved | **0 SURVIVE, 1 weak PROMISING**, rest KILL (XS Donchian fell to KILL 2026-06-09 — survivorship); the one real thing — [carry](GLOSSARY.md#carry) — is a sub-risk-free *regime trade* |
 | **Polymarket** (prediction markets) | **[polymarket/README.md](polymarket/README.md)** | 35-hypothesis backlog, copy-trading, calibration, arbitrage, money-mgmt, 22 reverse-engineering mechanisms, 16 external-info leads | **0 deployable edge** — and here we can *prove* it, because every market resolves to a ground-truth label |
 
 ---

@@ -99,15 +99,15 @@
   <p class="sub">~111 trading hypotheses through the committed anti-overfitting gauntlet on free public data at $0 cloud cost. The FINAL verdict and every headline count below come from the canonical audited ledger <code>output/results-ledger.json</code> (not the raw per-domain tables). Each row also shows its RAW per-domain verdict for provenance; where the two-layer audit overturned a lead, the row is flagged.</p>
   <div class="banner">
     <span class="tag">Canonical audited state</span>
-    0 SURVIVE · 2 weak PROMISING · rest KILL/DEFERRED — nothing deployable
+    0 SURVIVE · 1 weak PROMISING · rest KILL/DEFERRED — nothing deployable
   </div>
   <div class="counts">
-    <div class="count-card cc-total"><span class="cc-n">78</span><span class="cc-label">Hypotheses</span></div>
+    <div class="count-card cc-total"><span class="cc-n">80</span><span class="cc-label">Hypotheses</span></div>
       <div class="count-card cc-SURVIVE"><span class="cc-n">0</span><span class="cc-label">SURVIVE</span></div>
-      <div class="count-card cc-PROMISING"><span class="cc-n">2</span><span class="cc-label">PROMISING</span></div>
-      <div class="count-card cc-DEFERRED"><span class="cc-n">2</span><span class="cc-label">DEFERRED</span></div>
-      <div class="count-card cc-KILL"><span class="cc-n">74</span><span class="cc-label">KILL</span></div>
-    <div class="count-card cc-flip"><span class="cc-n">4</span><span class="cc-label">Audit flips</span></div>
+      <div class="count-card cc-PROMISING"><span class="cc-n">1</span><span class="cc-label">PROMISING</span></div>
+      <div class="count-card cc-DEFERRED"><span class="cc-n">3</span><span class="cc-label">DEFERRED</span></div>
+      <div class="count-card cc-KILL"><span class="cc-n">76</span><span class="cc-label">KILL</span></div>
+    <div class="count-card cc-flip"><span class="cc-n">5</span><span class="cc-label">Audit flips</span></div>
   </div>
 </header>
 <div class="controls">
@@ -122,6 +122,7 @@
       <option value="D6">D6</option>
       <option value="D7">D7</option>
       <option value="audit-nb">audit-nb</option>
+      <option value="campaign-E">campaign-E</option>
       <option value="consensus">consensus</option>
       <option value="onchain2">onchain2</option>
       <option value="quant">quant</option>
@@ -174,6 +175,26 @@
         <td class="c-auditOverrideReason"><span class="reason muted">—</span></td>
         <td class="c-lastAudit">2026-06-01</td>
         <td class="c-source"><a href="../output/edgehunt-audit-nb/SUMMARY.md">output/edgehunt-audit-nb/SUMMARY.md</a></td>
+      </tr>
+      <tr data-domain="campaign-E" data-verdict="KILL" data-flipped="0" data-search="campaign-e e2-xs-fundrank cross-sectional funding-rank long-short carry kill kill   ">
+        <td class="c-id">E2-XS-FUNDRANK</td>
+        <td class="c-domain">campaign-E</td>
+        <td class="c-name">Cross-sectional funding-rank long-short carry<div class="c-detail"></div></td>
+        <td class="c-rawVerdict"><span class="badge raw v-KILL">KILL</span></td>
+        <td class="c-auditedVerdict"><span class="badge v-KILL">KILL</span></td>
+        <td class="c-auditOverrideReason"><span class="reason muted">—</span></td>
+        <td class="c-lastAudit">2026-06-09</td>
+        <td class="c-source"><a href="../scripts/edgehunt-fundingrank/RESULTS.md">scripts/edgehunt-fundingrank/RESULTS.md</a></td>
+      </tr>
+      <tr data-domain="campaign-E" data-verdict="DEFERRED" data-flipped="0" data-search="campaign-e e3-kalshi-pm kalshi × polymarket same-event convergence deferred deferred   ">
+        <td class="c-id">E3-KALSHI-PM</td>
+        <td class="c-domain">campaign-E</td>
+        <td class="c-name">Kalshi × Polymarket same-event convergence<div class="c-detail"></div></td>
+        <td class="c-rawVerdict"><span class="badge raw v-DEFERRED">DEFERRED</span></td>
+        <td class="c-auditedVerdict"><span class="badge v-DEFERRED">DEFERRED</span></td>
+        <td class="c-auditOverrideReason"><span class="reason muted">—</span></td>
+        <td class="c-lastAudit">2026-06-09</td>
+        <td class="c-source"><a href="../scripts/edgehunt-kalshi/RESULTS.md">scripts/edgehunt-kalshi/RESULTS.md</a></td>
       </tr>
       <tr data-domain="consensus" data-verdict="KILL" data-flipped="0" data-search="consensus — funding-momentum inverse (drift-stripped) kill kill   +1.08 ann · deflated sharpe @ n=24 (prob 0.44&lt;0.95) · ($1,859, non-surviving) · high">
         <td class="c-id">—</td>
@@ -835,15 +856,15 @@
         <td class="c-lastAudit">2026-06-01</td>
         <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
       </tr>
-      <tr data-domain="requeue" data-verdict="PROMISING" data-flipped="0" data-search="requeue d1-ls-donch xs donchian channel-position long-short promising promising   1.69 (canon 1.41) · deflated_sharpe (only @n=72; passes @n=1 p=0.999) · 72 · 0.002 (xs-shuffle) · ~$4,116 (canonical, full-sample)">
+      <tr data-domain="requeue" data-verdict="KILL" data-flipped="1" data-search="requeue d1-ls-donch xs donchian channel-position long-short promising kill promising→kill (audited) substantially survivorship: the delisted-inclusive point-in-time replay used the honest 161-ever-member universe (vs 30 in the survivor panel; mean overlap 16.8/30; old-luna held through its crash). the family-wise cross-sectional-shuffle p moved 0.002 -&gt; 0.103 and beta-neutral alpha t 3.22 -&gt; 1.60 (btc beta -&gt; +0.36); library rungauntlet on the honest panel binds on deflated_sharpe (dsr 0.451 @n=72). pipeline parity 9/9 vs the published numbers proven first (audited-kill: survivorship + family-wise surrogate). 1.69 (canon 1.41) · deflated_sharpe (only @n=72; passes @n=1 p=0.999) · 72 · 0.002 (xs-shuffle) · ~$4,116 (canonical, full-sample)">
         <td class="c-id">D1-LS-DONCH</td>
         <td class="c-domain">requeue</td>
         <td class="c-name">XS Donchian channel-position long-short<div class="c-detail">1.69 (canon 1.41) · deflated_sharpe (only @N=72; passes @N=1 p=0.999) · 72 · 0.002 (XS-shuffle) · ~$4,116 (canonical, full-sample)</div></td>
-        <td class="c-rawVerdict"><span class="badge raw v-PROMISING">PROMISING</span></td>
-        <td class="c-auditedVerdict"><span class="badge v-PROMISING">PROMISING</span></td>
-        <td class="c-auditOverrideReason"><span class="reason muted">—</span></td>
-        <td class="c-lastAudit">2026-06-01</td>
-        <td class="c-source"><a href="../output/edgehunt-requeue/SUMMARY.md">output/edgehunt-requeue/SUMMARY.md</a></td>
+        <td class="c-rawVerdict"><span class="badge raw v-PROMISING struck">PROMISING</span></td>
+        <td class="c-auditedVerdict"><span class="flip" title="Substantially survivorship: the delisted-inclusive point-in-time replay used the honest 161-ever-member universe (vs 30 in the survivor panel; mean overlap 16.8/30; old-LUNA held through its crash). The family-wise cross-sectional-shuffle p moved 0.002 -&gt; 0.103 and beta-neutral alpha t 3.22 -&gt; 1.60 (BTC beta -&gt; +0.36); library runGauntlet on the honest panel binds on deflated_sharpe (DSR 0.451 @N=72). Pipeline parity 9/9 vs the published numbers proven first (audited-kill: survivorship + family-wise surrogate).">PROMISING→KILL (audited)</span><span class="badge v-KILL">KILL</span></td>
+        <td class="c-auditOverrideReason"><span class="reason">Substantially survivorship: the delisted-inclusive point-in-time replay used the honest 161-ever-member universe (vs 30 in the survivor panel; mean overlap 16.8/30; old-LUNA held through its crash). The family-wise cross-sectional-shuffle p moved 0.002 -&gt; 0.103 and beta-neutral alpha t 3.22 -&gt; 1.60 (BTC beta -&gt; +0.36); library runGauntlet on the honest panel binds on deflated_sharpe (DSR 0.451 @N=72). Pipeline parity 9/9 vs the published numbers proven first (audited-kill: survivorship + family-wise surrogate).</span></td>
+        <td class="c-lastAudit">2026-06-09</td>
+        <td class="c-source"><a href="../scripts/edgehunt-donchian-pit/RESULTS.md">scripts/edgehunt-donchian-pit/RESULTS.md</a></td>
       </tr>
       <tr data-domain="requeue" data-verdict="KILL" data-flipped="0" data-search="requeue d1-ls-ichi xs ichimoku long-short kill kill   1.40 is / 0.10 holdout (n.s.) · deflated_sharpe (+ haircut; pre-reg holdout -0.72 oos) · 48 · 0.001 is / 0.072 holdout · n/a">
         <td class="c-id">D1-LS-ICHI</td>

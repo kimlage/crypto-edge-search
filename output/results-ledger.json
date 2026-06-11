@@ -18,6 +18,34 @@
     "artifactPath": "output/edgehunt-audit-nb/SUMMARY.md"
   },
   {
+    "id": "E2-XS-FUNDRANK",
+    "domain": "campaign-E",
+    "name": "Cross-sectional funding-rank long-short carry",
+    "claimType": "carry",
+    "rawVerdict": "KILL",
+    "auditedVerdict": "KILL",
+    "bindingGate": "deflated_sharpe",
+    "honestN": 12,
+    "surrogateP": 0.06,
+    "monthlyAt100k": null,
+    "lastAudit": "2026-06-09",
+    "artifactPath": "scripts/edgehunt-fundingrank/RESULTS.md"
+  },
+  {
+    "id": "E3-KALSHI-PM",
+    "domain": "campaign-E",
+    "name": "Kalshi × Polymarket same-event convergence",
+    "claimType": "cross-venue-arb",
+    "rawVerdict": "DEFERRED",
+    "auditedVerdict": "DEFERRED",
+    "bindingGate": "data_deferred",
+    "honestN": null,
+    "surrogateP": null,
+    "monthlyAt100k": null,
+    "lastAudit": "2026-06-09",
+    "artifactPath": "scripts/edgehunt-kalshi/RESULTS.md"
+  },
+  {
     "id": "—",
     "domain": "consensus",
     "name": "Funding-momentum inverse (drift-stripped)",
@@ -645,14 +673,15 @@
     "domain": "requeue",
     "name": "XS Donchian channel-position long-short",
     "rawVerdict": "PROMISING",
-    "auditedVerdict": "PROMISING",
-    "lastAudit": "2026-06-01",
+    "auditedVerdict": "KILL",
+    "lastAudit": "2026-06-09",
     "claimType": "cross-sectional",
     "bindingGate": "deflated_sharpe",
     "honestN": 72,
-    "surrogateP": 0.009,
-    "monthlyAt100k": 4116,
-    "artifactPath": "output/edgehunt-requeue/SUMMARY.md"
+    "surrogateP": 0.103,
+    "monthlyAt100k": null,
+    "auditOverrideReason": "Substantially survivorship: the delisted-inclusive point-in-time replay used the honest 161-ever-member universe (vs 30 in the survivor panel; mean overlap 16.8/30; old-LUNA held through its crash). The family-wise cross-sectional-shuffle p moved 0.002 -> 0.103 and beta-neutral alpha t 3.22 -> 1.60 (BTC beta -> +0.36); library runGauntlet on the honest panel binds on deflated_sharpe (DSR 0.451 @N=72). Pipeline parity 9/9 vs the published numbers proven first (audited-kill: survivorship + family-wise surrogate).",
+    "artifactPath": "scripts/edgehunt-donchian-pit/RESULTS.md"
   },
   {
     "id": "D1-LS-ICHI",

@@ -11,12 +11,20 @@
  *      is the single, tested source of markdown-table parsing — we do not re-implement it.
  *   2. AUDIT layer — apply the CANONICAL AUDITED FINAL STATE: set `auditedVerdict`
  *      (= scientificVerdict) on every entry, attach honest-N / surrogate-p / monthly /
- *      binding-gate metadata, and FLIP the four audit-corrected leads (D5-08 reserve,
- *      Q9 low-vol, O3 fee-NVT, VRP) to KILL with an `auditOverrideReason` taken from the
- *      two-layer audit (`output/edgehunt-audit/SUMMARY.md`,
- *      `output/edgehunt-audit-nb/SUMMARY.md`, `output/edgehunt-deepen/SUMMARY.md`).
- *   3. The audited headline MUST be exactly 0 SURVIVE, 2 PROMISING (XS Donchian +
- *      dated-futures-unlevered-thin), rest KILL/DEFERRED — asserted before write.
+ *      binding-gate metadata, and FLIP the audit-corrected leads (D5-08 reserve,
+ *      Q9 low-vol, O3 fee-NVT, VRP, and — as of 2026-06-09 — D1-LS-DONCH XS Donchian)
+ *      to KILL with an `auditOverrideReason` taken from the two-layer audit
+ *      (`output/edgehunt-audit/SUMMARY.md`, `output/edgehunt-audit-nb/SUMMARY.md`,
+ *      `output/edgehunt-deepen/SUMMARY.md`) or the delisted-inclusive point-in-time
+ *      replay (`scripts/edgehunt-donchian-pit/RESULTS.md`).
+ *   3. CAMPAIGN-E layer — append the campaign-E hypotheses that have no per-domain
+ *      edgehunt SUMMARY.md table to parse (the cross-sectional funding-rank carry KILL
+ *      and the Kalshi×Polymarket convergence DEFERRED) from an explicit, source-cited
+ *      list. These are not in any `output/edgehunt-*` ledger directory, so they are
+ *      declared here rather than recovered by the raw parser.
+ *   4. The audited headline MUST be exactly 0 SURVIVE, 1 PROMISING
+ *      (dated-futures-unlevered-thin — XS Donchian was downgraded 2026-06-09 as
+ *      substantially survivorship), rest KILL/DEFERRED — asserted before write.
  *
  * The raw rate-limited "N further slots" filler rows carry NO verdict and are excluded
  * (they are not hypotheses). Deterministic: stable sort by (domain, id), no timestamps,
@@ -75,7 +83,46 @@ interface Override {
   monthlyAt100k?: number | null;
   auditOverrideReason?: string;
   artifactPath?: string;
+  /** Per-entry audit date override (defaults to AUDIT_DATE when absent). */
+  lastAudit?: string;
 }
+
+/**
+ * Campaign-E hypotheses that have NO per-domain edgehunt SUMMARY.md table for the
+ * raw parser to recover. They are declared here directly (rawVerdict == auditedVerdict,
+ * so no flip and no auditOverrideReason) with their evidence path cited. Sorted into
+ * the canonical (domain, id) order alongside the parsed rows before write.
+ */
+const EXTRA_ENTRIES: LedgerEntry[] = [
+  {
+    id: "E2-XS-FUNDRANK",
+    domain: "campaign-E",
+    name: "Cross-sectional funding-rank long-short carry",
+    claimType: "carry",
+    rawVerdict: "KILL",
+    auditedVerdict: "KILL",
+    bindingGate: "deflated_sharpe",
+    honestN: 12,
+    surrogateP: 0.06,
+    monthlyAt100k: null,
+    lastAudit: "2026-06-09",
+    artifactPath: "scripts/edgehunt-fundingrank/RESULTS.md",
+  },
+  {
+    id: "E3-KALSHI-PM",
+    domain: "campaign-E",
+    name: "Kalshi × Polymarket same-event convergence",
+    claimType: "cross-venue-arb",
+    rawVerdict: "DEFERRED",
+    auditedVerdict: "DEFERRED",
+    bindingGate: "data_deferred",
+    honestN: null,
+    surrogateP: null,
+    monthlyAt100k: null,
+    lastAudit: "2026-06-09",
+    artifactPath: "scripts/edgehunt-kalshi/RESULTS.md",
+  },
+];
 
 /** Stable synthetic id for the two id-less consensus carries. */
 function stableId(row: Row): string {
@@ -92,16 +139,7 @@ function overlayFor(row: Row): Override | undefined {
 }
 
 const OVERRIDES: Record<string, Override> = {
-  // ---- The 2 CONFIRMED PROMISING survivors ----
-  "D1-LS-DONCH": {
-    claimType: "cross-sectional",
-    auditedVerdict: "PROMISING",
-    bindingGate: "deflated_sharpe",
-    honestN: 72,
-    surrogateP: 0.009,
-    monthlyAt100k: 4116,
-    artifactPath: "output/edgehunt-requeue/SUMMARY.md",
-  },
+  // ---- The 1 CONFIRMED PROMISING survivor ----
   "D8-C6-DATED": {
     claimType: "carry",
     auditedVerdict: "PROMISING",
@@ -112,7 +150,21 @@ const OVERRIDES: Record<string, Override> = {
     artifactPath: "output/edgehunt-deepen/SUMMARY.md",
   },
 
-  // ---- The 4 FLIPS: raw PROMISING -> audited KILL ----
+  // ---- The 5 FLIPS: raw PROMISING -> audited KILL ----
+  // D1-LS-DONCH was a CONFIRMED PROMISING until 2026-06-09, when the delisted-inclusive
+  // point-in-time replay showed the lead was substantially survivorship (see below).
+  "D1-LS-DONCH": {
+    claimType: "cross-sectional",
+    auditedVerdict: "KILL",
+    bindingGate: "deflated_sharpe",
+    honestN: 72,
+    surrogateP: 0.103,
+    monthlyAt100k: null,
+    lastAudit: "2026-06-09",
+    auditOverrideReason:
+      "Substantially survivorship: the delisted-inclusive point-in-time replay used the honest 161-ever-member universe (vs 30 in the survivor panel; mean overlap 16.8/30; old-LUNA held through its crash). The family-wise cross-sectional-shuffle p moved 0.002 -> 0.103 and beta-neutral alpha t 3.22 -> 1.60 (BTC beta -> +0.36); library runGauntlet on the honest panel binds on deflated_sharpe (DSR 0.451 @N=72). Pipeline parity 9/9 vs the published numbers proven first (audited-kill: survivorship + family-wise surrogate).",
+    artifactPath: "scripts/edgehunt-donchian-pit/RESULTS.md",
+  },
   "D5-08": {
     claimType: "on-chain",
     auditedVerdict: "KILL",
@@ -192,7 +244,7 @@ export function buildLedger(): LedgerEntry[] {
       name: row.name,
       rawVerdict,
       auditedVerdict,
-      lastAudit: AUDIT_DATE,
+      lastAudit: ov?.lastAudit ?? AUDIT_DATE,
     };
     if (ov?.claimType !== undefined) entry.claimType = ov.claimType;
     if (ov?.bindingGate !== undefined) entry.bindingGate = ov.bindingGate;
@@ -210,6 +262,9 @@ export function buildLedger(): LedgerEntry[] {
 
     entries.push(entry);
   }
+
+  // Append campaign-E hypotheses that have no raw edgehunt SUMMARY.md to parse.
+  for (const extra of EXTRA_ENTRIES) entries.push({ ...extra });
 
   // Deterministic order: by domain then id.
   entries.sort((a, b) => (a.domain === b.domain ? a.id.localeCompare(b.id) : a.domain.localeCompare(b.domain)));
@@ -233,12 +288,12 @@ function main(): void {
   const entries = buildLedger();
   const counts = auditedHeadline(entries);
 
-  // Hard guard on the canonical headline: 0 SURVIVE, exactly 2 PROMISING.
+  // Hard guard on the canonical headline: 0 SURVIVE, exactly 1 PROMISING.
   if (counts.SURVIVE !== 0) throw new Error(`Expected 0 SURVIVE, got ${counts.SURVIVE}`);
-  if (counts.PROMISING !== 2) throw new Error(`Expected 2 PROMISING, got ${counts.PROMISING}`);
+  if (counts.PROMISING !== 1) throw new Error(`Expected 1 PROMISING, got ${counts.PROMISING}`);
   const promising = entries.filter((e) => e.auditedVerdict === "PROMISING").map((e) => e.id);
-  if (!promising.includes("D1-LS-DONCH") || !promising.includes("D8-C6-DATED")) {
-    throw new Error(`Expected PROMISING = {D1-LS-DONCH, D8-C6-DATED}, got ${JSON.stringify(promising)}`);
+  if (!promising.includes("D8-C6-DATED")) {
+    throw new Error(`Expected PROMISING = {D8-C6-DATED}, got ${JSON.stringify(promising)}`);
   }
 
   writeFileSync(LEDGER_PATH, JSON.stringify(entries, null, 2) + "\n", "utf8");

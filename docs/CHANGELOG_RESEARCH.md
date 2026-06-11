@@ -13,6 +13,34 @@ differ.
 
 ---
 
+## 2026-06-09 — XS Donchian flipped PROMISING → KILL (survivorship)
+
+The program's last cross-sectional PROMISING lead was rebuilt on a **delisted-inclusive
+point-in-time panel** and downgraded. Its sole open caveat had always been survivorship (the
+30-name panel had LUNA / FTT absent); resolving that caveat with the honest universe killed
+the lead. The audited headline is now **0 SURVIVE, 1 PROMISING (dated-futures-unlevered-thin),
+rest KILL/DEFERRED** — down from the 2 PROMISING that held from 2026-06-01.
+
+| # | ID | Lead | Raw → Audited | Reason |
+|---|----|------|---------------|--------|
+| 5 | `D1-LS-DONCH` | Cross-sectional Donchian channel-position L/S (β-neutral) | PROMISING → **KILL** | Substantially survivorship. Rebuilt on the honest 161-ever-member point-in-time universe (vs 30 in the survivor panel; mean overlap 16.8/30; old-LUNA held through its crash), the family-wise cross-sectional-shuffle p moved 0.002 → 0.103 and beta-neutral alpha t 3.22 → 1.60 (BTC beta → +0.36); the library `runGauntlet` binds on deflated_sharpe (DSR 0.451 @N=72). Pipeline parity 9/9 vs the published numbers proven first. (`scripts/edgehunt-donchian-pit/RESULTS.md`) |
+
+**Net effect on the count:** audited 2 PROMISING → **1 PROMISING**; total flips PROMISING →
+KILL now **5** (the 4 from 2026-06-01 plus this one). No flip ran in the other direction.
+
+Two **campaign-E** hypotheses were also recorded in the ledger on this date (no flip — their
+raw and audited verdicts agree):
+
+- **`E2-XS-FUNDRANK`** — cross-sectional funding-rank L/S carry → **KILL** (binding
+  deflated_sharpe, DSR 0.942 @N=12; also fails cpcv_pbo 0.643 and family-wise XS-shuffle
+  p=0.060). The coupon is real and the price leg is positive on the survivorship-free
+  155-perp panel, but it dies on multiple-testing. (`scripts/edgehunt-fundingrank/RESULTS.md`)
+- **`E3-KALSHI-PM`** — Kalshi × Polymarket same-event convergence → **DEFERRED** (binding
+  data_deferred: free Kalshi tape is only ~7 weeks; 2 fillable gaps in 70 same-event pairs,
+  both longshot losers; recorded-forward path documented). (`scripts/edgehunt-kalshi/RESULTS.md`)
+
+---
+
 ## 2026-06-01 — two-layer adversarial audit: 4 leads flipped PROMISING → KILL
 
 The first-pass per-domain runs surfaced six PROMISING leads. A two-layer audit
@@ -39,13 +67,18 @@ full grid size**. The fourth (VRP) is a single-regime artifact.
 KILL. No KILL was found to be a false-KILL anywhere in the audit (no real edge was wrongly
 discarded), so no flip ran in the other direction.
 
-### The two PROMISING survivors (no flip; magnitude caveats only)
+### The two PROMISING survivors *as of 2026-06-01* (magnitude caveats only)
 
-- **XS Donchian channel-position long-short (`D1-LS-DONCH`)** — structure real (XS-shuffle
-  p=0.009), but the 388-row consume-once holdout magnitude is ~zero (DSR@N=1=0.79) and
-  erodes toward 0/negative once borrow on the continuous short notional is charged. Stays
-  PROMISING with a financing caveat.
+> **Superseded:** the XS Donchian survivor below was later flipped to KILL on 2026-06-09 once
+> its survivorship caveat was resolved on the honest point-in-time panel (see the section at
+> the top of this changelog). The dated-futures carry is now the **sole** PROMISING.
+
+- **XS Donchian channel-position long-short (`D1-LS-DONCH`)** — structure real on the survivor
+  panel (XS-shuffle p=0.009), but the 388-row consume-once holdout magnitude is ~zero
+  (DSR@N=1=0.79) and erodes toward 0/negative once borrow on the continuous short notional is
+  charged. Held PROMISING with a survivorship + financing caveat until 2026-06-09, then
+  flipped to KILL (survivorship).
 - **Dated-futures basis carry (`D8-C6-DATED`)** — the levered headline was cut ~2× by a
   financing leak (RF charged on 1 unit while the book is ~2.95×-levered; levered DSR 0.13).
   Only a thin **unlevered** market-neutral excess survives (~4.9%/yr, t=2.41, ~$475/mo),
-  sub-every-multiple-testing bar. Stays PROMISING as **unlevered-thin only**.
+  sub-every-multiple-testing bar. Stays PROMISING as **unlevered-thin only** — now the sole lead.

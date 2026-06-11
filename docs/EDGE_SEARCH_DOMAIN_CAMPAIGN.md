@@ -91,8 +91,26 @@ residuals)` is ~0 *by construction* (a tautological metric — the beta-hedged a
 in-sample; the KILLs stand on the holdout collapse), and the 52-week-high KILL binds on the Harvey-Liu
 haircut, not the cited DSR.
 
-**Corrected tally for the audited set: 0 SURVIVE, 2 PROMISING (Donchian, dated-futures-unlevered-thin),
-~51 KILL.** No edge is deployable.
+**Corrected tally for the audited set (2026-06-01): 0 SURVIVE, 2 PROMISING (Donchian,
+dated-futures-unlevered-thin), ~51 KILL.** No edge is deployable.
+
+### Update — XS Donchian downgraded PROMISING → KILL (2026-06-09)
+
+The one survivorship caveat flagged above ("gated on a longer survivorship-clean panel") was
+resolved and **it killed the Donchian lead.** Rebuilt on the delisted-inclusive point-in-time
+universe — the honest **161 ever-member** assets (vs 30 in the survivor panel; mean overlap
+16.8/30; old-LUNA held *through* its 2022 crash) — the lead's two pillars collapse: the
+family-wise cross-sectional-shuffle **p moves 0.002 → 0.103** and the beta-neutral alpha
+**t 3.22 → 1.60** (book now loads +0.36 on BTC); the library `runGauntlet` binds on
+**deflated_sharpe (DSR 0.451 @N=72)**. Pipeline parity 9/9 vs the published numbers was proven
+first. The published edge was substantially an artifact of scoring a 2026 universe on 2021
+history. (`scripts/edgehunt-donchian-pit/RESULTS.md`.) **Revised audited tally: 0 SURVIVE,
+1 PROMISING (dated-futures-unlevered-thin), ~52 KILL.**
+
+A subsequent **campaign-E** pass also recorded two more $0 hypotheses: cross-sectional
+funding-rank L/S carry → **KILL** (binding deflated_sharpe, DSR 0.942 @N=12;
+`scripts/edgehunt-fundingrank/RESULTS.md`) and Kalshi × Polymarket same-event convergence →
+**DEFERRED** on data (free Kalshi tape only ~7 weeks; `scripts/edgehunt-kalshi/RESULTS.md`).
 
 ---
 

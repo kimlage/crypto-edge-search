@@ -357,10 +357,13 @@ positive at every `N ∈ [20, 200]` and every holdout quarter), but on the **388
 consume-once holdout the magnitude is indistinguishable from zero** (DSR@N=1 = 0.79,
 Newey-West t(mean) = 0.96, block-bootstrap CI-lower < 0).
 
-> **Survivorship caveat.** The 30-coin panels are survivorship-biased (LUNA / FTT / UST
-> absent), so **even the holdout is an upper bound** — a −90% delisting shock flips the XS
-> Donchian holdout negative in ~17% of draws. A survivorship-clean point-in-time universe is
-> a precondition for any promotion.
+> **Survivorship caveat — and how it resolved.** The 30-coin panels are survivorship-biased
+> (LUNA / FTT / UST absent), so **even the holdout is an upper bound** — a −90% delisting shock
+> flips the XS Donchian holdout negative in ~17% of draws. A survivorship-clean point-in-time
+> universe was a precondition for any promotion. **That precondition was tested on 2026-06-09
+> and the lead failed it:** rebuilt on the honest 161-ever-member PIT universe, the family-wise
+> cross-sectional-shuffle p moved 0.002 → 0.103, alpha t 3.22 → 1.60, and the gauntlet binds on
+> DSR 0.451 @N=72 — so **XS Donchian is now KILL** (`scripts/edgehunt-donchian-pit/RESULTS.md`).
 
 ### 5.6 Two metric pitfalls to avoid
 
@@ -385,22 +388,24 @@ Newey-West t(mean) = 0.96, block-bootstrap CI-lower < 0).
 |---|---:|---|
 | Hypotheses tested at full rigor | **~111** | ~35 prior rounds + 58 (2026-06 domain campaign) + 18 ($0 backlog), 8 domains, all on real public data, cloud spend $0 |
 | Clean **SURVIVE** | **0** | nothing cleared the full gauntlet on data it had never seen |
-| **PROMISING** (weak, caveated) | **2** | XS Donchian L/S; dated-futures basis carry (UNLEVERED-thin only) |
+| **PROMISING** (weak, caveated) | **1** | dated-futures basis carry (UNLEVERED-thin only) — XS Donchian fell to KILL 2026-06-09 (survivorship) |
 | **KILL** | the rest | every prediction / TA / microstructure / relative-value / rotation / on-chain-flow / sentiment / calendar idea — fixed *and* adaptive |
-| **DEFERRED** | a few | only because the honest test needs paid PIT data (L2 order books, PIT options chains) — not a verdict on edge |
+| **DEFERRED** | a few | only because the honest test needs paid/forward data (L2 order books, PIT options chains, a longer Kalshi tape) — not a verdict on edge |
 
-The two PROMISING leads, precisely:
+The sole remaining PROMISING lead, precisely:
 
-1. **XS Donchian channel-position long-short** — beta-neutral (book β ≈ 0, honest-OOS hedge
-   beta 0.78, *not* the in-sample over-hedge 0.318), right-null **cross-sectional-shuffle
-   p = 0.009**, structure positive at every `N` and every quarter — but the 388-row
-   consume-once holdout **magnitude is ≈ 0** (DSR@N=1 0.79, Newey-West t 0.96), and financing
-   on the short notional erodes OOS to a **range ≈ 0.3–0.5**. Held back by honest-N
-   magnitude-significance and a survivorship-biased panel.
-2. **Dated-futures basis carry** — a real market-neutral term-structure premium, but
+1. **Dated-futures basis carry** — a real market-neutral term-structure premium, but
    **UNLEVERED-thin only** (≈ 4.9%/yr, t = 2.41, sub-every-multiple-testing-bar). The levered
    headline was a financing-leak artifact (§5.4). A sub-risk-free regime trade, not a
    business.
+
+**XS Donchian channel-position long-short was downgraded PROMISING → KILL on 2026-06-09.** It
+looked beta-neutral with a real structure on the 30-name survivor panel (cross-sectional-shuffle
+p = 0.009), but rebuilt on the delisted-inclusive point-in-time universe (the honest 161
+ever-members; mean overlap 16.8/30; old-LUNA held through its crash) it was **substantially
+survivorship**: the family-wise shuffle p moved 0.002 → 0.103 and the beta-neutral alpha t 3.22
+→ 1.60 (BTC beta → +0.36); the library gauntlet binds on DSR 0.451 @ N=72.
+(`scripts/edgehunt-donchian-pit/RESULTS.md`.)
 
 The two prior carry "survivors" of earlier rounds (perp-funding carry; dated-futures basis)
 **remain sub-risk-free regime trades** under honest accounting. **Nothing is deployable.**
@@ -454,8 +459,9 @@ machine-readable artifact:
 
 | Claim | Source of truth |
 |---|---|
-| 2026-06 campaign roll-up: 0 SURVIVE, 2 PROMISING, ~51 KILL; full KILL ledger | [`docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md`](./EDGE_SEARCH_DOMAIN_CAMPAIGN.md), `output/edgehunt-*/SUMMARY.md` |
+| 2026-06 campaign roll-up: 0 SURVIVE, 1 PROMISING, ~52 KILL; full KILL ledger | [`docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md`](./EDGE_SEARCH_DOMAIN_CAMPAIGN.md), `output/edgehunt-*/SUMMARY.md` |
 | Reserve / Q9 / O3 PROMISING → KILL on the family-wise MAX-stat; systemic financing leak | `output/edgehunt-audit/SUMMARY.md`, `output/edgehunt-audit-nb/SUMMARY.md` |
+| XS Donchian PROMISING → KILL (survivorship, 2026-06-09): honest 161-member PIT panel | `scripts/edgehunt-donchian-pit/RESULTS.md` |
 | Pre-registered consume-once deepening (donchian / dated / reserve / vrp) | `output/edgehunt-deepen/SUMMARY.md`, `output/edgehunt-D5-followup/VERDICT.md` |
 | Per-domain syntheses (consensus, D1–D7, D348, quant, on-chain, requeue) | `output/edgehunt/SUMMARY.md` and the matching `output/edgehunt-*/SUMMARY.md` |
 | Testable-hypothesis backlog (8 domains) | [`docs/BACKLOG.md`](./BACKLOG.md) |

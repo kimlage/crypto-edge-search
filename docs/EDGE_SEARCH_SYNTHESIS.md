@@ -2,6 +2,14 @@
 
 *[Home](INDEX.md) · [Crypto](README.md) · [Methodology](METHODOLOGY.md) · [Glossary](GLOSSARY.md) · [Polymarket](polymarket/README.md)*
 
+> **2026-06-09 update — XS Donchian downgraded PROMISING → KILL; tally now 0 SURVIVE / 1 PROMISING.**
+> The cross-sectional Donchian L/S lead was rebuilt on a delisted-inclusive point-in-time panel
+> (the honest 161-ever-member universe vs the 30-name survivor panel that scored it) and shown to
+> be **substantially survivorship**: family-wise cross-sectional-shuffle **p 0.002 → 0.103**,
+> beta-neutral alpha **t 3.22 → 1.60** (BTC beta → +0.36), binds on **DSR 0.451 @ N=72**. The
+> **dated-futures basis carry (unlevered-thin)** is now the **sole** PROMISING. See
+> `scripts/edgehunt-donchian-pit/RESULTS.md` and `docs/CHANGELOG_RESEARCH.md`.
+
 > **Purpose.** This is the canonical map of what the edge search actually learned, so a future
 > reader does not re-walk dead ground. It is the honest, public "Findings & Synthesis" page for
 > the whole program: a $0, reproducible falsification lab that pushed **~111 crypto
@@ -10,7 +18,7 @@
 > hypothesis the data keeps confirming: for an individual at retail cost, speculation behaves far
 > more like a game of chance than a consistent way to make money.
 >
-> **The audited verdict: 0 clean SURVIVE, 2 weak PROMISING, everything else KILL. Nothing is
+> **The audited verdict: 0 clean SURVIVE, 1 weak PROMISING, everything else KILL. Nothing is
 > deployable.** The durable deliverable is the methodology and the body of negative evidence.
 >
 > **Where this sits in the documentation set** (start at the index, [`README.md`](README.md)):
@@ -32,15 +40,16 @@
   ~35 prior rounds + 58 from the 2026-06 parallelized domain campaign + 18 from a follow-on $0
   backlog — every one through the same committed gauntlet.
 - **0 clean SURVIVE.** Nothing cleared the full gauntlet on data it had never seen.
-- **2 weak PROMISING**, both held back at the *same* boundary (honest-N magnitude-significance on
-  unseen data) and both carrying a financing caveat:
-  1. **XS Donchian channel-position long-short** — beta-neutral; its *structure* is real
-     (cross-sectional-shuffle null p=0.009), but on the 388-row consume-once holdout the
-     **magnitude is indistinguishable from zero** (DSR@N=1 = 0.79, Newey-West t(mean) = 0.96), and
-     once borrow is charged on the short notional the OOS Sharpe erodes to a **range ~0.3–0.5**.
-  2. **Dated-futures basis carry, UNLEVERED-thin only** — a thin market-neutral excess of
+- **1 weak PROMISING**, held back at the honest-N magnitude-significance boundary on unseen data
+  and carrying a financing caveat:
+  1. **Dated-futures basis carry, UNLEVERED-thin only** — a thin market-neutral excess of
      **~4.9%/yr (t=2.41)**, sub-every-multiple-testing bar. *The levered headline was a
      financing-leak artifact.*
+- **XS Donchian channel-position long-short was downgraded PROMISING → KILL on 2026-06-09.** It
+  looked real on the 30-name survivor panel (cross-sectional-shuffle null p=0.009), but rebuilt on
+  the delisted-inclusive point-in-time universe (161 ever-members) it was **substantially
+  survivorship**: the family-wise shuffle p moved 0.002 → 0.103 and beta-neutral alpha t 3.22 →
+  1.60 (BTC beta → +0.36); the library gauntlet binds on DSR 0.451 @ N=72.
 - **Everything else is a documented KILL** — every prediction / TA / relative-value / rotation /
   event-flow / on-chain-flow / sentiment-macro / calendar idea, fixed, adaptive, and
   genetically-evolved.
@@ -60,9 +69,9 @@
 |---|---:|---|
 | Total hypotheses tested across 8 domains | **~111** | all $0, all through the committed gauntlet |
 | Clean **SURVIVE** | **0** | nothing deployable |
-| Weak **PROMISING** | **2** | XS Donchian L/S; dated-futures basis (unlevered-thin) |
+| Weak **PROMISING** | **1** | dated-futures basis (unlevered-thin) — XS Donchian fell to KILL 2026-06-09 (survivorship) |
 | **KILL** | the rest | documented teaching cases |
-| Earlier PROMISINGs **flipped to KILL by audit** | **3** | reserve-depletion, Q9 low-vol, O3 NVT |
+| Earlier PROMISINGs **flipped to KILL** | **4** | reserve-depletion, Q9 low-vol, O3 NVT (audit) + XS Donchian (survivorship, 2026-06-09) |
 
 **Provenance of the ~111:** ~35 from the prior chronological rounds (predictive TA, cross-section,
 trend, carry, rotation, event-flow, the retired genetic-programming alpha engine), **58 from the
@@ -71,12 +80,12 @@ trend, carry, rotation, event-flow, the retired genetic-programming alpha engine
 under `output/edgehunt-*/SUMMARY.md`; the audits are `output/edgehunt-audit/SUMMARY.md` and
 `output/edgehunt-audit-nb/SUMMARY.md`; the deepening is `output/edgehunt-deepen/SUMMARY.md`.
 
-### The two weak PROMISING leads — in one line each
+### The sole weak PROMISING lead — plus the downgraded Donchian
 
 | Lead | Family | Passes (the right null) | Held back by |
 |---|---|---|---|
-| **XS Donchian channel-position L/S** | cross-sectional breakout | Beta-neutral (β≈0), cross-sectional-shuffle null **p=0.009**, positive every N∈[20,200] and every holdout quarter | On the 388-row consume-once holdout the **magnitude ≈ 0**: DSR@N=1 **0.79**, Newey-West t(mean) **0.96**, block-bootstrap CI-lower < 0; financing on the ~1.0× short notional erodes OOS to a **range ~0.3–0.5**; survivorship-biased panel |
 | **Dated-futures basis carry** (unlevered-thin) | structural carry | A real market-neutral excess **survives unlevered** (~4.9%/yr, t=2.41, DSR 0.60); term-structure premium beyond perp funding | **Sub-every-multiple-testing bar**; regime-fragile (sub-RF in 2023, −37% in the 2021 cohort); the **levered** headline was a financing leak (DSR collapses to ~0.13) |
+| **XS Donchian channel-position L/S** *(downgraded 2026-06-09 → KILL)* | cross-sectional breakout | Looked beta-neutral on the survivor panel, cross-sectional-shuffle null p=0.009 | **Substantially survivorship.** On the honest 161-ever-member point-in-time panel the family-wise shuffle p moved **0.002 → 0.103** and alpha **t 3.22 → 1.60** (BTC beta → +0.36); binds on **DSR 0.451 @N=72**. Now **KILL** (`scripts/edgehunt-donchian-pit/RESULTS.md`) |
 
 ### The three audit flips (PROMISING → KILL) — all the same defect
 
@@ -125,9 +134,10 @@ data it had never seen. The edge is **NOT** in:
 10. **Calendar & event** — halving cycle (unfalsifiable-in-favor at N=2), sell-in-May,
     turn-of-month, day-of-week, CME gap-fill, stablecoin-mint events.
 
-The **two weak PROMISING leads** are the only places the structure/sign is non-random — and even they
-fail to show a positive realized mean *with significance at honest N on unseen data*. **The one real
-thing — carry — is a regime trade that has decayed below the risk-free rate** (§4). That is the whole
+The **sole weak PROMISING lead** (dated-futures carry) — plus the now-downgraded XS Donchian — were
+the only places the structure/sign was non-random, and even they fail to show a positive realized mean
+*with significance at honest N on unseen data* (Donchian failing it on the survivorship-free rebuild).
+**The one real thing — carry — is a regime trade that has decayed below the risk-free rate** (§4). That is the whole
 map.
 
 ---
@@ -208,8 +218,8 @@ the kill, but it **inflated both carry headlines**.
 > **Example — dated-futures basis carry:** the script charged RF on 1 unit while the book was
 > ~2.95×-levered. Charging borrow on the real notional collapses **Sharpe 1.64 → 0.69**, **DSR 0.58
 > → 0.13**, **$1,062 → $447/mo** — and it fails the 0.95 DSR gate at *any* RF ≥ 0.75%/yr. Only a
-> thin **unlevered** ~4.9%/yr excess survives. (Donchian's OOS holdout erodes from 0.53 toward
-> 0/negative once borrow on its ~1.0× short notional is charged.)
+> thin **unlevered** ~4.9%/yr excess survives. (The Donchian lead carried the same short-notional
+> borrow caveat; it was separately downgraded to KILL on 2026-06-09 for **survivorship** — §1.)
 
 > **A tenth, doc-level caution — the tautological metric.** `residual_alpha_sharpe = sharpe(OLS
 > residuals)` is **~0 by construction** (the residual mean is exactly 0), so it proves nothing about
@@ -306,11 +316,12 @@ PROMISING / SURVIVE boundary, and **no lead crossed it.**
 This is the single most important thing the program learned. The closest miss illustrates it cleanly:
 the BTC reserve-depletion lead posted a clean-looking paper-forward (Sharpe ≈1.19), is causal and
 leak-free — and is still a **KILL**, because its "pre-registered" config was the argmax of a searched
-neighborhood, so its surrogate significance does not survive multiple-testing deflation. Donchian's
-cross-sectional structure is real (XS-shuffle p=0.009), yet its 388-row holdout *magnitude* is
-statistically indistinguishable from zero (Newey-West t = 0.96). In both, the **sign is real and the
-magnitude is not** — which is precisely the line between an interesting structure and a deployable
-edge.
+neighborhood, so its surrogate significance does not survive multiple-testing deflation. The XS
+Donchian lead made the same point twice over: its cross-sectional structure looked real on the survivor
+panel (XS-shuffle p=0.009), yet its holdout *magnitude* was indistinguishable from zero — and when the
+panel was rebuilt **survivorship-free**, even the *structure* (the shuffle null) failed (p 0.002 →
+0.103). The **sign that looked real was partly the dead coins** — which is precisely the line between
+an interesting in-sample structure and a deployable edge.
 
 **Nothing is deployable.** The durable deliverable is the **methodology** — the committed gauntlet,
 the right-null discipline, honest N, the family-wise surrogate, the consume-once holdout, and the

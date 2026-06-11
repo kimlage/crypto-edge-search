@@ -10,13 +10,15 @@
  *
  *   2. LEDGER HEADLINE — derive the audited headline counts straight from the
  *      ledger's auditedVerdict field and ASSERT they match the CANONICAL claim:
- *      exactly 0 SURVIVE and exactly 2 PROMISING {D1-LS-DONCH, D8-C6-DATED},
- *      everything else KILL/DEFERRED. This is the machine-readable source of truth.
+ *      exactly 0 SURVIVE and exactly 1 PROMISING {D8-C6-DATED}, everything else
+ *      KILL/DEFERRED. This is the machine-readable source of truth. (XS Donchian /
+ *      D1-LS-DONCH was downgraded PROMISING -> KILL on 2026-06-09 as substantially
+ *      survivorship; see scripts/edgehunt-donchian-pit/RESULTS.md.)
  *
  *   3. DOC HEADLINE — the human-readable headline in README.md and docs/RESULTS.md
  *      MUST repeat the same numbers. We grep each doc for the SURVIVE=0 claim, the
- *      PROMISING=2 claim, and the ~111-hypotheses figure (each doc states the count
- *      in its own form: RESULTS.md as the literal "0 SURVIVE" / "2 PROMISING" line,
+ *      PROMISING=1 claim, and the ~111-hypotheses figure (each doc states the count
+ *      in its own form: RESULTS.md as the literal "0 SURVIVE" / "1 PROMISING" line,
  *      README.md as a `| Clean **SURVIVE** | **0** |` table row). If a doc's stated
  *      number ever drifts from the ledger, this fails with an explicit diff.
  *
@@ -43,8 +45,8 @@ const RESULTS_PATH = join(REPO_ROOT, "docs", "RESULTS.md");
 
 /** The CANONICAL AUDITED FINAL STATE — the single source of truth this check encodes. */
 const EXPECTED_SURVIVE = 0;
-const EXPECTED_PROMISING = 2;
-const EXPECTED_PROMISING_IDS = ["D1-LS-DONCH", "D8-C6-DATED"];
+const EXPECTED_PROMISING = 1;
+const EXPECTED_PROMISING_IDS = ["D8-C6-DATED"];
 const EXPECTED_HYPOTHESES_TOKEN = "~111";
 
 interface LedgerEntry {
