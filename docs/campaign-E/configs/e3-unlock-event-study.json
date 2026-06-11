@@ -1,0 +1,47 @@
+{
+  "hypothesis": "E3",
+  "name": "Unlock-cliff event study — beta-hedged short over frozen forward calendar",
+  "frozen": "2026-06-09",
+  "binding_doc": "docs/campaign-E/PREREGISTRATION.md#3",
+  "role": "open PIT dataset + accruing event study; verdict accrues at ~2-5 events/month toward ~100-140 powered events (~3+ years)",
+  "calendar": {
+    "procedure": "sha256-freeze next-12-month cliff list from free CryptoRank/Tokenomist pages via scripts/recorders/record-unlock-calendar.mjs -> docs/campaign-E/frozen-calendar-YYYYMMDD.json",
+    "verification": "EVERY event verified against the on-chain vesting contract via free public RPCs BEFORE inclusion (contract address, unlock timestamp, amount; verification block recorded per event); unverifiable events excluded",
+    "append_only": "calendar additions create a new freeze file + hash; events already inside their entry window at freeze time are ineligible",
+    "historical_leg": "OUT OF SCOPE — DefiLlama /emissions is paywalled (HTTP 402, verified 2026-06-09); forward-only"
+  },
+  "eligibility": {
+    "unlock_type": "investor/team cliff",
+    "min_pct_circulating_canonical": 0.03,
+    "perp_listed": "Binance USDT-M perp listed and trading at entry date",
+    "verified_on_chain": true
+  },
+  "trade": {
+    "short_leg": "token USDT-M perp, short",
+    "hedge_leg": "long BTC perp sized beta * short notional",
+    "beta": "rolling 90-day OLS beta of token daily log returns vs BTC, estimated with data through T-11 only",
+    "entry": "T-10 daily close (UTC)",
+    "exit": "T+2 daily close (UTC)",
+    "costs": "taker 4 bps/side each leg; perp funding paid/received on both legs from recorded prints; no borrow leg"
+  },
+  "sensitivity_grid": {
+    "declared_cells": 4,
+    "thresholds_pct_circulating": [0.03, 0.05],
+    "windows": [
+      { "enter": "T-10 close", "exit": "T+2 close" },
+      { "enter": "T-5 close", "exit": "T+1 close" }
+    ],
+    "reporting": "family-wise MAX-statistic across the 4 cells at every look",
+    "canonical_binding_cell": { "threshold": 0.03, "window": { "enter": "T-10 close", "exit": "T+2 close" } }
+  },
+  "scoring": {
+    "per_event": "abnormal hedged return over the window",
+    "aggregate": "event-study t-stat, Newey-West, event-clustered, against the quarterly OBF boundaries",
+    "power": "~100-140 powered events needed; at ~2-5 events/month that is ~3+ years (PROJECT_REVIEW section 3 pre-flight gate)",
+    "kill_condition": "significantly POSITIVE hedged short-window return at look k>=4 kills the mechanism"
+  },
+  "source": [
+    "docs/PROJECT_REVIEW_2026-06-09.md sections 4.1 (unlock-cliff park verdicts), 4.2.5 (forward-only $0 design, CryptoRank/Tokenomist + RPC verification, 2-5 events/month, 100-140 events), 5B",
+    "docs/PROJECT_REVIEW_2026-06-09.md section 1.2 (DefiLlama /emissions paywalled, HTTP 402, verified 2026-06-09)"
+  ]
+}

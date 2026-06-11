@@ -235,3 +235,22 @@ export {
   loadHypothesisSpec,
   requiresFamilyValidation,
 } from "./lib/spec/hypothesis-spec";
+
+// ---------------------------------------------------------------------------
+// Power analysis (pre-flight: is a claimed edge even detectable on the data
+// you have?). Pure, dependency-free primitives.
+// ---------------------------------------------------------------------------
+export {
+  normalQuantile,
+  requiredObservedSharpeAnnual,
+  poweredHorizonYears,
+  ensembleSharpeAnnual,
+  preflightPowerCheck,
+} from "./lib/validation/power-analysis";
+export type {
+  RequiredObservedSharpeOptions,
+  PoweredHorizonOptions,
+  EnsembleSharpeOptions,
+  PreflightPowerCheckOptions,
+  PreflightPowerCheckResult,
+} from "./lib/validation/power-analysis";

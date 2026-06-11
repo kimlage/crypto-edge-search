@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "submissionId": "rsi2-overlay-example",
+  "author": {
+    "name": "Example Submitter",
+    "github": "example-submitter"
+  },
+  "claim": {
+    "summary": "An RSI(2) < 10 long/flat overlay on a noise panel harvests short-horizon mean reversion net of taker cost.",
+    "claimType": "predictive",
+    "mechanism": "A 2-period RSI below 10 marks a short-horizon oversold extreme; entering long at that close is claimed to harvest mean reversion. On this seeded synthetic noise panel the claim is FALSE BY CONSTRUCTION — this worked example exists to demonstrate the submission format, and it KILLs by design.",
+    "expectedFailureMode": "baselines (the mostly-flat overlay loses to buy-and-hold / equal-weight on a drifting panel) and deflated_sharpe at honest N=1 on a zero-edge series."
+  },
+  "strategy": {
+    "selectionMode": "preregistered_single",
+    "statistic": "compoundReturn"
+  },
+  "data": {
+    "sources": [
+      {
+        "provider": "synthetic (worked example)",
+        "endpoint": "generate-stub.mjs (deterministic, seed 1337, no network)",
+        "series": "6-asset daily noise panel + RSI(2) overlay gross returns, 600 rows"
+      }
+    ],
+    "periodStart": "2024-01-01",
+    "periodEnd": "2025-08-22",
+    "knownBiases": [
+      "synthetic_fixture_not_market_data",
+      "common_drift_injected_so_buy_and_hold_is_a_real_bar"
+    ]
+  },
+  "declared": {
+    "honestN": 1,
+    "null": "block",
+    "namedNull": "stationary-block-bootstrap",
+    "preregHash": "sha256:0a04b9a68ca0ddc5d7db34bde91382a59c5b0b0cf324e8a212f8f3628b790bd9",
+    "preregCreatedAt": "2026-06-09T00:00:00.000Z"
+  },
+  "files": {
+    "hypothesisYaml": "hypothesis.yaml",
+    "returnsCsv": "returns.csv",
+    "panelCsv": "panel.csv",
+    "fetchScriptNote": "README.md"
+  },
+  "notes": "WORKED EXAMPLE — KILLS BY DESIGN. The panel is seeded synthetic noise (generate-stub.mjs); an oscillator overlay on noise has no edge by construction. Use this directory as the template for a real submission: replace the data with $0 public sources, keep every declaration honest."
+}

@@ -1,0 +1,43 @@
+{
+  "kind": "preregistration",
+  "version": 1,
+  "hypothesisId": "rsi2-overlay-example",
+  "mechanism": "A 2-period RSI below 10 marks a short-horizon oversold extreme; going long at that close and staying flat otherwise is claimed to harvest short-horizon mean reversion. On this panel the claim is false by construction (the panel is seeded iid-style noise with a common drift), so the example demonstrates what an honest KILL looks like. The single config (period=2, entry<10, long/flat) was frozen before any returns were generated.",
+  "frozenConfig": {
+    "id": "rsi2-overlay-example",
+    "name": "EXAMPLE (kills by design): RSI(2) long/flat overlay on a synthetic noise panel",
+    "claimType": "predictive",
+    "mechanism": "A 2-period RSI below 10 marks a short-horizon oversold extreme; going long at that close and staying flat otherwise is claimed to harvest short-horizon mean reversion. On this panel the claim is false by construction (the panel is seeded iid-style noise with a common drift), so the example demonstrates what an honest KILL looks like. The single config (period=2, entry<10, long/flat) was frozen before any returns were generated.\n",
+    "data": {
+      "sources": [
+        "synthetic-noise-stub-seed-1337"
+      ],
+      "pointInTime": "as_of",
+      "fidelity": "synthetic"
+    },
+    "cost": {
+      "taker_bps_per_side": 5,
+      "maker_bps_per_side": 1,
+      "slippage_bps": 2,
+      "maker_fraction": 0
+    },
+    "search": {
+      "selection_mode": "preregistered_single",
+      "configCount": 1
+    },
+    "baselines": [
+      "buy_and_hold",
+      "equal_weight",
+      "random_lottery"
+    ],
+    "surrogate": {
+      "type": "block"
+    },
+    "holdout": {
+      "policy": "tail",
+      "fraction": 0.2
+    }
+  },
+  "configHash": "sha256:0a04b9a68ca0ddc5d7db34bde91382a59c5b0b0cf324e8a212f8f3628b790bd9",
+  "createdAt": "2026-06-09T00:00:00.000Z"
+}

@@ -1,0 +1,63 @@
+{
+  "hypothesis": "E1",
+  "name": "XS Donchian channel-position long-short — canonical forward watch",
+  "frozen": "2026-06-09",
+  "binding_doc": "docs/campaign-E/PREREGISTRATION.md#1",
+  "role": "KILL-detection / extension watch (26-week window cannot reach DSR>=0.95 unless observed ann Sharpe ~2.34; see power table)",
+  "signal": {
+    "type": "donchian_channel_position",
+    "lookback_days": 120,
+    "window": "t-119..t inclusive of current close",
+    "formula": "cp = (close - min_120) / (max_120 - min_120)",
+    "validity": "all 120 closes > 0 AND (max_120 - min_120) > 1e-12, else cp undefined",
+    "direction": "HIGH",
+    "dir_value": 1,
+    "note": "long high channel position (breakout); LOW direction was the study placebo and is excluded"
+  },
+  "weights": {
+    "family": "zscore",
+    "construction": "z_i = (cp_i - mean_cs(cp)) / std_cs(cp); std fallback 1 if degenerate; w_i = 2 * z_i / sum_j |z_j|",
+    "gross_exposure": 2.0,
+    "dollar_neutral": true,
+    "min_cross_section": 6
+  },
+  "rebalance": {
+    "frequency": "weekly",
+    "timing": "close of the first Monday daily bar (UTC) of each ISO week; weights held until next rebalance",
+    "note": "spec decision per PROJECT_REVIEW_2026-06-09.md section 5B; backtest code rebalanced daily"
+  },
+  "universe": {
+    "rule": "live top-30 Binance spot USDT pairs by trailing 90-day dollar volume",
+    "exclusions": "stablecoin/fiat bases and leveraged tokens (UP/DOWN/BULL/BEAR)",
+    "refresh": "at each weekly rebalance from latest output/recorders/market-universe.ndjson snapshot",
+    "point_in_time": true
+  },
+  "costs": {
+    "taker_per_side": 0.0004,
+    "turnover_charge": "sum_i |w_i(t) - w_i(t-)| * 0.0004",
+    "borrow_apr_on_short_notional": 0.10,
+    "borrow_note": "binding flat assumption on full short notional (~1.0x of 2.0 gross); 5%/yr sensitivity reported non-binding"
+  },
+  "hedge": {
+    "type": "BTC perp overlay",
+    "beta_estimation": "OLS of strategy prior realized daily net returns vs BTC and EW-universe basket, trailing 90 calendar days, honest-OOS (data through rebalance close only)",
+    "gate": "|beta| < 0.1 vs both BTC and EW at each quarterly look (binding)"
+  },
+  "kill_condition": "at any look with >=26 forward weeks: cumulative beta-hedged net mean <= 0 AND upper 95% Newey-West CI below the 0.3-Sharpe-equivalent mean",
+  "pre_commit_reference": {
+    "full_sample_net_sharpe": 1.4046,
+    "turnover_per_day": 0.3853,
+    "replication_date": "2026-06-09",
+    "panel": "output/crossxs/daily-closes.json (30 coins, 2020-06-02..2026-05-31)",
+    "audited_honest_oos_sharpe_range_with_borrow": [0.3, 0.5],
+    "holdout_dsr_at_n1": 0.79,
+    "holdout_newey_west_t": 0.96
+  },
+  "source": [
+    "scripts/edgehunt-requeue/donch_ls_final.ts lines 26 (COST=0.0004), 46-54 (channelPos), 56-57 (Cfg/Family), 64 (dir flip), 66-68 (zscore weight construction, min 6 names, gross 2.0), 96-97 (turnover cost), 144-151 (grid incl. N=120 zscore HIGH cell)",
+    "scripts/edgehunt-requeue/canon_check.ts lines 25-26 (canonical channelPos + buildZ), 36 (N=120 in canonical sweep)",
+    "output/edgehunt-requeue/SUMMARY.md PROMINENT CALLOUT (canonical pre-registered config: N=120 zscore HIGH, net Sharpe 1.405, turnover 0.385, holdout +0.79)",
+    "docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md lead 2 + audit update 2026-06-01 (borrow-adjusted OOS 0.3-0.5; honest-OOS hedge 0.78)",
+    "docs/PROJECT_REVIEW_2026-06-09.md sections 3, 5B"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "_doc": "Draft input for scripts/recorders/record-unlock-calendar.mjs. Curate events here from the free CryptoRank (https://cryptorank.io/token-unlocks) and Tokenomist (https://tokenomist.ai) pages, verify each against the on-chain vesting contract via a free public RPC, fill the verification block, then run the freezer to produce docs/campaign-E/frozen-calendar-YYYYMMDD.json. Events without verified=true are EXCLUDED from the freeze. See docs/campaign-E/PREREGISTRATION.md section 3.1.",
+  "_template_event": {
+    "token": "EXAMPLE",
+    "binancePerpSymbol": "EXAMPLEUSDT",
+    "unlockDateUTC": "2026-08-15",
+    "unlockTimestampUTC": "2026-08-15T00:00:00Z",
+    "pctCirculating": 0.041,
+    "allocation": "investor/team",
+    "cliff": true,
+    "sourcePages": [
+      "https://cryptorank.io/price/example/vesting",
+      "https://tokenomist.ai/example"
+    ],
+    "verification": {
+      "verified": false,
+      "chain": "ethereum",
+      "vestingContract": "0x0000000000000000000000000000000000000000",
+      "rpcUrl": "https://ethereum-rpc.publicnode.com",
+      "method": "TODO: read vesting schedule slot / call releasable()/vestedAmount() at the cliff timestamp",
+      "verifiedAt": null,
+      "notes": ""
+    }
+  },
+  "events": []
+}

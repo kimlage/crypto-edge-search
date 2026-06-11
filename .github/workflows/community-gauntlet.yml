@@ -1,0 +1,160 @@
+# Community gauntlet — runs every submission PR through the committed 8-gate
+# stack and posts the gate-by-gate verdict. STAGED COPY: lands at
+# .github/workflows/community-gauntlet.yml in the public repo (see PORTING.md).
+#
+# Security model (deliberate):
+#   - Submissions are DATA ONLY (json/yaml/yml/csv/md). The guard job fails the
+#     run if a PR touches anything outside submissions/** or adds any other file
+#     type — submitter-supplied code NEVER executes here.
+#   - The only token is the default GITHUB_TOKEN. No secrets are exposed to
+#     submitters; on fork PRs that token is read-only, so the comment/label
+#     steps are guarded and the verdict still lands in the job summary +
+#     artifact for the maintainer to relay. Maintainer-run by design.
+#   - NOTHING auto-merges. A survive-candidate label is an invitation for the
+#     maintainer to review + independently reproduce, never a merge signal.
+#   - All actions are pinned to full commit SHAs.
+name: Community gauntlet
+
+"on":
+  pull_request:
+    paths:
+      - "submissions/**"
+
+concurrency:
+  group: community-gauntlet-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  gauntlet:
+    name: schema -> gauntlet -> verdict
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Needed for the PR comment + labels. On fork PRs GitHub silently
+      # downgrades GITHUB_TOKEN to read-only; the guarded steps below skip and
+      # the verdict is still published via the job summary + artifact.
+      pull-requests: write
+      issues: write
+    env:
+      CI: "true"
+    steps:
+      - name: Checkout (full history for base diff)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      # ---- Guard: submissions are data-only, inside submissions/** ----------
+      - name: Enforce data-only submission diff
+        run: |
+          set -euo pipefail
+          BASE="origin/${{ github.base_ref }}"
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          CHANGED=$(git diff --name-only "$BASE"...HEAD)
+          echo "Changed files:"; echo "$CHANGED"
+          BAD=$(echo "$CHANGED" | grep -Ev '^submissions/[^/]+/[^/]+\.(json|ya?ml|csv|md|mjs)$' || true)
+          # .mjs is allowed ONLY for the committed example's generate-stub; a
+          # submitter PR adding any executable file is refused outright.
+          BAD_CODE=$(echo "$CHANGED" | grep -E '\.mjs$' | grep -v '^submissions/rsi2-overlay-example/generate-stub\.mjs$' || true)
+          if [ -n "$BAD$BAD_CODE" ]; then
+            echo "::error::Submission PRs may only add data files (json/yaml/csv/md) under submissions/<id>/. Offending: $BAD $BAD_CODE"
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ---- Schema + honesty locks (prereg hash, grid-N, power pre-flight) ---
+      - name: Validate submission declarations
+        run: |
+          set -euo pipefail
+          BASE="origin/${{ github.base_ref }}"
+          DIRS=$(git diff --name-only "$BASE"...HEAD -- 'submissions/**' | cut -d/ -f1-2 | sort -u)
+          echo "dirs=$DIRS"
+          for d in $DIRS; do
+            [ -f "$d/submission.json" ] || { echo "::error::$d has no submission.json"; exit 1; }
+            node scripts/community/community-runner.mjs check "$d"
+          done
+
+      # ---- The gauntlet itself (committed primitives via the crypto-edge CLI)
+      - name: Run the gauntlet
+        run: |
+          set -euo pipefail
+          BASE="origin/${{ github.base_ref }}"
+          DIRS=$(git diff --name-only "$BASE"...HEAD -- 'submissions/**' | cut -d/ -f1-2 | sort -u)
+          mkdir -p "$RUNNER_TEMP/verdicts"
+          : > "$RUNNER_TEMP/verdicts/comment.md"
+          LABEL="gauntlet:indeterminate"
+          for d in $DIRS; do
+            node scripts/community/community-runner.mjs run "$d" --out "$RUNNER_TEMP/verdicts" | tee "$RUNNER_TEMP/verdicts/raw.txt"
+            cat "$RUNNER_TEMP/verdicts/$(basename "$d").comment.md" >> "$RUNNER_TEMP/verdicts/comment.md"
+            L=$(grep -E '^::label::' "$RUNNER_TEMP/verdicts/raw.txt" | tail -1 | sed 's/^::label:://')
+            [ -n "$L" ] && LABEL="$L"
+          done
+          echo "GAUNTLET_LABEL=$LABEL" >> "$GITHUB_ENV"
+          # The verdict always lands in the job summary (works on fork PRs too).
+          cat "$RUNNER_TEMP/verdicts/comment.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload verdict artifact
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: gauntlet-verdict
+          path: ${{ runner.temp }}/verdicts/
+
+      # ---- PR comment (skipped on fork PRs: read-only token) ----------------
+      - name: Post gate-by-gate verdict as a PR comment
+        if: ${{ always() && github.event.pull_request.head.repo.full_name == github.repository }}
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const fs = require("fs");
+            const path = `${process.env.RUNNER_TEMP}/verdicts/comment.md`;
+            if (!fs.existsSync(path)) return;
+            const marker = "<!-- community-gauntlet-verdict -->";
+            const body = `${marker}\n${fs.readFileSync(path, "utf8")}\n` +
+              `\n*Automated verdict from the committed gauntlet. No auto-merge: a ` +
+              `survive-candidate requires maintainer review + independent reproduction.*`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const comments = await github.rest.issues.listComments({ owner, repo, issue_number, per_page: 100 });
+            const prior = comments.data.find((c) => c.body && c.body.startsWith(marker));
+            if (prior) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: prior.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+      # ---- Verdict label (kill / promising / survive-candidate / ...) -------
+      - name: Apply verdict label
+        if: ${{ always() && github.event.pull_request.head.repo.full_name == github.repository }}
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const label = process.env.GAUNTLET_LABEL || "gauntlet:indeterminate";
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            // Ensure the label exists (first run on a fresh repo), then swap it in.
+            const COLORS = {
+              "gauntlet:kill": "d73a4a",
+              "gauntlet:promising": "fbca04",
+              "gauntlet:survive-candidate": "0e8a16",
+              "gauntlet:deferred": "c5def5",
+              "gauntlet:indeterminate": "ededed",
+              "gauntlet:checked": "ededed",
+            };
+            try {
+              await github.rest.issues.createLabel({ owner, repo, name: label, color: COLORS[label] ?? "ededed" });
+            } catch { /* already exists */ }
+            const existing = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number });
+            for (const l of existing.data.filter((l) => l.name.startsWith("gauntlet:"))) {
+              await github.rest.issues.removeLabel({ owner, repo, issue_number, name: l.name }).catch(() => {});
+            }
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [label] });

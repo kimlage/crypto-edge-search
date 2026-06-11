@@ -1,0 +1,50 @@
+{
+  "hypothesis": "E2",
+  "name": "Two-mechanism ensemble — Donchian sleeve + unlevered dated-basis sleeve (ONE hypothesis)",
+  "frozen": "2026-06-09",
+  "binding_doc": "docs/campaign-E/PREREGISTRATION.md#2",
+  "role": "infrastructure + content; honest powered horizon ~11-16 years at sleeve Sharpes 0.3-0.7 (rho~0) per PROJECT_REVIEW section 3 — NOT a practical SURVIVE attempt, stated bluntly",
+  "scoring_unit": "the ensemble return series only; sleeves are diagnostics, never adjudicated separately",
+  "sleeves": {
+    "donchian": {
+      "spec": "identical to E1 frozen config",
+      "config_ref": "docs/campaign-E/configs/e1-donchian-canonical.json"
+    },
+    "dated_basis_unlevered": {
+      "instruments": "BTC + ETH Binance COIN-M quarterly futures vs spot",
+      "trade": "long spot + short contango quarterly, hold to convergence; stack front + next quarter, equal-weight across active legs",
+      "entry_rule": "enter only when annualized basis NET of contemporaneous trailing-30d perp-funding carry exceeds hurdle",
+      "ann_hurdle": 0.06,
+      "purge_perp_at_entry": true,
+      "exit_backwardation": true,
+      "leverage": 1.0,
+      "charge_early_unwind": true,
+      "early_unwind": { "daily_prob": 0.004, "slip_bps": 25 },
+      "taker_per_side": 0.0004,
+      "note": "unlevered only — the levered variant was a financing-leak artifact killed by the 2026-06-01 audit"
+    }
+  },
+  "weights": {
+    "scheme": "inverse-volatility, equal-risk 50/50, frozen from pre-commit data only",
+    "donchian_capital_weight": 0.0624,
+    "dated_basis_capital_weight": 0.9376,
+    "derivation": {
+      "donchian_ann_vol": 0.50928,
+      "donchian_daily_std": 0.026657,
+      "donchian_vol_source": "canonical N=120 zscore HIGH replication on output/crossxs/daily-closes.json, 2026-06-09",
+      "dated_basis_ann_vol": 0.03391,
+      "dated_basis_daily_std": 0.0017749973435767978,
+      "dated_basis_vol_source": "output/edgehunt/dated_futures_carry_report.json rawPortfolio.stdDaily (primary config)",
+      "formula": "w_i = (1/ann_vol_i) / sum_j (1/ann_vol_j); each sleeve contributes ~3.18%/yr vol at rho~0"
+    },
+    "rebalancing": "frozen capital weights restored at each quarterly look only; no re-estimation ever"
+  },
+  "costs_financing": "all sleeve-level costs per sleeve specs; financing charged on full notional (audit error class i)",
+  "kill_condition": "ensemble cumulative net mean <= 0 at any look with >= 2 years of data, OR both sleeves individually killed (E1 kill condition; basis sleeve annualized excess <= 0 over >= 2 years)",
+  "source": [
+    "scripts/edgehunt/dated_futures_carry.ts lines 45-48 (TAKER, early-unwind constants), 104-110 (CarryConfig), 132-186 (entry/exit/roll simulation), 289-296 (primary committed config: annHurdle 0.06, exitBackwardation, chargeEarlyUnwind, purgePerpAtEntry)",
+    "output/edgehunt/dated_futures_carry_report.json (rawPortfolio.stdDaily, primary config provenance)",
+    "docs/EDGE_SEARCH_DOMAIN_CAMPAIGN.md audit update 2026-06-01 (levered carry = financing leak; unlevered ~4.9%/yr t=2.41 DSR 0.60)",
+    "docs/PROJECT_REVIEW_2026-06-09.md sections 3 (consequence 2: 2-sleeve ensemble SR ~0.7-0.85 -> 11-16 years), 5B"
+  ]
+}

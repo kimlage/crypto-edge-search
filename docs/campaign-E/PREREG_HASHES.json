@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-06-09T23:32:56.901Z",
+  "note": "Binding upon maintainer commit (PREREGISTRATION.md section 0). Hash change after binding = new hypothesis, family K increments.",
+  "files": [
+    {
+      "path": "docs/campaign-E/PREREGISTRATION.md",
+      "bytes": 20338,
+      "sha256": "23cd6998226d900fdf37e8b217d2f52305a78538b42648582d189dfb2f6984c9"
+    },
+    {
+      "path": "docs/campaign-E/configs/e1-donchian-canonical.json",
+      "bytes": 3442,
+      "sha256": "6e8eeb72b492ca329ba1e89b583246216d95cea8349f81902c8f0a883c9f690c"
+    },
+    {
+      "path": "docs/campaign-E/configs/e2-ensemble.json",
+      "bytes": 3214,
+      "sha256": "1e81ca961b5fba28e51cb69d8b755281284df69a8d98a204af8d05004346e988"
+    },
+    {
+      "path": "docs/campaign-E/configs/e3-unlock-event-study.json",
+      "bytes": 2865,
+      "sha256": "accca730b49f4eae61b14571738b7ee455c27ccd5dfdbf3f37f8ea08e9861140"
+    },
+    {
+      "path": "docs/campaign-E/configs/e4-regime-carry.json",
+      "bytes": 3096,
+      "sha256": "1bc6046b743210829b033081fa7b6a541041d9ab9c72274bcb04504df7fed152"
+    }
+  ]
+}

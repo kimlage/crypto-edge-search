@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Campaign-E daily recorders — SHIPPED UNLOADED. Strictly opt-in: nothing in the repo loads
+     this; see scripts/recorders/README.md for the launchctl bootstrap command. Data-only
+     recording; the lab's training loop remains OFF (2026-05-31 decision). -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.kimlage.ces-recorders</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>cd /path/to/crypto-edge-search &amp;&amp; node scripts/recorders/record-daily-market.mjs &amp;&amp; node scripts/recorders/record-deribit-chain.mjs</string>
+  </array>
+
+  <!-- daily at 06:00 local; launchd coalesces a missed run on wake (cron would skip it) -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>6</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>/path/to/crypto-edge-search/output/recorders/launchd-run.log</string>
+  <key>StandardErrorPath</key>
+  <string>/path/to/crypto-edge-search/output/recorders/launchd-run.log</string>
+
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>LowPriorityIO</key>
+  <true/>
+</dict>
+</plist>

@@ -1,0 +1,50 @@
+{
+  "hypothesis": "E4",
+  "name": "Regime-triggered structural carry — pre-registered activation rule (PROJECT_REVIEW section 5C verbatim)",
+  "frozen": "2026-06-09",
+  "binding_doc": "docs/campaign-E/PREREGISTRATION.md#4",
+  "role": "the centerpiece: only construction whose in-regime Sharpe history (>=2) clears the power wall within ~1-2 years of triggered time; dormant at zero cost until the regime arrives",
+  "trigger_on": {
+    "funding": "equal-weight 8-major Binance perp funding > 8%/yr sustained 30 consecutive days",
+    "majors": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "AVAXUSDT"],
+    "and_basis": "BTC quarterly annualized basis > 5%"
+  },
+  "trigger_off": {
+    "funding": "< 5%/yr for 30 days",
+    "or_basis": "< 2%",
+    "action": "close at the next roll"
+  },
+  "trigger_state_at_freeze": {
+    "date": "2026-06-09",
+    "state": "OFF",
+    "evidence": "2026-YTD equal-weight 8-major funding ~ -0.05%/yr (PROJECT_REVIEW section 5C)"
+  },
+  "book_while_on": {
+    "structure": "delta-neutral, unlevered",
+    "senior_sleeve": "long spot + short dated quarterly, BTC + ETH, hold-to-convergence",
+    "junior_sleeve": "short perp funding receiver on the 8 majors, equal-weight",
+    "perp_sleeve_notional_cap": 0.5,
+    "financing": "financing/borrow charged on full notional",
+    "taker_per_side": 0.0004,
+    "mark": "weekly"
+  },
+  "crash_tail_control": "pre-declared: perp-spot carry KILL showed short-crash-option profile (skew -12.9, Nov-2024 -18.9% month); hence the 50% perp-leg cap with contractually-converging dated-basis as senior sleeve; tail stress is part of the published spec",
+  "scoring": {
+    "claim": "triggered windows beat T-bills net of everything, at honest N=1",
+    "windows": "scored ONLY over ON-windows, cumulative across regimes",
+    "honest_n": 1,
+    "nulls": {
+      "primary": "calendar-reanchor + regime-placebo (random alternative trigger dates with matched ON-duration)",
+      "documented_wrong_null": "XS-shuffle — wrong for directional carry; no cross-sectional selection claim to destroy"
+    },
+    "looks": "quarterly under the Campaign E alpha-spending schedule (PREREGISTRATION.md section 5)"
+  },
+  "power": "in-regime carry at 2021/2024 richness paid double-digit APR delta-neutral (dated-basis low-funding-regime Sharpe 2.87; 2024 funding blowout 10.99%/yr) -> in-regime true Sharpe >= 2 -> ~1-2 years cumulative ON-time to 80% power; if the regime never returns the hypothesis stays dormant at zero cost",
+  "data": "$0: cached funding/basis series + daily recorder (output/recorders/market-funding.ndjson, market-basis.ndjson); T-bill benchmark from cached FRED series",
+  "source": [
+    "docs/PROJECT_REVIEW_2026-06-09.md section 5C (normative, copied verbatim in substance)",
+    "scripts/edgehunt/dated_futures_carry.ts (dated-basis entry/roll/convergence mechanics reused by the senior sleeve)",
+    "output/edgehunt/dated_futures_carry_report.json regimeConditioned.datedCarry_lowPerp (Sharpe 2.87 provenance)",
+    "output/funding/ (8-major cached funding universe)"
+  ]
+}

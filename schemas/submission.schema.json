@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kimlage/crypto-edge-search/schemas/submission.schema.json",
+  "title": "CommunitySubmission",
+  "description": "A community 'run the gauntlet' submission: one strategy claim, its $0 data provenance, the DECLARED honest N (every config tried), the declared null, the cost spec, and the file map the runner consumes. A submission is DATA ONLY (JSON/YAML/CSV/MD) — submitters never add executable code; the gates that score it are the repo's committed, tested primitives (validateStrategy / validateStrategyFamily via the crypto-edge CLI). The strategy/hypothesis specs referenced here use the repo's existing loaders: src/lib/spec/hypothesis-spec.ts (loadHypothesisSpec) and src/lib/spec/load-spec.ts (loadStrategySpec / loadCostSpec).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "submissionId", "author", "claim", "strategy", "data", "declared", "files"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "description": "Submission schema version. Bump only with a schema change."
+    },
+    "submissionId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,63}$",
+      "description": "Stable kebab-case identifier; MUST equal the submission's directory name under submissions/."
+    },
+    "author": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The name to publish the verdict under (a SURVIVE is published with your name on it — and so is a KILL)."
+        },
+        "github": {
+          "type": "string",
+          "description": "GitHub handle (no @)."
+        },
+        "contact": {
+          "type": "string",
+          "description": "Optional contact (email / X handle). Never required."
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "mechanism", "claimType"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 10,
+          "description": "ONE falsifiable sentence: what edge, in which market, over which horizon. State it so a KILL is meaningful."
+        },
+        "mechanism": {
+          "type": "string",
+          "minLength": 20,
+          "description": "WHY the edge should exist (risk premium / flow / friction / behavioral bias / microstructure). 'A backtest looked good' is not a mechanism."
+        },
+        "claimType": {
+          "type": "string",
+          "enum": ["predictive", "structural", "carry", "anomaly", "descriptive"],
+          "description": "Mirrors HypothesisClaimType in src/lib/spec/hypothesis-spec.ts."
+        },
+        "expectedFailureMode": {
+          "type": "string",
+          "description": "Honest prior: the most likely binding gate and why (coincident long-beta, h=0 tautology, selection inflation, luckiest-of-N, carry sub-risk-free, holdout magnitude)."
+        },
+        "forward": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["windowYears", "expectedTrueSharpe"],
+          "description": "Declare this ONLY for a forward / pre-registered live claim. Triggers the MANDATORY power pre-flight: if the declared window cannot reach 80% power at the expected true Sharpe, the submission is auto-DEFERRED as a SURVIVE attempt (it may still run as a forward watch).",
+          "properties": {
+            "windowYears": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "The declared forward scoring window, in years (26 weeks = 0.5)."
+            },
+            "expectedTrueSharpe": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "The TRUE annualized Sharpe you claim the mechanism delivers. Powered horizon ≈ ((1.96 + 0.8416) / SR)^2 years for 80% power."
+            },
+            "lookSchedule": {
+              "type": "string",
+              "description": "When the window is scored (e.g. 'quarterly'). The vault is consumed on schedule, never early."
+            }
+          }
+        }
+      }
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selectionMode"],
+      "properties": {
+        "selectionMode": {
+          "type": "string",
+          "enum": ["preregistered_single", "searched_grid"],
+          "description": "Mirrors SelectionMode in src/lib/spec/hypothesis-spec.ts. preregistered_single = ONE config frozen from mechanism BEFORE looking at returns (honest N=1, requires declared.preregHash). searched_grid = a family; routed to `crypto-edge validate-family` (family-wise MAX-statistic null)."
+        },
+        "statistic": {
+          "type": "string",
+          "enum": ["compoundReturn", "mean", "sharpe"],
+          "description": "Statistic the gauntlet scores on (ReturnSeriesStatistic). Default compoundReturn for the single path, sharpe for the family path."
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sources", "periodStart", "periodEnd", "knownBiases"],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Every source must be FREE, PUBLIC and KEY-LESS ($0 rule). Paid or keyed data disqualifies the submission.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["provider", "endpoint", "series"],
+            "properties": {
+              "provider": { "type": "string", "minLength": 1, "description": "e.g. 'Binance', 'Coin Metrics Community', 'data.binance.vision'." },
+              "endpoint": { "type": "string", "minLength": 1, "description": "The exact public, key-less endpoint or bulk-file URL used." },
+              "series": { "type": "string", "minLength": 1, "description": "The exact series pulled (symbols, field, cadence)." }
+            }
+          }
+        },
+        "periodStart": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "First covered date (YYYY-MM-DD), inclusive."
+        },
+        "periodEnd": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "Last covered date (YYYY-MM-DD), inclusive."
+        },
+        "knownBiases": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "The biases the data carries — survivorship (delisted names present?), look-ahead / point-in-time, regime coverage, revisions. Use 'none_known' only if truly none. Mirrors DatasetSpec.known_biases."
+        }
+      }
+    },
+    "declared": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["honestN", "null"],
+      "properties": {
+        "honestN": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "EVERY distinct config you tried while developing this — counted up front, never 1-because-you-kept-one. For searched_grid it MUST equal the product of the strategy spec's configs grid sizes; for preregistered_single it MUST be 1 and requires preregHash."
+        },
+        "null": {
+          "type": "string",
+          "enum": ["phase", "block", "cross_sectional", "family_max"],
+          "description": "The machine-checked surrogate mode (mirrors SurrogateType). Match the null to the claim: temporal timing -> phase/block; rotation / relative value -> cross_sectional; ANY searched grid -> family_max."
+        },
+        "namedNull": {
+          "type": "string",
+          "description": "Optional finer-grained named null from the lab taxonomy (e.g. 'calendar-reanchor', 'IAAFT', 'GARCH-sim', 'bracket-on-surrogate', 'shuffled-VRP', 'cross-sectional-shuffle'). Documents intent; the machine-run mode is `null` above."
+        },
+        "preregHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "REQUIRED when honestN is 1: the configHash printed by `crypto-edge prereg <hypothesis.yaml> --json` (buildPreregistration). The runner recomputes it from the submitted hypothesis spec; a mismatch voids the N=1 claim."
+        },
+        "preregCreatedAt": {
+          "type": "string",
+          "description": "ISO-8601 instant the config was frozen (the --created-at passed to `crypto-edge prereg`). Informational; the hash covers only the frozen config."
+        }
+      }
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["panelCsv"],
+      "description": "Paths RELATIVE to the submission directory. Data files only.",
+      "properties": {
+        "hypothesisYaml": {
+          "type": "string",
+          "description": "HypothesisSpec (loadHypothesisSpec / `crypto-edge prereg`). REQUIRED for preregistered_single."
+        },
+        "strategyYaml": {
+          "type": "string",
+          "description": "StrategySpec (loadStrategySpec) whose `configs` define the searched grid. REQUIRED for searched_grid (it is the `crypto-edge validate-family` input)."
+        },
+        "returnsCsv": {
+          "type": "string",
+          "description": "Long CSV (date,return[,position]) of GROSS per-period strategy returns (parseReturnsCsv). REQUIRED for preregistered_single. Include the position column so turnover cost is charged on every |delta-position|."
+        },
+        "panelCsv": {
+          "type": "string",
+          "description": "Wide date+assets CSV (parsePanelCsv). For preregistered_single it seeds the buy-and-hold / equal-weight baselines (--baselines); for searched_grid it is the panel the family trades (--panel). ALWAYS required: no baselines, no certification."
+        },
+        "costYaml": {
+          "type": "string",
+          "description": "Optional CostSpec (loadCostSpec) for the leverage-aware cost model (--cost). Declare EVERY carry leg; financing is charged on the FULL levered/short notional."
+        },
+        "fetchScriptNote": {
+          "type": "string",
+          "description": "Optional path to a markdown note documenting EXACTLY how to re-fetch the CSVs from the $0 sources (commands/URLs). Reproducibility note, not executable code."
+        }
+      }
+    },
+    "notes": {
+      "type": "string",
+      "description": "Anything else the maintainer should know (e.g. 'this example KILLs by design')."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "strategy": { "properties": { "selectionMode": { "const": "preregistered_single" } } } } },
+      "then": {
+        "properties": {
+          "declared": { "required": ["honestN", "null", "preregHash"], "properties": { "honestN": { "const": 1 } } },
+          "files": { "required": ["panelCsv", "hypothesisYaml", "returnsCsv"] }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "strategy": { "properties": { "selectionMode": { "const": "searched_grid" } } } } },
+      "then": {
+        "properties": {
+          "declared": { "properties": { "honestN": { "minimum": 2 }, "null": { "const": "family_max" } } },
+          "files": { "required": ["panelCsv", "strategyYaml"] }
+        }
+      }
+    }
+  ]
+}
